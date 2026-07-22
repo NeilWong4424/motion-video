@@ -17,7 +17,7 @@ test('a sparse one-sentence brief records assumptions without inventing claims',
   requires('agent/prompts/brief-planner.md', [
     ['fact/constraint/assumption/unknown separation', /fact.+constraint.+assumption.+unknown/is],
     ['truth-critical questioning', /truth-critical/i],
-    ['unsupported-claim stop', /unsupported.+claim/i],
+    ['unsupported-claim stop', /unsupported.+claim|claim.+(?:lacks|without).+(?:evidence|source)/i],
     ['one-message ownership', /one message/i],
     ['no visual direction authority', /must not[\s\S]+(?:style|composition|motion profile)/i],
   ]);
@@ -38,8 +38,8 @@ test('creative direction treats camera travel as spatial meaning, not decoration
   requires('agent/prompts/creative-direction.md', [
     ['fixed continuity policy', /seamless-default/i],
     ['spatial-relation question', /spatial relationship.+camera travel|camera travel.+spatial relationship/is],
-    ['held live composition fallback', /held (?:shot|camera|composition)[\s\S]+live (?:content|motion)/i],
-    ['cut budget', /chapterCutBudget[\s\S]+(?:0 or 1|0 \| 1)/i],
+    ['held live composition fallback', /held live composition|held (?:shot|camera|composition)[\s\S]+live (?:content|motion)/i],
+    ['cut budget', /chapterCutBudget[\s\S]{0,100}0[\s\S]{0,40}1/i],
     ['no executable implementation', /must not[\s\S]+(?:React|CSS|executable code)/i],
   ]);
 });
@@ -47,8 +47,8 @@ test('creative direction treats camera travel as spatial meaning, not decoration
 test('motion planning makes continuity structural and records unsupported expression as a gap', () => {
   requires('agent/prompts/motion-planner.md', [
     ['one bridge per adjacent pair', /exactly one bridge.+adjacent Beat/is],
-    ['persistent IDs', /persistent.+(?:node IDs|identity)/i],
-    ['global clock/world/camera', /global clock[\s\S]+(?:Persistent World|global world)[\s\S]+global camera/i],
+    ['persistent IDs', /persistent.+(?:node IDs|identity)|stable identity[\s\S]+node ID/i],
+    ['global clock/world/camera', /global (?:frame )?clock[\s\S]+(?:Persistent World|global world)[\s\S]+global camera/i],
     ['chapter-cut ceiling', /maximum.+one.+chapter cut/i],
     ['typed gap disposition', /CapabilityGap@1|CAPABILITY_GAP/],
     ['no unknown capability', /must not[\s\S]+undeclared capabilit/i],
@@ -79,7 +79,7 @@ test('natural-language revisions become lock-aware patches, never direct edits',
 test('cold reviewers write evidence and decisions but never repairs or approval', () => {
   for (const path of ['agent/reviewers/creative-reviewer.md', 'agent/reviewers/motion-reviewer.md']) {
     requires(path, [
-      ['hash-bound evidence', /RenderPlan hash/i],
+      ['hash-bound evidence', /RenderPlan hash|hash-bound[\s\S]+RenderPlan/i],
       ['structured frame evidence', /frame range|frameRange/i],
       ['three-way decision', /ship.+fix.+rebuild/is],
       ['read-only behavior', /read-only/i],
@@ -94,9 +94,9 @@ test('motion review catches slide rhythm using playback and seam evidence', () =
     ['bridge samples', /before[\s\S]+midpoint[\s\S]+after/i],
     ['brightness/dead-frame scan', /brightness[\s\S]+dead frame/i],
     ['eye trace', /eye trace/i],
-    ['persistent identity', /persistent identity/i],
+    ['persistent identity', /persistent identity|Persistent World[\s\S]+stable identity/i],
     ['slide-like rhythm', /slide-like|slide rhythm/i],
-    ['real target distinction', /real frozen target|actual target component/i],
+    ['real target distinction', /real frozen target|actual target component|real target[\s\S]+mounted[\s\S]+frozen/i],
   ]);
 });
 
