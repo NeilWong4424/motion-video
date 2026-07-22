@@ -1,0 +1,11 @@
+node_modules/
+out/
+.cache/
+.remotion/
+.DS_Store
+projects/*/assets/
+projects/*/references/
+projects/*/revisions/
+projects/*/capabilities/
+!projects/_template/
+!projects/_template/**

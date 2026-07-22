@@ -1,0 +1,15 @@
+{
+  "name": "local-text-to-motion-prompt-os",
+  "version": "0.1.0-part1",
+  "private": true,
+  "type": "module",
+  "description": "Local Prompt OS contracts for a continuity-first text-to-motion repository. Part 1 contains no motion engine.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "test:prompts": "node --test tests/prompt-contracts.test.mjs",
+    "verify:part1": "node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
