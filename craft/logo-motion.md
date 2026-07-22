@@ -6,7 +6,7 @@ Use for a supplied, licensed logo or identity asset that needs a restrained intr
 
 ## Reads
 
-Read local asset provenance and license status, brand constraints, the Treatment, and `style-system.md`.
+Read local asset provenance and license status, brand constraints, the Treatment, `style-system.md`, and `continuity-first.md`.
 
 ## Writes
 

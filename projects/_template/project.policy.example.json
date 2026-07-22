@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "project-policy@1",
+  "projectId": "example-project",
+  "previewApproval": {
+    "defaultActor": "human",
+    "hostOptIn": {
+      "enabled": false,
+      "allowedHostIds": []
+    }
+  }
+}

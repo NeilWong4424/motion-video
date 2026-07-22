@@ -1,6 +1,6 @@
 ---
 name: video
-description: Route a local pure-code 2D motion request into the repository's canonical Prompt OS workflow.
+description: Use when a user asks to create, revise, review, add audio direction to, or deliver a local pure-code 2D motion video in this repository.
 argument-hint: <brief>
 ---
 

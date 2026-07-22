@@ -6,7 +6,7 @@ Use for abstract geometry, lines, paths, masks, and drawn relations that carry m
 
 ## Reads
 
-Read the Treatment visual thesis, MotionSpec intent, `style-system.md`, and `continuity-first.md`.
+Read the Treatment visual thesis, MotionSpec intent, `motion-craft.md`, `style-system.md`, and `continuity-first.md`.
 
 ## Writes
 

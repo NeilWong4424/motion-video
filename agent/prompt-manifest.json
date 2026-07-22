@@ -1,6 +1,20 @@
 {
   "contractVersion": "prompt-os/v1",
   "orchestrator": "agent/video-workflow.md",
+  "contracts": [
+    "agent/contracts/workflow-decision.md",
+    "agent/contracts/authority-matrix.md",
+    "agent/contracts/artifact-contracts.md",
+    "agent/contracts/input-trust.md",
+    "agent/contracts/treatment-contract.md",
+    "agent/contracts/motion-spec-contract.md",
+    "agent/contracts/capability-gap-contract.md",
+    "agent/contracts/revision-contract.md",
+    "agent/contracts/review-contract.md",
+    "agent/contracts/role-result.md",
+    "agent/contracts/engine-interface.md",
+    "agent/contracts/diagnostics.md"
+  ],
   "roles": [
     {
       "id": "orchestrator",
@@ -30,13 +44,20 @@
       "id": "motion-planner",
       "file": "agent/prompts/motion-planner.md",
       "authority": ["motion-spec", "capability-gap"],
-      "writes": ["projects/<project-id>/motion.spec.json"]
+      "writes": [
+        "projects/<project-id>/motion.spec.json",
+        "projects/<project-id>/capability-gaps/<gap-id>.json"
+      ]
     },
     {
       "id": "capability-builder",
       "file": "agent/prompts/capability-builder.md",
-      "authority": ["approved-project-local-capability"],
-      "writes": ["projects/<project-id>/capabilities/<capability-id>/**"]
+      "authority": ["capability-gap-diagnosis", "project-local-capability-proposal-advisory"],
+      "writes": [],
+      "availability": "interface-stub",
+      "futureWrites": [
+        "projects/<project-id>/capabilities/<capability-id>/capability.manifest.json"
+      ]
     },
     {
       "id": "revision-interpreter",

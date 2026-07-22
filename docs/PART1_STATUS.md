@@ -4,6 +4,19 @@
 
 Part 1 supplies the documentation-only Prompt OS: shared Codex and Claude Code entrypoints, canonical state/routing rules, unique role authority, artifact and diagnostic contracts, role/reviewer prompts, craft guidance, and workflow handoffs. Static contract tests may verify the document structure and policy language.
 
+The checked-in inventory contains one canonical orchestrator, seven artifact/advisory agent prompts, two cold-review prompts, 12 central contracts, 15 on-demand craft skills, the provider-neutral music-prompt document template, three workflow handoffs, and operator templates for fast/structured intake, local sources, and locked revisions.
+
+## Verification
+
+Fresh Part 1 verification:
+
+```text
+npm test
+63 tests, 63 passed, 0 failed
+```
+
+Three independent pressure-review tracks exercised scope/truth, continuity/capability/revision, and review/audio edge cases. After repair and final re-review, each track reported 0 Critical and 0 Important findings. See [`reviews/PROMPT_PRESSURE_REPORT.md`](reviews/PROMPT_PRESSURE_REPORT.md).
+
 This status does not claim a host compatibility dry run, generated project, preview, QC pass, approval, MP4, audio prompt, mux, or delivery artifact. Those require real later interfaces and evidence.
 
 ## Engine implementation status

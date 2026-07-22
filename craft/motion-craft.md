@@ -6,7 +6,7 @@ Use for a motion-language decision that crosses domains: hierarchy, staging, hol
 
 ## Reads
 
-Read the approved Brief and Treatment, motion profile, `continuity-first.md`, and the selected domain module.
+Read the approved Brief and Treatment, motion profile, and `continuity-first.md`. Use the current role-owned domain context supplied by the loader; do not reverse-load a domain module that declares `motion-craft` as a dependency.
 
 ## Writes
 

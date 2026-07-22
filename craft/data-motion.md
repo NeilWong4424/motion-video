@@ -6,7 +6,7 @@ Use for charts, quantified comparisons, value changes, and data-backed visual ex
 
 ## Reads
 
-Read verified Brief facts, source labels and units, approved Treatment, and `diagram-motion.md` when relationships are shown.
+Read verified Brief facts, source labels and units, approved Treatment, and `motion-craft.md`. This module expresses any value-bearing relationship from those inputs without reverse-loading the diagram skill.
 
 ## Writes
 

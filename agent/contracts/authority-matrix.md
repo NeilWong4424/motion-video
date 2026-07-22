@@ -5,15 +5,18 @@ Authority is singular and field-specific. Precedence is: user facts, explicit co
 | Concern or artifact | Sole authority | Inputs | Explicit exclusion |
 |---|---|---|---|
 | State, next route, repair counters, stop | Orchestrator | All roles, tools, and user evidence | Creative content, persisted artifacts, gate evidence |
+| `ProjectPolicy@1` at `projects/<project-id>/project.policy.json` | User | User's explicit approval policy choice | Orchestrator/host self-authorization; `_template` example as authority |
 | Facts, audience, one message, CTA, constraints, assumptions, `FACT_CHECK` | Brief Planner | User and Researcher | Style, composition, exact timing |
 | Measured local-source findings | Researcher | User-supplied local sources | Facts by invention, treatment, style choice |
 | Treatment, narrative, visual thesis, motion profile, style pack, Beat intentions, vocabulary, cut budget | Creative Direction | Approved Brief, findings, craft | Geometry, tracks, code |
 | MotionSpec and recorded capability gap | Motion Planner | Approved Brief/Treatment, declared catalog, craft | Runtime code, undeclared capability |
-| Approved project-local capability package | Capability Builder | Recorded gap and explicit route approval | Brief/Treatment changes, shared promotion |
-| SemanticPatch | Revision Interpreter | Verbatim instruction, current hashes/locks, issue IDs | Applying patch, direct source edits |
+| Capability gap diagnosis and project-local proposal advisory | Capability Builder interface stub | Recorded gap content hash and explicit attributed route approval | Current/future implementation authority, package writes, Brief/Treatment changes, shared promotion |
+| Future approved project-local capability package | Separately authorized future interface named by an exact implementation manifest | User-authorized exact file manifest plus recorded gap and reviewed advisory | Authority inferred from the Capability Builder advisory or Part 1 prompt manifest |
+| SemanticPatch | Revision Interpreter | Verbatim instruction, current hashes/locks, and closed `user-request` or issue/cycle-bound `review-repair` cause | Applying patch, direct source edits |
 | Creative review | Creative Reviewer | Exact preview, Brief/Treatment, current QC | Source edits, Preview Approval |
 | Motion review | Motion Reviewer | Exact preview/frames, MotionSpec, current QC | Source edits, Preview Approval |
-| Preview Approval | Human by default; explicitly permitted host only by project policy | Passing current QC and two `ship` reviews | Reviewers or orchestrator by implication |
+| Preview Approval decision | Human by default; exact host only after explicit user opt-in in current Project Policy | Passing current QC and two `ship` reviews | Reviewers or orchestrator by implication |
+| `PreviewApproval@1` artifact | Future deterministic Approval recorder | Attributed decision/reason, current policy hash, exact preview/evidence, passing QC, both `ship` review hashes | Creative judgment, policy writes, inferred actor authority |
 | AudioBrief | Sound Designer | Approved locked silent cut and motion cues | `MUSIC_PROMPT.md`, generated music, visual edits |
 | Technical QC and derived artifacts | Future deterministic tools | Canonical, current hash-bound inputs | New creative decisions or silent fallbacks |
 | `MUSIC_PROMPT.md` | Future deterministic audio-prompt tool | Current AudioBrief and approved locked picture | Human-role hand editing, provider selection |

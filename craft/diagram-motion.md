@@ -6,7 +6,7 @@ Use for processes, systems, flows, architectures, and relationships whose meanin
 
 ## Reads
 
-Read verified facts, supplied diagrams if any, the Treatment, `data-motion.md` where values are present, and `continuity-first.md`.
+Read verified facts and values, supplied diagrams if any, the Treatment, `motion-craft.md`, and `continuity-first.md`. This module validates any depicted values directly from verified inputs without reverse-loading the data skill.
 
 ## Writes
 

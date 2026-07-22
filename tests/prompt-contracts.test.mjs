@@ -14,8 +14,17 @@ const expectedFiles = [
   'agent/prompt-manifest.json',
   'agent/contracts/authority-matrix.md',
   'agent/contracts/artifact-contracts.md',
+  'agent/contracts/capability-gap-contract.md',
   'agent/contracts/engine-interface.md',
   'agent/contracts/diagnostics.md',
+  'agent/contracts/input-trust.md',
+  'agent/contracts/motion-spec-contract.md',
+  'agent/contracts/revision-contract.md',
+  'agent/contracts/review-contract.md',
+  'agent/contracts/role-result.md',
+  'agent/contracts/treatment-contract.md',
+  'agent/contracts/workflow-decision.md',
+  'agent/templates/music-prompt-document.md',
   'agent/prompts/brief-planner.md',
   'agent/prompts/researcher.md',
   'agent/prompts/creative-direction.md',
@@ -44,7 +53,13 @@ const expectedFiles = [
   'docs/workflows/audio-handoff.md',
   'docs/workflows/capability-gap.md',
   'docs/workflows/revision.md',
+  'docs/PROMPT_OS_MAP.md',
   'docs/PART1_STATUS.md',
+  'projects/_template/BRIEF_INPUT.md',
+  'projects/_template/LOCAL_SOURCES.md',
+  'projects/_template/REVISION_REQUEST.md',
+  'projects/_template/project.policy.example.json',
+  'examples/invocations.md',
 ];
 
 const roleFiles = [
@@ -101,8 +116,11 @@ const roleWrites = {
   'brief-planner': ['projects/<project-id>/brief.spec.json'],
   researcher: ['projects/<project-id>/research.findings.json'],
   'creative-direction': ['projects/<project-id>/treatment.json'],
-  'motion-planner': ['projects/<project-id>/motion.spec.json'],
-  'capability-builder': ['projects/<project-id>/capabilities/<capability-id>/**'],
+  'motion-planner': [
+    'projects/<project-id>/motion.spec.json',
+    'projects/<project-id>/capability-gaps/<gap-id>.json',
+  ],
+  'capability-builder': [],
   'revision-interpreter': ['projects/<project-id>/revision.patch.json'],
   'sound-designer': ['projects/<project-id>/audio-brief.json'],
   'creative-reviewer': ['out/<project-id>/<revision-id>/<render-plan-hash>/review/creative-review.json'],
@@ -145,6 +163,40 @@ test('the role manifest gives each canonical artifact exactly one owner', () => 
   const concreteWrites = manifest.roles.flatMap((role) => role.writes.map((path) => [path, role.id]));
   const duplicates = concreteWrites.filter(([path], index) => concreteWrites.findIndex(([candidate]) => candidate === path) !== index);
   assert.deepEqual(duplicates, [], 'Two roles claim the same write target');
+
+  const capabilityBuilder = manifest.roles.find((role) => role.id === 'capability-builder');
+  assert.equal(capabilityBuilder.availability, 'interface-stub');
+  assert.deepEqual(capabilityBuilder.futureWrites, [
+    'projects/<project-id>/capabilities/<capability-id>/capability.manifest.json',
+  ]);
+});
+
+test('orchestration closes re-entry, approval provenance and repair-cycle semantics', () => {
+  const workflow = read('agent/video-workflow.md');
+  const artifacts = read('agent/contracts/artifact-contracts.md');
+  const engine = read('agent/contracts/engine-interface.md');
+  const diagnostics = read('agent/contracts/diagnostics.md');
+
+  for (const route of ['new project', 'existing visual revision', 'review request', 'audio request', 'delivery request']) {
+    assert.match(workflow, new RegExp(route, 'i'), `Missing request re-entry route: ${route}`);
+  }
+  assert.match(workflow, /currentRevisionId\s*!==?\s*null[\s\S]+RESOLVE/i);
+  assert.match(workflow, /RECORD_PREVIEW_APPROVAL[\s\S]+APPROVED[\s\S]+SILENT_FINAL/i);
+  assert.match(workflow, /failure|refusal/i);
+  assert.match(workflow, /TECHNICAL_QC[\s\S]+(?:block|fail)[\s\S]+(?:must not|cannot).+(?:review|PREVIEW_GATE)/i);
+  assert.match(workflow, /repairCycleId/);
+  assert.match(workflow, /structuralRepairCount/);
+  assert.match(workflow, /visualRepairCount/);
+  assert.match(workflow, /rebuild\s*>\s*fix\s*>\s*ship/i);
+
+  assert.match(artifacts, /ProjectPolicy@1/);
+  assert.match(artifacts, /policyHash/);
+  assert.match(engine, /Approval recorder/i);
+  assert.match(engine, /PreviewApproval@1/);
+  assert.match(engine, /QC.+both review.+policy/is);
+  assert.match(diagnostics, /same revision|same RenderPlan/i);
+  assert.match(diagnostics, /preview.+sampled.+QC.+review.+approval/is);
+  assert.match(diagnostics, /byte|hash/i);
 });
 
 test('host entry points stay thin and route to the same workflow', () => {
@@ -228,6 +280,37 @@ test('audio has one locked-cut-first manual workflow and no competing order', ()
   assert.match(corpus, /4,000 characters/i);
 });
 
+test('the manual music handoff has a concrete provider-neutral document template', () => {
+  const template = read('agent/templates/music-prompt-document.md');
+  assert.match(template, /PASTE THIS INTO THE MUSIC GENERATOR/);
+  assert.match(template, /Motion cue reference.+do not paste/i);
+  assert.match(template, /\{\{durationSeconds\}\}/);
+  assert.match(template, /\{\{style\}\}/);
+  assert.match(template, /\{\{cueStructure\}\}/);
+  assert.match(template, /instrumental/i);
+  assert.match(template, /4,000 characters/i);
+  assert.match(template, /future deterministic.+not implemented/i);
+  assert.doesNotMatch(template, /https?:\/\//i);
+});
+
+test('operator templates cover fast, structured, local-source and locked-revision inputs', () => {
+  const brief = read('projects/_template/BRIEF_INPUT.md');
+  const sources = read('projects/_template/LOCAL_SOURCES.md');
+  const revision = read('projects/_template/REVISION_REQUEST.md');
+  const examples = read('examples/invocations.md');
+  assert.match(brief, /Fast input/i);
+  assert.match(brief, /Structured brief/i);
+  assert.match(brief, /verified fact/i);
+  assert.match(sources, /local path/i);
+  assert.match(sources, /rights|license/i);
+  assert.match(revision, /lock/i);
+  assert.match(revision, /other.+unchanged/i);
+  assert.match(examples, /Codex/i);
+  assert.match(examples, /Claude Code/i);
+  assert.match(examples, /revision/i);
+  assert.match(read('docs/PROMPT_OS_MAP.md'), /Orchestrator.+Agent.+Skill/is);
+});
+
 test('the Prompt OS contains no credential, model-call, generated-video or platform workflow', () => {
   const paths = expectedFiles.filter((path) => /\.(?:md|json)$/.test(path) && existsSync(file(path)));
   const corpus = paths.map((path) => read(path)).join('\n');
@@ -241,6 +324,7 @@ test('all manifest file references resolve inside the repository', () => {
   const promptManifest = JSON.parse(read('agent/prompt-manifest.json'));
   const skillManifest = JSON.parse(read('craft/skill-manifest.json'));
   const referenced = [
+    ...promptManifest.contracts,
     ...promptManifest.roles.map((role) => role.file),
     ...skillManifest.skills.map((skill) => skill.file),
   ];

@@ -6,7 +6,7 @@ Use to turn the Treatment's visual thesis into a limited, coherent system of con
 
 ## Reads
 
-Read the Brief constraints, approved Treatment, supplied local assets and fonts, and the relevant domain craft module.
+Read the Brief constraints, approved Treatment, supplied local assets and fonts, and the current role-owned domain requirements. This module is self-contained and does not reverse-load domain craft modules that declare `style-system` as a dependency.
 
 ## Writes
 

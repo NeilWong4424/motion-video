@@ -6,7 +6,7 @@ Use only for supplied and verified UI states, flows, and user actions.
 
 ## Reads
 
-Read supplied local UI evidence, verified product facts, the Brief, Treatment, and `continuity-first.md`.
+Read supplied local UI evidence, verified product facts, the Brief, Treatment, `motion-craft.md`, and `continuity-first.md`.
 
 ## Writes
 

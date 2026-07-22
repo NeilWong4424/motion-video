@@ -6,7 +6,7 @@ Use for typography-led films, labels, captions, headlines, and any text that cha
 
 ## Reads
 
-Read approved copy and facts, resolved font constraints, copy strategy, motion profile, and `continuity-first.md`.
+Read approved copy and facts, resolved font constraints, copy strategy, motion profile, `motion-craft.md`, and `continuity-first.md`.
 
 ## Writes
 

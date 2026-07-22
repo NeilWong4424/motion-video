@@ -16,7 +16,7 @@ None. This module performs no artifact writes.
 
 - Keep the Persistent World mounted once and preserve stable identity and shared coordinates through the travel.
 - Name the actual relationship a camera travel reveals: for example containment, proximity, sequence, or a meaningful scale change.
-- Make travel eye-trackable with one primary verb and a traceable bridge; use a global camera rather than local scene cameras.
+- Make travel eye-trackable with one primary verb by default and a traceable bridge; use a global camera rather than local scene cameras. Combine verbs only when a semantic relationship requires the combination, and record the rationale plus the continuous eye trace.
 - Prefer a held camera with live content when travel adds no understanding.
 - Use the real target and preroll it when a target must take over a bridge.
 

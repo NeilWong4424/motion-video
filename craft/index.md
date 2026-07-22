@@ -2,11 +2,11 @@
 
 ## Purpose / Use when
 
-Use this index to select only the craft needed by a role's declared task. Craft is procedural guidance, not an authority layer: it never changes the owner of a canonical artifact.
+Use this index as a human-readable explanation of craft routing after the machine loader has bootstrapped from `skill-manifest.json`. This file is neither the machine entry point nor a second selector. Craft is procedural guidance, not an authority layer: it never changes the owner of a canonical artifact.
 
 ## Reads
 
-Read the applicable role contract, the current approved upstream artifacts, and the fixed scope and artifact contracts before using a craft module. Apply precedence in this order: fixed scope, authority, and schemas; workflow gates; applicable craft; illustrative examples.
+Always read `skill-manifest.json` first. The loader then uses only that manifest's `file` and transitive `requires` fields to load this index or another craft module. Read the applicable role contract, workflow state, task trigger, current approved upstream artifacts, and the fixed-scope and artifact contracts as required by the selected entry. Apply precedence in this order: fixed scope, authority, and schemas; workflow gates; applicable craft; illustrative examples.
 
 ## Writes
 
@@ -14,28 +14,37 @@ None. Craft modules perform no artifact writes.
 
 ## Must
 
-- Route creative direction and motion planning to `motion-craft.md`, `continuity-first.md`, and the domain module actually used.
-- Route spatial travel to `continuous-world.md` and `camera-choreography.md`.
-- Route visual-system decisions to `style-system.md`; route type, shapes, data, diagrams, UI, identity, and ambient work to their matching modules.
-- Route sound work to `sound-design.md` and the sole workflow at `../docs/workflows/audio-handoff.md`.
-- Route delivery evidence to `delivery.md`; route a recorded gap or requested change to the workflow documents under `../docs/workflows/`.
-- Treat all executable names in these documents as deferred interfaces, not implemented in Part 1.
+- Bootstrap only from `craft/skill-manifest.json`; never bootstrap from this index or any individual module. Treat the manifest as the single machine-readable craft loader contract. Select an entry only when the current reader role is in `readerRoles`, the current state is in `workflowStates`, and at least one declared `triggerConditions` item matches the actual task.
+- Verify every selected entry's `entryConditions`, then load only its `file` plus the transitive files named by `requires`. A required skill must also be read-only; dependencies do not need a second task-trigger match.
+- If no entry matches, continue without domain craft or route to the owning workflow. Do not load all craft files as background context.
+- Check each selected module's `exitEvidence` before the role hands off its own artifact. Missing exit evidence blocks that handoff; it never authorizes craft to write the evidence.
+- Route creative direction and motion planning to `motion-craft.md`, `continuity-first.md`, and only the domain module actually triggered.
+- Route actual spatial travel to `continuous-world.md` and `camera-choreography.md`; do not load them for a held camera merely because the film is continuity-first.
+- Route visual-system decisions to `style-system.md`; route type, shapes, data, diagrams, UI, identity, and ambient work only to their matching triggered modules.
+- Route AudioBrief language to `sound-design.md` and the sole workflow at `../docs/workflows/audio-handoff.md`. Sound Designer routing ends at `AUDIO_BRIEF` or the deferred `AUDIO_PROMPT` boundary; it does not extend to manual generation, mux, or delivery.
+- Route read-only delivery gate assessment to the orchestrator through `delivery.md`; actual render, alignment, mux, and delivery remain future deterministic interfaces.
+- Route a persisted capability gap or requested revision to the workflow documents under `../docs/workflows/`. `capability-gap.md` is a workflow document, not a craft skill: it has no craft skill ID, `readerRoles`, `workflowStates`, or `requires` route, and the craft manifest must not be used to load it for Capability Builder. Role/workflow routing must load that workflow through its owning prompt and workflow contract; it does not become a craft-manifest write.
+- Treat all executable names in these documents as deferred interfaces, not implemented in Part 1. A role uses `RoleResult@1.status="awaiting-interface"` only when canonical hashing/validation/recording of its own written draft is missing. An unavailable later non-role resolver, renderer, approval recorder, audio-prompt, mux, or delivery interface is recorded by the orchestrator as `WorkflowDecision@1.status="blocked"`, followed by `STOP`.
 
 ## Must not
 
 - Grant a craft module authority to write, approve, render, alter locks, or bypass a gate.
+- Interpret `readerRoles`, `workflowStates`, dependencies, entry conditions, or exit evidence as artifact ownership.
+- Eager-load every craft module, select a module from topic similarity alone, treat this human index as a machine bootstrap, or load a craft dependency that is not declared in `requires`.
 - Let illustrative timing override an approved motion profile or continuity policy.
 - Duplicate or replace the audio handoff workflow.
 
 ## Stop conditions
 
-Stop and route to the owning role or workflow when a required link is missing, a craft rule conflicts with a schema or policy, or a request needs an artifact write.
+Stop and route to the owning role or workflow when the manifest is missing/invalid, a required dependency or entry condition is unavailable, a required link is missing, a craft rule conflicts with a schema or policy, or a request needs an artifact write.
 
 ## Output schema
 
 None.
 
-## Module routing
+## Human routing reference
+
+This table explains manifest entries to people. It does not select or load a module; machine loading still begins with `craft/skill-manifest.json` and follows only the selected entry's `file` and transitive `requires`.
 
 | Need | Module |
 | --- | --- |
