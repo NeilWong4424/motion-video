@@ -6,6 +6,7 @@
     "agent/contracts/authority-matrix.md",
     "agent/contracts/artifact-contracts.md",
     "agent/contracts/input-trust.md",
+    "agent/contracts/role-artifact-contracts.md",
     "agent/contracts/treatment-contract.md",
     "agent/contracts/motion-spec-contract.md",
     "agent/contracts/capability-gap-contract.md",

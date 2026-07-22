@@ -54,6 +54,7 @@ When facts, rights, local-source evidence, scope, a lock, or a gate is missing o
 
 - [`workflow-decision.md`](../agent/contracts/workflow-decision.md) closes project identity, quick defaults, exact role delegation, deterministic interface invocation, producer-free advances, stops, out-of-scope, and completion.
 - [`input-trust.md`](../agent/contracts/input-trust.md) and [`role-result.md`](../agent/contracts/role-result.md) close the instruction boundary and typed result/audit handoff for every role.
+- [`role-artifact-contracts.md`](../agent/contracts/role-artifact-contracts.md) closes the complete Brief, Research Findings, typed measurement, and AudioBrief shapes used by their unique role owners.
 - [`treatment-contract.md`](../agent/contracts/treatment-contract.md) closes the strategic Treatment shape and stable revision identities.
 - [`motion-spec-contract.md`](../agent/contracts/motion-spec-contract.md) closes the cumulative half-open timeline, Persistent World, camera, nodes, and six continuity bridges.
 - [`capability-gap-contract.md`](../agent/contracts/capability-gap-contract.md) separates the hashed gap payload from its attributed route decision and advisory stop.

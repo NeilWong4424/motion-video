@@ -154,7 +154,7 @@ COMPLETE → terminal; no further delegation
 
 Each named deferred interface has only the documented success output or an explicit refusal/failure stop; absence is never success. See `agent/contracts/engine-interface.md`.
 
-Silent delivery still requires `audioBriefHash`, `promptContentHash`, `promptAttemptHash`, and the actual matching `MUSIC_PROMPT.md`/prompt-attempt evidence. `AWAITING_ENGINE_INTERFACE` is not a canonical state. A role returns `RoleResult.status="awaiting-interface"` only when it wrote its authorized draft and the canonical validation, hashing, or recording handoff for that same role-owned artifact is missing. When a later non-role deterministic interface such as `AUDIO_PROMPT` is unavailable after Sound Designer already returned `written`, the orchestrator alone emits `WorkflowDecision@1.status="blocked"` and routes to `STOP`; it does not invent a second RoleResult producer.
+Silent delivery still requires `audioBriefHash`, `promptContentHash`, the external `promptAttemptHash` alias equal to the attempt's stored `contentHash`, and the actual matching `MUSIC_PROMPT.md`/prompt-attempt evidence. `AWAITING_ENGINE_INTERFACE` is not a canonical state. A role returns `RoleResult.status="awaiting-interface"` only when it wrote its authorized draft and the canonical validation, hashing, or recording handoff for that same role-owned artifact is missing. When a later non-role deterministic interface such as `AUDIO_PROMPT` is unavailable after Sound Designer already returned `written`, the orchestrator alone emits `WorkflowDecision@1.status="blocked"` and routes to `STOP`; it does not invent a second RoleResult producer.
 
 ## Preview approval and project policy
 

@@ -5,12 +5,71 @@ import test from 'node:test';
 
 const root = resolve(import.meta.dirname, '..');
 
+const forbiddenRuntimeRoots = new Set([
+  'src',
+  'scripts',
+  'engine',
+  'runtime',
+  'lib',
+  'bin',
+]);
+
+const forbiddenPart2Files = new Set([
+  'remotion.config.ts',
+  'remotion.config.js',
+  'vite.config.ts',
+  'vite.config.js',
+  'tsconfig.json',
+  'pnpm-lock.yaml',
+  'package-lock.json',
+  'yarn.lock',
+  'bun.lock',
+  'bun.lockb',
+]);
+
+const executableCodeExtensions = new Set([
+  '.c',
+  '.cc',
+  '.cjs',
+  '.cpp',
+  '.cts',
+  '.go',
+  '.h',
+  '.hpp',
+  '.java',
+  '.js',
+  '.jsx',
+  '.kt',
+  '.kts',
+  '.mjs',
+  '.mts',
+  '.py',
+  '.rb',
+  '.rs',
+  '.sh',
+  '.swift',
+  '.ts',
+  '.tsx',
+  '.wasm',
+]);
+
 function walk(directory) {
   return readdirSync(directory, {withFileTypes: true}).flatMap((entry) => {
     if (entry.name === '.git') return [];
     const absolute = resolve(directory, entry.name);
     return entry.isDirectory() ? walk(absolute) : [absolute];
   });
+}
+
+function isDeferredPart2Path(repositoryPath) {
+  const normalized = repositoryPath.replaceAll('\\', '/').replace(/^\.\//, '');
+  const [topLevel] = normalized.split('/');
+
+  if (forbiddenRuntimeRoots.has(topLevel)) return true;
+  if (forbiddenPart2Files.has(normalized)) return true;
+  if (topLevel === 'tests') return false;
+
+  return executableCodeExtensions.has(extname(normalized).toLowerCase());
 }
 
 test('all checked-in JSON documentation artifacts are valid JSON', () => {
@@ -41,22 +100,41 @@ test('relative Markdown links remain inside the repository and resolve', () => {
 });
 
 test('Part 1 contains no deferred motion-engine implementation', () => {
-  const forbidden = [
-    'src',
-    'scripts',
-    'remotion.config.ts',
-    'vite.config.ts',
-    'tsconfig.json',
-    'pnpm-lock.yaml',
-    'package-lock.json',
+  const checkedInPaths = walk(root).map((path) => relative(root, path).replaceAll('\\', '/'));
+  const forbiddenRoots = [...forbiddenRuntimeRoots]
+    .filter((path) => existsSync(resolve(root, path)));
+  const present = [
+    ...forbiddenRoots,
+    ...checkedInPaths.filter(isDeferredPart2Path),
   ];
-  const present = forbidden.filter((path) => existsSync(resolve(root, path)));
   assert.deepEqual(present, [], `Part 2 files appeared in Part 1: ${present.join(', ')}`);
 
   const symlinks = walk(root)
     .filter((path) => lstatSync(path).isSymbolicLink())
     .map((path) => relative(root, path));
   assert.deepEqual(symlinks, [], `Prompt OS should not depend on symlinks: ${symlinks.join(', ')}`);
+});
+
+test('Part 2 boundary recognizes runtime roots and code outside tests', () => {
+  for (const path of [
+    'engine/index.ts',
+    'runtime/resolve.js',
+    'lib/compiler.tsx',
+    'bin/render.sh',
+    'misc/compositor.mjs',
+    'index.cjs',
+  ]) {
+    assert.equal(isDeferredPart2Path(path), true, `Part 2 path escaped the boundary: ${path}`);
+  }
+
+  for (const path of [
+    'tests/repository-boundary.test.mjs',
+    'package.json',
+    'docs/example.md',
+    'agent/prompt-manifest.json',
+  ]) {
+    assert.equal(isDeferredPart2Path(path), false, `Part 1 documentation/test file was rejected: ${path}`);
+  }
 });
 
 test('the Claude Code video skill has discoverable, trigger-only frontmatter', () => {

@@ -45,46 +45,61 @@ A Beat is a narrative information state, not a slide. `settleAt` and the positiv
 
 ## ContinuityBridge
 
-Every adjacent ordered Beat pair has exactly one bridge. All bridges carry this exact base:
+Every adjacent ordered Beat pair has exactly one bridge. The bridge IDs must name that exact adjacent ordered Beat pair: `fromBeatId` is the earlier member and `toBeatId` is the immediately following member. All bridges carry only this identity/boundary base:
 
 ```ts
-type BridgeBase = {
+type TransitionFamily =
+  | "shared-element"
+  | "camera-navigation"
+  | "morph-into-target"
+  | "match-on-action"
+  | "directional-push";
+
+type BridgeIdentityBase = {
   id: string;
   fromBeatId: string;
   toBeatId: string;
   durationFrames: number;
   bridgeRange: SegmentRange;
   narrativeReason: string;
-  transitionFamily: string;
-  vocabularyRole: "ordinary" | "signature";
-  motionOwnership: "camera" | "node" | "camera-and-node-semantic";
-  combinationMeaning?: string;
   eyeTrace: {
     outgoing: {nodeId: string; point: NormalizedPoint};
     incoming: {nodeId: string; point: NormalizedPoint};
   };
 };
+
+type PositiveDurationBridgeBase = BridgeIdentityBase & {
+  transitionFamily: TransitionFamily;
+  vocabularyRole: "ordinary" | "signature";
+  motionOwnership: "camera" | "node" | "camera-and-node-semantic";
+  combinationMeaning?: string;
+};
 ```
+
+Within every member, `fromBeatId` and `toBeatId` form the exact adjacent ordered Beat pair; neither field may point to a merely nearby or non-adjacent Beat.
 
 `combinationMeaning` is required when semantically combined camera and node motion is used. The closed union has exactly six variants:
 
 ```ts
-type SharedElementBridge = BridgeBase & {
+type SharedElementBridge = PositiveDurationBridgeBase & {
   mode: "shared-element";
+  transitionFamily: "shared-element";
   nodeId: string;
   motionRange: SegmentRange;
 };
 
-type CameraNavigationBridge = BridgeBase & {
+type CameraNavigationBridge = PositiveDurationBridgeBase & {
   mode: "camera-navigation";
+  transitionFamily: "camera-navigation";
   cameraSegmentId: string;
   destinationNodeId: string;
   spatialRelationship: string;
   cameraRange: SegmentRange;
 };
 
-type MorphIntoTargetBridge = BridgeBase & {
+type MorphIntoTargetBridge = PositiveDurationBridgeBase & {
   mode: "morph-into-target";
+  transitionFamily: "morph-into-target";
   sourceNodeId: string;
   targetNodeId: string;
   motionRange: SegmentRange;
@@ -92,8 +107,9 @@ type MorphIntoTargetBridge = BridgeBase & {
   settleFrames: number;
 };
 
-type MatchOnActionBridge = BridgeBase & {
+type MatchOnActionBridge = PositiveDurationBridgeBase & {
   mode: "match-on-action";
+  transitionFamily: "match-on-action";
   outgoingNodeId: string;
   incomingNodeId: string;
   actionAt: SegmentRef;
@@ -101,8 +117,9 @@ type MatchOnActionBridge = BridgeBase & {
   action: "translate" | "scale" | "rotate" | "draw" | "expand" | "collapse";
 };
 
-type DirectionalPushBridge = BridgeBase & {
+type DirectionalPushBridge = PositiveDurationBridgeBase & {
   mode: "directional-push";
+  transitionFamily: "directional-push";
   direction: "left" | "right" | "up" | "down";
   semanticDirection: "forward" | "back" | "parallel";
   outgoingNodeIds: [string, ...string[]];
@@ -110,8 +127,9 @@ type DirectionalPushBridge = BridgeBase & {
   motionRange: SegmentRange;
 };
 
-type ChapterCutBridge = BridgeBase & {
+type ChapterCutBridge = BridgeIdentityBase & {
   mode: "chapter-cut";
+  exceptionRole: "chapter-cut";
   durationFrames: 0;
   reason: "new-chapter" | "time-jump" | "location-jump" | "emotional-impact";
   exceptionJustification: string;
@@ -130,7 +148,17 @@ type ContinuityBridge =
   | ChapterCutBridge;
 ```
 
-All non-cut variants require positive `durationFrames`; resolved `bridgeRange` length must equal `durationFrames`. For every `motionRange`, its resolved durationFrames and the bridge `durationFrames` must be equal; `cameraRange` likewise equals the declared bridge range. Every node/camera reference must resolve to the actual participant. `cameraSegmentId` must name a move whose range equals `cameraRange`. Their downstream evidence is before/midpoint/after. A `chapter-cut` has zero transition frames: `bridgeRange.from`, `bridgeRange.to`, and `boundaryAt` are the same adjacent-Beat boundary. It instead requires outgoing-last, incoming-first, incoming-held, and full-frame-change evidence. It additionally requires a real break, Treatment exception budget, and `maxEyeTraceDistanceNormalized` greater than zero and `<= 0.15`; measured Euclidean distance above that declaration emits `EYE_TRACE_JUMP`. The entire film has at most one chapter cut and no adjacent cuts.
+For adjacent Beats derive `fromBeatStartFrame`, `boundaryFrame` (the outgoing Beat's exclusive end and incoming Beat's start), and `toBeatEndFrame`. For every positive-duration bridge, resolve `bridgeRange` to `[bridgeStartFrame, bridgeEndFrameExclusive)` and enforce this exact seam-straddling inequality:
+
+```text
+fromBeatStartFrame < bridgeStartFrame < boundaryFrame < bridgeEndFrameExclusive < toBeatEndFrame
+```
+
+This makes `durationFrames` a positive integer of at least two, with `bridgeEndFrameExclusive - bridgeStartFrame === durationFrames`. It also guarantees that `beforeFrame = bridgeStartFrame - 1` is in the outgoing Beat and `afterFrame = bridgeEndFrameExclusive` is in the incoming Beat. A positive bridge that lies wholly inside one Beat, merely touches the boundary, or targets any non-adjacent pair is invalid.
+
+Every variant's literal `transitionFamily` must equal its `mode` and must be authorized by the Treatment's positive-duration `transitionVocabulary`. Each `motionRange` and `cameraRange` must have the exact same resolved start and end as `bridgeRange`, not merely the same duration. Every node/camera reference must resolve to the actual participant. `cameraSegmentId` must name the move whose range is that exact `cameraRange`. Their downstream evidence is before/midpoint/after.
+
+A `chapter-cut` is a closed, zero-duration Treatment-budgeted exception outside `transitionVocabulary`; it is not a sixth positive transition family. `ChapterCutBridge` deliberately omits `transitionFamily`, `vocabularyRole`, `motionOwnership`, and `combinationMeaning`. Its `bridgeRange.from`, `bridgeRange.to`, and `boundaryAt` must all resolve to the exact adjacent-Beat `boundaryFrame`. It instead requires outgoing-last, incoming-first, incoming-held, and full-frame-change evidence. It additionally requires a real break, available `TreatmentSpec.chapterCutBudget`, and `maxEyeTraceDistanceNormalized` greater than zero and `<= 0.15`; measured Euclidean distance above that declaration emits `EYE_TRACE_JUMP`. The entire film has at most one chapter cut and no adjacent cuts.
 
 ## ContentTransition and PersistentNode
 
@@ -215,6 +243,7 @@ There is exactly one `main-camera`. Camera segment `range` values partition and 
 type MotionSpec = {
   schemaVersion: "motion-spec@1";
   projectId: string;
+  briefHash: string;
   treatmentHash: string;
   canvas: {
     width: number;
@@ -233,6 +262,8 @@ type MotionSpec = {
   motionCues: MotionCue[];
 };
 ```
+
+The accepted Brief is a direct identity and timing parent, not merely an ancestor hidden behind the Treatment. `MotionSpec.projectId` and `BriefSpec.projectId` must be exactly equal; `briefHash` must be the canonical hash of that exact accepted Brief, and `treatmentHash` must bind a Treatment carrying the same `briefHash`. `MotionSpec.canvas.width`, `MotionSpec.canvas.height`, and `MotionSpec.canvas.fps` must equal the corresponding `BriefSpec` values. The ordered Beat registry covers the complete film with no hidden tail or gap, and `sum(Beat.durationFrames) === BriefSpec.durationInFrames`.
 
 ## Salience and anti-slide invariants
 

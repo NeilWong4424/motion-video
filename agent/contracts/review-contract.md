@@ -96,23 +96,68 @@ For a completed review, `evidenceHash` is the canonical SHA-256 of `{evidenceRef
 Motion bridge evidence is a closed union:
 
 ```ts
-type PositiveDurationBridgeEvidence = {
+type PositiveDurationBridgeMode =
+  | "shared-element"
+  | "camera-navigation"
+  | "morph-into-target"
+  | "match-on-action"
+  | "directional-push";
+
+type PositiveDurationBridgeEvidenceBase = {
   kind: "positive-duration";
   bridgeId: string;
+  declaredMode: PositiveDurationBridgeMode;
   bridgeStartFrame: integer;
+  boundaryFrame: integer;
   bridgeEndFrameExclusive: integer;
   before: FrameEvidenceRef;
   midpoint: FrameEvidenceRef;
   after: FrameEvidenceRef;
   brightnessDeadFrameScan: EvidenceRef;
-  realization: "persistent-shared-element" | "camera-navigation" | "scene-stack-real-target" | "match-on-action" | "directional-push";
-  endpointCheck: "exact-visual" | "geometry-only" | "continuous-motion";
   measuredEyeTraceDistanceNormalized: number;
 };
+
+type SharedElementBridgeEvidence = PositiveDurationBridgeEvidenceBase & {
+  declaredMode: "shared-element";
+  realization: "persistent-shared-element";
+  endpointCheck: "exact-visual";
+};
+
+type CameraNavigationBridgeEvidence = PositiveDurationBridgeEvidenceBase & {
+  declaredMode: "camera-navigation";
+  realization: "camera-navigation";
+  endpointCheck: "continuous-motion";
+};
+
+type MorphIntoTargetBridgeEvidence = PositiveDurationBridgeEvidenceBase & {
+  declaredMode: "morph-into-target";
+  realization: "scene-stack-real-target";
+  endpointCheck: "exact-visual";
+};
+
+type MatchOnActionBridgeEvidence = PositiveDurationBridgeEvidenceBase & {
+  declaredMode: "match-on-action";
+  realization: "match-on-action";
+  endpointCheck: "continuous-motion";
+};
+
+type DirectionalPushBridgeEvidence = PositiveDurationBridgeEvidenceBase & {
+  declaredMode: "directional-push";
+  realization: "directional-push";
+  endpointCheck: "continuous-motion";
+};
+
+type PositiveDurationBridgeEvidence =
+  | SharedElementBridgeEvidence
+  | CameraNavigationBridgeEvidence
+  | MorphIntoTargetBridgeEvidence
+  | MatchOnActionBridgeEvidence
+  | DirectionalPushBridgeEvidence;
 
 type ChapterCutEvidence = {
   kind: "chapter-cut";
   bridgeId: string;
+  declaredMode: "chapter-cut";
   durationFrames: 0;
   boundaryFrame: integer;
   incomingHoldStartFrame: integer;
@@ -127,7 +172,21 @@ type ChapterCutEvidence = {
 type BridgeEvidence = PositiveDurationBridgeEvidence | ChapterCutEvidence;
 ```
 
-A positive-duration bridge first derives aliases `beforeFrame = startFrame - 1`, `midpointFrame = startFrame + floor((endFrameExclusive - startFrame - 1) / 2)`, and `afterFrame = endFrameExclusive`. In the envelope these are `before.frameIndex = bridgeStartFrame - 1`, `midpoint.frameIndex = bridgeStartFrame + floor((bridgeEndFrameExclusive - bridgeStartFrame - 1) / 2)`, and `after.frameIndex = bridgeEndFrameExclusive`. Their roles must respectively be `before`, `midpoint`, and `after`. A zero-frame cut derives `outgoingLastFrame = boundaryFrame - 1`, `incomingFirstFrame = boundaryFrame`, and `incomingHeldFrame` from the incoming Beat's declared `holdRange`; these populate the matching `.frameIndex` fields. The roles must respectively be `outgoing-last`, `incoming-first`, and `incoming-held`; `fullFrameChange` covers exactly the outgoing-last/incoming-first pair. Every still is single-frame evidence; its `frameRange` is exactly `[frameIndex, frameIndex + 1)`. Incorrect sample positions refuse completion even when file hashes are otherwise valid.
+A positive-duration evidence member is not allowed to choose a convenient review interval. Its `bridgeId` selects one exact positive MotionSpec bridge; `declaredMode` must equal that bridge's `mode`. `bridgeStartFrame`, `boundaryFrame`, and `bridgeEndFrameExclusive` must be exactly equal to the resolved MotionSpec bridge start, its actual adjacent-Beat boundary, and its resolved exclusive end. They must satisfy the MotionSpec seam-straddling inequality. `brightnessDeadFrameScan.frameRange` is non-null and exactly `[bridgeStartFrame, bridgeEndFrameExclusive)`.
+
+Mode, realization, and endpoint policy are one closed mapping, with no alternate combinations:
+
+```text
+shared-element      -> persistent-shared-element -> exact-visual
+camera-navigation   -> camera-navigation         -> continuous-motion
+morph-into-target   -> scene-stack-real-target   -> exact-visual
+match-on-action     -> match-on-action            -> continuous-motion
+directional-push    -> directional-push           -> continuous-motion
+```
+
+A positive-duration bridge derives `beforeFrame = bridgeStartFrame - 1`, `midpointFrame = bridgeStartFrame + floor((bridgeEndFrameExclusive - bridgeStartFrame - 1) / 2)`, and `afterFrame = bridgeEndFrameExclusive`. These populate `before.frameIndex`, `midpoint.frameIndex`, and `after.frameIndex`; their roles must respectively be `before`, `midpoint`, and `after`. Because the bridge crosses the real seam, `before` is inside the outgoing Beat and `after` is inside the incoming Beat.
+
+A zero-frame cut's `boundaryFrame` must be exactly equal to the MotionSpec chapter-cut's resolved adjacent-Beat boundary; `declaredMode` must be `chapter-cut`. Its `declaredEyeTraceDistanceNormalized` must be exactly equal to that bridge's `maxEyeTraceDistanceNormalized`, and completion requires `measuredEyeTraceDistanceNormalized <= declaredEyeTraceDistanceNormalized`. It derives `outgoingLastFrame = boundaryFrame - 1`, `incomingFirstFrame = boundaryFrame`, and `incomingHeldFrame` from the incoming Beat's declared `holdRange`. Therefore `outgoingLast.frameIndex = boundaryFrame - 1`, `incomingFirst.frameIndex = boundaryFrame`, and `fullFrameChange.frameRange` is exactly `[boundaryFrame - 1, boundaryFrame + 1)`. The roles must respectively be `outgoing-last`, `incoming-first`, and `incoming-held`. Every still is single-frame evidence with `frameRange` exactly `[frameIndex, frameIndex + 1)`. Incorrect bridge identity, mode, boundary, range, eye-trace declaration/measurement, sample position, scan coverage, or hash refuses completion even when files otherwise exist.
 
 ## Issues and disposition invariants
 
@@ -189,5 +248,7 @@ type IncompleteReview = ReviewEnvelope & {
 
 type ReviewResult = CompletedReview | IncompleteReview;
 ```
+
+For a completed Motion Review, `bridgeEvidence` is an ordered bijection over `MotionSpec.timeline.bridges`: it has the same length, the same order, a unique bridgeId for every member, exactly one evidence member for each declared bridge, with no missing and no extra bridge evidence. Each evidence member's closed variant must match the corresponding bridge mode and the exact ranges described above. A completed Creative Review always has `bridgeEvidence: []`. An incomplete Motion Review may contain only an ordered, unique subset of evidence actually observed for bridges in that bound MotionSpec; it cannot add evidence for another bridge or duplicate an ID.
 
 An incomplete result compares nullable actual `observedBindings` against the delegated `expectedBindings`, describes absent file/frame proof in `missingEvidenceRefs`, absent required viewing rates in `missingPlaybackRates`, and **must not fabricate** a missing hash or playback observation; it cannot carry `ship`, `fix`, or `rebuild`. At least one of `missingEvidenceRefs` or `missingPlaybackRates` is non-empty; they may not both be empty. This permits an honest incomplete result when every file exists but one required playback rate was not actually observed. Only a completed review requires every observed binding to be non-null and exactly equal its expected/top-level target, `technicalQcDecision: "pass"`, a matching passing `technicalQcHash`, the exact role-required playback set, resolvable evidence hashes, all domain-required evidence checks, and a decision consistent with its issue scopes. Neither variant is Preview Approval.

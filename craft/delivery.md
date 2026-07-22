@@ -14,7 +14,7 @@ None. This module performs no artifact writes.
 
 ## Must
 
-- In a future implemented workflow, a silent delivery with no returned local track still requires the actual AudioBrief bytes and `audioBriefHash`, plus the actual selected content-addressed `MUSIC_PROMPT.md` bytes, `promptContentHash`, and `promptAttemptHash`. The prompt artifact must bind to the current AudioBrief hash, approved locked picture, revision, and RenderPlan; naming an interface is not evidence. An explicit no-track choice never bypasses AudioBrief authoring or prompt compilation.
+- In a future implemented workflow, a silent delivery with no returned local track still requires the actual AudioBrief bytes and `audioBriefHash`, plus the actual selected content-addressed `MUSIC_PROMPT.md` bytes, `promptContentHash`, and external `promptAttemptHash` alias equal to the attempt envelope's stored `contentHash`. The prompt artifact must bind to the current AudioBrief hash, approved locked picture, revision, and RenderPlan; naming an interface is not evidence. An explicit no-track choice never bypasses AudioBrief authoring or prompt compilation.
 - Bind every delivery statement to one exact project, revision, plan, and evidence set; preserve immutable, content-addressed attempts.
 - Keep editable project source by reference and distinguish silent from optional locally mixed delivery.
 - Require fresh approval and evidence after any change that invalidates locks or bindings.

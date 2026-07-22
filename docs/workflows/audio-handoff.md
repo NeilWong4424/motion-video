@@ -24,6 +24,8 @@ Follow this canonical order only:
 6. Future local alignment and mux interface, bound to the returned track and the same locked picture.
 7. Delivery evidence for the silent or optionally mixed result.
 
+In every external path or operator declaration, `promptAttemptHash` is an alias for the selected `MusicPromptAttempt@1` stored `contentHash`; `prompt-attempt.json` stores no second attempt-identity field. Exact-attempt checks reload that file, recompute `contentHash`, and require the alias, directory name, and stored identity to agree.
+
 No-track silent delivery follows the same first three steps: it requires the actual AudioBrief with `audioBriefHash` and the actual content-addressed `MUSIC_PROMPT.md` with `promptContentHash` and `promptAttemptHash` before the user may select no returned track. An explicit silent selection never bypasses either artifact.
 
 The future paste block is capped at 4,000 characters. Recheck all bindings after any visual revision; stale AudioBriefs, prompt documents, tracks, or approvals cannot be reused. If the audio-prompt tool is unavailable, the completed AudioBrief and Sound Designer's `RoleResult@1` with `status: "written"` remain valid; the orchestrator records the unavailable non-role interface as `WorkflowDecision@1` with `status: "blocked"` and transitions from `AUDIO_PROMPT` to `STOP`. If the user has no third-party generator, stop after an actual prompt artifact exists; this never invalidates or blocks the earlier AudioBrief.

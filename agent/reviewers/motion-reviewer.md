@@ -33,11 +33,12 @@ Write only `out/<project-id>/<revision-id>/<render-plan-hash>/review/motion-revi
 - Verify full provenance before a completed decision: `contentHash`, `producer`, non-empty `parentHashes`, labeled `sourceHashes`, project/revision, `renderPlanHash`, `previewHash`, `reviewBundleHash`, `evidenceHash`, and `technicalQcHash`.
 - Treat `expectedBindings` as the exact delegated review target, not observed proof. Record only genuinely inspected values in `observedBindings`; use the contract's null/omitted representation for missing observations and never copy expected hashes into observed proof.
 - Review the complete film cold at 1× and again at 0.25× playback before making a completed decision; record both exact preview references and start-to-end observations in `playbackEvidence`.
-- For every positive-duration bridge, verify hashed before, midpoint, and after evidence plus brightness/dead-frame scan evidence.
-- For a zero-frame chapter cut, require outgoing-last, incoming-first, incoming-held, and full-frame-change evidence plus declared/measured eye trace; a zero-duration cut has no midpoint.
+- For every positive-duration bridge, verify hashed before, midpoint, and after evidence plus brightness/dead-frame scan evidence. Bind its evidence start, actual adjacent-Beat boundary, and exclusive end to the exact resolved MotionSpec range; the scan must cover that exact range.
+- For a zero-frame chapter cut, require outgoing-last, incoming-first, incoming-held, and full-frame-change evidence plus declared/measured eye trace; bind the declaration to the MotionSpec maximum and refuse a measured distance above it. A zero-duration cut has no midpoint.
+- Require completed `bridgeEvidence` to be an ordered bijection over `MotionSpec.timeline.bridges`: same length and order, one unique matching ID/closed mode per bridge, with no missing, extra, or duplicate evidence. A Creative Review always uses an empty bridge set; a Motion Review may do so only when its bound MotionSpec has no bridges.
 - Resolve every `EvidenceRef` beneath the bound bundle and verify exact content hashes. Arbitrary labels are not evidence.
 - Reject transparent, bare, accidental black, or otherwise dead frames.
-- Compare exact endpoints only when the closed handoff mode requires exact visual/geometry equality. For continuous motion, judge trajectory and velocity rather than demanding pixel identity.
+- Enforce the closed bridge mapping: shared element → persistent shared element → exact visual; camera navigation → camera navigation → continuous motion; morph into target → scene-stack real target → exact visual; match on action → match on action → continuous motion; directional push → directional push → continuous motion. For continuous motion, judge trajectory and velocity rather than demanding pixel identity.
 - Assess easing, settles, readable holds, eye trace, camera holds/travels, primary-versus-combined camera verbs and their semantic rationale/reveals, target preroll, content transitions, bridge duration, anchor salience, whole-film layout fingerprints, and slide-like replacement rhythm.
 - Verify at most one justified chapter cut and its complete zero-frame evidence.
 - Distinguish Persistent World persistent identity—one stable node, stable identity, and one geometry track—from a scene-stack real target mounted early and frozen through preroll.
@@ -75,7 +76,7 @@ If the review output itself cannot be written, return `blocked`. Use `awaiting-i
 1. Load the delegated expected target, then independently observe project, revision, all three source hashes, RenderPlan, preview, evidence bundle, evidence-set hash, and Technical QC. Complete only when observed equals expected and QC passes.
 2. Watch the complete film cold at 1×, then at 0.25× before loading craft.
 3. Consult `craft/index.md` and `craft/skill-manifest.json`; select only state/trigger-matched motion-review skills and their declared `requires`.
-4. For each positive-duration bridge, inspect before/midpoint/after evidence and the brightness/dead-frame scan. For each zero-frame chapter cut, inspect outgoing-last/incoming-first/incoming-held/full-frame-change and eye-trace evidence.
+4. Walk `MotionSpec.timeline.bridges` in order and pair each with exactly one same-position, unique-ID evidence member. For each positive-duration bridge, verify the declared mode and exact resolved start/boundary/end, inspect before/midpoint/after evidence, and require brightness/dead-frame coverage over that exact bridge range. For each zero-frame chapter cut, bind its boundary to the exact MotionSpec boundary and inspect outgoing-last/incoming-first/incoming-held/full-frame-change and eye-trace evidence.
 5. Verify the declared realization mechanism through the contract's closed union: stable one-node geometry, camera navigation, mounted/frozen real target, match-on-action, directional push, or chapter cut.
 6. Apply the mode-specific endpoint/trajectory test and inspect content-transition behavior.
 7. Review easing, velocity continuity, settles, holds, focal eye trace, camera motivation, anchor salience, whole-film layout fingerprints, and repeated replacement patterns.
@@ -168,7 +169,9 @@ If the review output itself cannot be written, return `blocked`. Use `awaiting-i
 }
 ```
 
-`bridgeEvidence` is not open-ended. A positive-duration member has `kind: "positive-duration"`, `before`, `midpoint`, `after`, `brightnessDeadFrameScan`, one closed realization value, endpoint check, and measured eye trace. A chapter-cut member has `kind: "chapter-cut"`, `durationFrames: 0`, `outgoingLast`, `incomingFirst`, `incomingHeld`, `fullFrameChange`, and declared/measured eye trace.
+The illustrative `bridgeEvidence: []` above is valid only when the exact bound MotionSpec contains one Beat and therefore zero bridges. Otherwise a completed Motion Review must contain the contract's ordered bijection.
+
+`bridgeEvidence` is not open-ended. A positive-duration member carries the matching `declaredMode`, exact `bridgeStartFrame`, actual `boundaryFrame`, exact `bridgeEndFrameExclusive`, `before`, `midpoint`, `after`, exact-range `brightnessDeadFrameScan`, its mode-bound realization/endpoint check, and measured eye trace. A chapter-cut member carries `declaredMode: "chapter-cut"`, `durationFrames: 0`, the exact MotionSpec `boundaryFrame`, `outgoingLast`, `incomingFirst`, `incomingHeld`, the exact two-frame `fullFrameChange`, and declared/measured eye trace.
 
 The incomplete variant is always `"complete": false`, `"decision": null`, and `"evidenceHash": null` when the evidence set is unresolved. Every `observedBindings` field is the inspected value or `null`, including `technicalQcDecision: "pass" | "blocking" | null`; never copy it from `expectedBindings`. `missingEvidenceRefs` contains absent file/frame proof; `missingPlaybackRates` contains either or both of `"1.0x"` and `"0.25x"` when a required full viewing did not occur. Allowed completed decisions are `ship`, `fix`, and `rebuild`; never encode their union as one string.
 

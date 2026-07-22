@@ -30,9 +30,9 @@ test('MotionSpec maps every semantic time reference to one global half-open fram
 
 test('review evidence roles resolve to exact bridge and cut frames', () => {
   const review = read('agent/contracts/review-contract.md');
-  assert.match(review, /beforeFrame\s*=\s*startFrame\s*-\s*1/i);
+  assert.match(review, /beforeFrame\s*=\s*bridgeStartFrame\s*-\s*1/i);
   assert.match(review, /midpointFrame[\s\S]+floor/i);
-  assert.match(review, /afterFrame\s*=\s*endFrameExclusive/i);
+  assert.match(review, /afterFrame\s*=\s*bridgeEndFrameExclusive/i);
   assert.match(review, /outgoingLastFrame\s*=\s*boundaryFrame\s*-\s*1/i);
   assert.match(review, /incomingFirstFrame\s*=\s*boundaryFrame/i);
   assert.match(review, /incomingHeldFrame[\s\S]+holdRange/i);
@@ -266,6 +266,7 @@ test('CapabilityGap identity is canonical and non-self-referential', () => {
 test('music prompt attempts have one content-addressed path and complete bindings', () => {
   const artifacts = read('agent/contracts/artifact-contracts.md');
   const template = read('agent/templates/music-prompt-document.md');
+  const audioWorkflow = read('docs/workflows/audio-handoff.md');
   assert.match(artifacts, /out\/<project-id>\/<revision-id>\/<render-plan-hash>\/audio\/[\s\S]+<prompt-attempt-hash>/i);
   assert.match(artifacts, /MUSIC_PROMPT\.md/);
   for (const field of [
@@ -278,7 +279,15 @@ test('music prompt attempts have one content-addressed path and complete binding
     assert.match(template, new RegExp(field));
   }
   assert.match(artifacts, /promptAttemptHash/);
-  assert.match(template, /promptAttemptHash[\s\S]+(?:not|neither).+embedded|(?:not|neither).+embedded[\s\S]+promptAttemptHash/i);
+  const storedAttemptFields = /`MusicPromptAttempt@1` is `\{([^}]*)\}`/.exec(artifacts)?.[1];
+  assert.ok(storedAttemptFields, 'MusicPromptAttempt@1 needs an explicit stored-field projection');
+  assert.match(storedAttemptFields, /\bcontentHash\b/);
+  assert.doesNotMatch(storedAttemptFields, /\bpromptAttemptHash\b/);
+  assert.match(artifacts, /promptAttemptHash[\s\S]+(?:external|path)[\s\S]+alias[\s\S]+(?:equals|equal to)[\s\S]+contentHash/i);
+  assert.match(artifacts, /prompt-attempt\.json[\s\S]+does not store[\s\S]+(?:second|separate)[\s\S]+promptAttemptHash/i);
+  assert.match(template, /prompt-attempt\.json[\s\S]+records[\s\S]+contentHash[\s\S]+promptContentHash/i);
+  assert.match(template, /does not store[\s\S]+promptAttemptHash/i);
+  assert.match(audioWorkflow, /promptAttemptHash[\s\S]+alias[\s\S]+MusicPromptAttempt@1[\s\S]+contentHash/i);
 });
 
 test('missing Part 2 interfaces use the defined role status and workflow stop', () => {
@@ -313,4 +322,62 @@ test('delivery interface names the mandatory AudioBrief and prompt-attempt evide
   const deliveryRow = interfaces.split('\n').find((line) => line.startsWith('| Delivery packager |')) ?? '';
   assert.match(deliveryRow, /AudioBrief/i);
   assert.match(deliveryRow, /prompt[- ]attempt/i);
+});
+
+test('role-authored source artifacts inherit one closed central contract', () => {
+  const contractPath = 'agent/contracts/role-artifact-contracts.md';
+  const contract = read(contractPath);
+  const manifest = JSON.parse(read('agent/prompt-manifest.json'));
+
+  assert.ok(manifest.contracts.includes(contractPath));
+  for (const type of ['BriefSpec', 'ResearchFindings', 'AudioBriefArtifact']) {
+    assert.match(contract, new RegExp(`type ${type} = \\{[\\s\\S]+?schemaVersion:`));
+  }
+  assert.match(contract, /durationInFrames:\s*PositiveInteger/);
+  assert.match(contract, /type BriefFps\s*=\s*24\s*\|\s*25\s*\|\s*30\s*\|\s*50\s*\|\s*60/);
+  assert.match(contract, /durationInFrames\s*===?\s*durationSeconds\s*\*\s*canvas\.fps/);
+  assert.match(contract, /MotionSpec binds that `briefHash`[\s\S]+Beat durations must sum to[\s\S]+durationInFrames/i);
+  assert.match(contract, /type MeasurementValue\s*=[\s\S]+kind:\s*"scalar"[\s\S]+kind:\s*"range"[\s\S]+kind:\s*"point"[\s\S]+kind:\s*"rectangle"/i);
+  assert.match(contract, /type MeasurementLocation\s*=[\s\S]+kind:\s*"whole-source"[\s\S]+kind:\s*"frame-range"[\s\S]+kind:\s*"time-range"[\s\S]+kind:\s*"page-region"[\s\S]+kind:\s*"image-region"[\s\S]+kind:\s*"data-path"/i);
+  assert.match(contract, /type MeasurementUncertainty\s*=[\s\S]+kind:\s*"exact"[\s\S]+kind:\s*"absolute"[\s\S]+kind:\s*"relative"[\s\S]+kind:\s*"bounded"/i);
+  assert.match(contract, /closed object[\s\S]+additional fields[\s\S]+forbidden/i);
+  assert.match(contract, /localPath[\s\S]+repository-relative[\s\S]+(?:URL|`\.\.`)[\s\S]+forbidden/i);
+  assert.doesNotMatch(contract, /\bunknown\b|Record\s*</);
+
+  const artifactSummary = read('agent/contracts/artifact-contracts.md');
+  assert.match(artifactSummary, /ResearchFindings@1[\s\S]+measurements\[\][\s\S]+inputTrustFindings\[\]/i);
+
+  for (const path of [
+    'agent/prompts/brief-planner.md',
+    'agent/prompts/researcher.md',
+    'agent/prompts/sound-designer.md',
+  ]) {
+    assert.match(read(path), /agent\/contracts\/role-artifact-contracts\.md/);
+  }
+
+  assert.match(read('agent/prompts/brief-planner.md'), /"durationInFrames":\s*600/);
+  assert.match(read('agent/prompts/researcher.md'), /"location":\s*\{"kind":\s*"frame-range"/);
+  assert.match(read('agent/prompts/researcher.md'), /"uncertainty":\s*\{"kind":\s*"absolute"/);
+  assert.match(read('agent/prompts/sound-designer.md'), /"schemaVersion":\s*"audio-brief@1"/);
+
+  const example = (path) => JSON.parse(/```json\n([\s\S]*?)\n```/.exec(read(path))?.[1] ?? 'null');
+  const brief = example('agent/prompts/brief-planner.md');
+  const research = example('agent/prompts/researcher.md');
+  const audio = example('agent/prompts/sound-designer.md');
+  assert.deepEqual(Object.keys(brief).sort(), [
+    'assumptions', 'audience', 'canvas', 'constraints', 'cta', 'durationInFrames',
+    'durationSeconds', 'goal', 'inputTrustFindings', 'language', 'message',
+    'prohibitedContent', 'projectId', 'schemaVersion', 'suppliedAssetIds', 'title',
+    'verifiedFacts',
+  ].sort());
+  assert.equal(brief.durationInFrames, brief.durationSeconds * brief.canvas.fps);
+  assert.deepEqual(Object.keys(research).sort(), [
+    'findings', 'inferences', 'inputTrustFindings', 'measurements', 'projectId',
+    'schemaVersion', 'sources', 'status', 'unresolved',
+  ].sort());
+  assert.deepEqual(Object.keys(audio).sort(), [
+    'audio', 'durationInFrames', 'fps', 'previewApprovalHash', 'projectId',
+    'renderManifestHash', 'renderPlanHash', 'revisionId', 'schemaVersion',
+    'silentMasterHash',
+  ].sort());
 });

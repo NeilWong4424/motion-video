@@ -11,7 +11,7 @@ Final pressure disposition:
 - Scope and truth: 0 Critical, 0 Important.
 - Continuity, capability gaps, and semantic revision: 0 unresolved Critical or Important in those contracts.
 - Review and audio: 0 Critical, 0 Important.
-- Current full static suite: 63 passed, 0 failed.
+- Current full static suite: 70 passed, 0 failed.
 
 ## Scenarios exercised
 
@@ -44,22 +44,27 @@ The contracts now require one cumulative half-open timeline, one Persistent Worl
 - Silent delivery attempting to skip AudioBrief or the real prompt attempt.
 - Two immutable music-prompt attempts where a track generated from attempt A is returned while attempt B is selected.
 
-Completed Creative Review requires an exact full-film 1.0× observation; completed Motion Review requires exact 1.0× and 0.25× observations. Incomplete review can honestly represent missing playback with no missing file. Review evidence binds actual preview/frame bytes and never creates approval. Audio has one order: locked approved silent picture, AudioBrief, deterministic local `MUSIC_PROMPT.md` attempt, manual third-party generation by the user, then optional future local alignment/mux. The prompt byte hash is always `promptContentHash`, and `ManualAudioReturn@1` selects a precise attempt path/hash and must survive local reload and recomputation before use.
+Completed Creative Review requires an exact full-film 1.0× observation; completed Motion Review requires exact 1.0× and 0.25× observations. Incomplete review can honestly represent missing playback with no missing file. Review evidence binds actual preview/frame bytes and never creates approval. Audio has one order: locked approved silent picture, AudioBrief, deterministic local `MUSIC_PROMPT.md` attempt, manual third-party generation by the user, then optional future local alignment/mux. The prompt byte hash is always `promptContentHash`; the stored attempt identity is only `MusicPromptAttempt@1.contentHash`; and external `promptAttemptHash` path/selection values must equal that stored identity. `ManualAudioReturn@1` selects a precise attempt path/hash and must survive local reload and recomputation before use.
 
 ## Contract defects closed during pressure testing
 
 | Area | Defect exposed | Closure |
 | --- | --- | --- |
 | Timeline | Beat retime changed derived global frames without a closed impact/lock policy | Deterministic cascade, exact child targets, derived-lock protection, and invariant revalidation |
+| Bridge seam | A positive bridge could declare a range unrelated to the boundary between its named Beats | Exact adjacent-pair identity, strict seam-straddling interval, identical mechanism endpoints, and direct Brief duration binding |
+| Bridge review | Evidence could use an alternate interval, duplicate/omit a bridge, or combine a mode with the wrong realization policy | Exact MotionSpec boundary/range binding, ordered bijection, exact scan coverage, and a closed mode-to-realization mapping |
+| Chapter cut | The zero-frame exception inherited positive-family vocabulary and ownership fields | Separate cut-only shape outside `transitionVocabulary`, bound to the Treatment cut budget and exact boundary evidence |
 | Capability | Gap payload, route authorization, and advisory sequencing drifted | One closed payload, separate hash-bound human route, advisory then explicit implementation stop |
 | Treatment | No single closed Treatment schema and an invalid reference example | Central `TreatmentSpec@1` contract and referentially complete example |
 | Review | Required playback had no structured evidence; playback-only incomplete was unrepresentable | Bound `PlaybackEvidence`, exact rate sets, and cross-field incomplete invariant |
 | Audio ownership | Sound Designer and a later non-role prompt interface could both appear responsible | Sound Designer ends with written AudioBrief; orchestrator alone invokes or blocks the future prompt interface |
 | Delivery | Silent output could be interpreted as bypassing the prompt chain | AudioBrief plus actual content-addressed prompt attempt remain mandatory |
-| Audio identity | Prompt bytes had two hash names; returned tracks lacked attempt identity | Sole `promptContentHash` plus exact-attempt `ManualAudioReturn@1` |
+| Audio identity | Prompt bytes and the attempt envelope risked duplicate hash names; returned tracks lacked exact attempt identity | Sole prompt-byte `promptContentHash`, sole stored attempt `contentHash`, external `promptAttemptHash` alias, and exact-attempt `ManualAudioReturn@1` |
 | Project identity | Derived IDs and collision suffixes could exceed the explicit 64-character domain | One validated `ProjectId` algorithm with per-suffix length budgeting |
 | Routing | STOP decisions could name continuing states; non-role success had no legal form; role/state pairs were independent | Closed `delegate`, `invoke-interface`, `advance`, STOP, and complete variants with exact pairs |
 | Input trust | Only intake roles had a typed route for later hostile evidence | Required `inputTrustFindings` on every `RoleResult@1` and `WorkflowDecision@1` |
+| Source artifacts | Brief, Research Findings, typed measurements, and AudioBrief lacked one complete role-readable shape contract | One closed central contract, direct Brief frame identity, typed measurement unions, and exact locked-picture AudioBrief bindings |
+| Part 1 boundary | A narrow root-name check could miss runtime code in alternate directories | Runtime/config/lockfile denial plus executable-code extension checks outside the test tree |
 
 ## Evidence and limitations
 
@@ -69,6 +74,6 @@ The verification command is:
 npm test
 ```
 
-The suite checks inventory, unique authority, route/state closure, local-only scope, typed handoffs, continuity and revision invariants, review provenance, audio attempt identity, JSON validity, Markdown-link integrity, and absence of Part 2 source/runtime files.
+The suite checks inventory, unique authority, route/state closure, local-only scope, typed handoffs, continuity and revision invariants, review provenance, audio attempt identity, JSON validity, Markdown-link integrity, forbidden runtime roots/configuration, and executable-code extensions outside the test tree. This broader static scan is still a filename/path boundary, not semantic proof about arbitrary documentation bytes.
 
 This is static prompt-contract evidence, not an end-to-end host execution. No Codex/Claude Code compatibility dry run, schema runtime, resolver, Remotion preview, renderer, Technical QC implementation, revision applier, approval recorder, audio-prompt generator, mux, or delivery packager exists in Part 1. The report therefore does not claim that a video, MP4, review artifact, prompt file, or delivery package was produced.

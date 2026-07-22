@@ -34,4 +34,4 @@ The future interface must count this paste block and refuse output over 4,000 ch
 - Continuous motion events: `{{motionCueReference}}`
 - Manual SFX production notes: `{{sfxNotes}}`
 
-This reference preserves the locked-cut context for human checking. It is not generator-facing content and must remain outside the paste block. The sibling `prompt-attempt.json` records `promptAttemptHash` and `promptContentHash`; neither hash is embedded into this Markdown because the attempt identity depends on the completed Markdown bytes and must not become self-referential.
+This reference preserves the locked-cut context for human checking. It is not generator-facing content and must remain outside the paste block. The sibling `prompt-attempt.json` records its sole stored attempt identity as `contentHash` and records the Markdown-byte identity as `promptContentHash`. It does not store a second `promptAttemptHash` field: outside the envelope, `promptAttemptHash` is the path/selection alias equal to `contentHash`. None of these hashes is embedded into this Markdown because the attempt identity depends on the completed Markdown bytes and must not become self-referential.

@@ -35,15 +35,17 @@ Do not write any other path. A capability gap is a durable artifact, never an in
 ## Must
 
 - Conform `MotionSpec@1` exactly to `agent/contracts/motion-spec-contract.md`; that central contract is normative and this prompt must not invent a looser shape.
+- Bind the exact accepted Brief directly through `briefHash`; preserve its project ID, canvas, fps, and `durationInFrames`, and require the ordered Beat durations to sum to that exact duration.
 - Treat each Beat as a narrative state, not a slide.
 - Use one global frame clock to drive one mounted Persistent World and one global camera track, with one coordinate convention.
 - Preserve stable identity: a persisting object keeps one node ID and identity across Beats.
 - Declare exactly one bridge for every adjacent Beat pair and no orphan bridges.
+- Pin each bridge to its exact adjacent ordered Beat pair. Every positive bridge must begin inside the outgoing Beat, cross the pair's real boundary, and end inside the incoming Beat; its mechanism range must use the exact same resolved endpoints as its bridge range.
 - Follow bridge priority: same-node `shared-element`, honest `camera-navigation`, `morph-into-target`, `match-on-action`, `directional-push`, then `chapter-cut`.
 - Declare motion ownership, eye trace, narrative reason, transition family, settle point, readable hold, focal node, renderer/effect IDs with versions, `ContentTransition`, `SegmentRef`, and motion cues.
 - Keep camera moves to meaningful holds and travels that reveal a real spatial relationship; every camera segment declares `reveals`.
 - Give each camera move one closed `primaryVerb` by default. It may add at most one distinct, unique secondary in `combinedVerbs` only with a non-empty `combinationRationale`, non-empty real `reveals`, and continuous eye trace; decorative combined motion and open verb strings are invalid.
-- Use positive bridge duration except for a justified `chapter-cut`, which has zero frames, full exception evidence, and is limited to the Treatment budget with an absolute maximum of one chapter cut.
+- Use positive bridge duration except for a justified `chapter-cut`, which has zero frames, full exception evidence, and is limited to the Treatment budget with an absolute maximum of one chapter cut. A chapter cut is outside the positive transition vocabulary and omits positive-only transition-family, vocabulary-role, and motion-ownership fields.
 - For a persistent shared element, use the same `PersistentNode` and geometry track. For a scene-stack real-target handoff, mount the real target early, freeze it through `preRollFrames`, and declare `settleFrames`; never substitute a visual copy.
 - Require every continuity anchor to be the focal node, a focal ancestor, or to meet the contract's minimum 10% weighted visual salience. A decorative persistent speck is not continuity.
 - Record content transitions so text or state does not pop at a boundary.
@@ -58,7 +60,7 @@ Do not write any other path. A capability gap is a durable artifact, never an in
 - Add undeclared capabilities, implementation code, arbitrary JavaScript/CSS, remote URLs, or unresolved asset paths.
 - Hide camera or transition ownership inside node effects.
 - Claim two different nodes have stable identity, substitute a hand-built visual copy for a real target, or invent spatial relation to avoid a cut.
-- Use a chapter cut without the required reason, zero-frame evidence contract, outgoing/incoming eye trace, and available budget.
+- Use a chapter cut without the required reason, zero-frame evidence contract, outgoing/incoming eye trace, and available budget, or mislabel a chapter cut as a positive transition family.
 - Exceed the Treatment vocabulary, change the Treatment, or silently approximate a recorded gap.
 - Self-authorize a capability route, invent a gap content hash, or treat an ephemeral proposal as registered capability evidence.
 - Claim resolver, compiler, engine, registry, schemas, CLI, hashing, validation, or rendering functionality exists in Part 1.
@@ -71,10 +73,10 @@ Return `blocked` for absent/stale Brief or Treatment hashes, unavailable current
 
 ## Procedure
 
-1. Verify current Brief/Treatment acceptance bindings, canvas, fps, duration, transition vocabulary, and cut budget. If an owner-produced upstream hash is absent, return `blocked` rather than guessing.
+1. Verify current Brief/Treatment acceptance bindings, direct Brief hash, matching project ID, canvas, fps, exact frame duration, transition vocabulary, and cut budget. If an owner-produced upstream hash is absent, return `blocked` rather than guessing.
 2. Consult `craft/index.md` and its manifest; load only state/trigger-matched skills and their dependencies, never the entire craft directory. Translate Beat intentions into ordered narrative states with focal nodes, settles, holds, and live content.
 3. Define the Persistent World hierarchy, stable node identities, one coordinate space, and exactly one `main-camera` track.
-4. Select exactly one bridge per adjacent pair using the priority order. Declare eye trace, ownership, mechanism, and positive duration unless it is the single justified zero-frame chapter cut.
+4. Select exactly one bridge per adjacent pair using the priority order. Resolve the outgoing start, exact adjacent boundary, and incoming end; make every positive bridge straddle that boundary with an identical mechanism range. Declare eye trace, ownership, mechanism, and positive duration unless it is the single justified zero-frame chapter cut.
 5. Distinguish persistent one-node identity from a scene-stack real target with genuine mount/freeze/preroll evidence.
 6. Declare deterministic renderer/effect intents and motion cues using only known IDs and local assets.
 7. Check readability, bridge completeness, anchor salience, camera motivation, content transitions, whole-film layout fingerprints, repeated full-frame replacement, and cut evidence.

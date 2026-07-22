@@ -18,6 +18,7 @@ const expectedFiles = [
   'agent/contracts/engine-interface.md',
   'agent/contracts/diagnostics.md',
   'agent/contracts/input-trust.md',
+  'agent/contracts/role-artifact-contracts.md',
   'agent/contracts/motion-spec-contract.md',
   'agent/contracts/revision-contract.md',
   'agent/contracts/review-contract.md',

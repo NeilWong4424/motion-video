@@ -50,7 +50,7 @@ The normative tuple definitions are in `artifact-contracts.md`. At each interfac
 - Silent final: the whole Approval tuple + Preview Approval bytes/hash; its Render Manifest binds exact silent-master bytes/hash and RenderPlan/build/profile identity.
 - Audio prompt, alignment/mux, and delivery: exact Preview Approval hash + Render Manifest hash + silent-master hash, followed by required AudioBrief, `promptContentHash`, `promptAttemptHash`, and each applicable exact-attempt manual-return/alignment/mux hash.
 
-The audio-prompt success path is exactly `out/<project-id>/<revision-id>/<render-plan-hash>/audio/<audioBriefHash>/prompts/<prompt-attempt-hash>/MUSIC_PROMPT.md` plus sibling `prompt-attempt.json`. The attempt schema and hash projection are defined in `artifact-contracts.md`. Naming that path without both actual matching files is not success.
+The audio-prompt success path is exactly `out/<project-id>/<revision-id>/<render-plan-hash>/audio/<audioBriefHash>/prompts/<prompt-attempt-hash>/MUSIC_PROMPT.md` plus sibling `prompt-attempt.json`. The attempt schema and hash projection are defined in `artifact-contracts.md`: the JSON stores only `contentHash` as attempt identity, while the path/selection name `promptAttemptHash` is an external alias that must equal it. Naming that path without both actual matching files is not success.
 
 Any bound byte/hash change is stale even for the same `revisionId` and the same `renderPlanHash`. A newly encoded preview, replaced sampled frame, rewritten QC/review/approval/policy/Render Manifest, or changed post-lock audio artifact must invalidate every dependent result.
 
