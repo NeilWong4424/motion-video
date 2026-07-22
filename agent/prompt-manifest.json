@@ -1,0 +1,66 @@
+{
+  "contractVersion": "prompt-os/v1",
+  "orchestrator": "agent/video-workflow.md",
+  "roles": [
+    {
+      "id": "orchestrator",
+      "file": "agent/video-workflow.md",
+      "authority": ["state", "routing", "gates", "repair-budgets", "stops"],
+      "writes": []
+    },
+    {
+      "id": "brief-planner",
+      "file": "agent/prompts/brief-planner.md",
+      "authority": ["brief", "facts", "assumptions", "fact-check"],
+      "writes": ["projects/<project-id>/brief.spec.json"]
+    },
+    {
+      "id": "researcher",
+      "file": "agent/prompts/researcher.md",
+      "authority": ["local-source-evidence", "measurements"],
+      "writes": ["projects/<project-id>/research.findings.json"]
+    },
+    {
+      "id": "creative-direction",
+      "file": "agent/prompts/creative-direction.md",
+      "authority": ["treatment", "narrative", "visual-thesis", "motion-profile"],
+      "writes": ["projects/<project-id>/treatment.json"]
+    },
+    {
+      "id": "motion-planner",
+      "file": "agent/prompts/motion-planner.md",
+      "authority": ["motion-spec", "capability-gap"],
+      "writes": ["projects/<project-id>/motion.spec.json"]
+    },
+    {
+      "id": "capability-builder",
+      "file": "agent/prompts/capability-builder.md",
+      "authority": ["approved-project-local-capability"],
+      "writes": ["projects/<project-id>/capabilities/<capability-id>/**"]
+    },
+    {
+      "id": "revision-interpreter",
+      "file": "agent/prompts/revision-interpreter.md",
+      "authority": ["semantic-patch"],
+      "writes": ["projects/<project-id>/revision.patch.json"]
+    },
+    {
+      "id": "sound-designer",
+      "file": "agent/prompts/sound-designer.md",
+      "authority": ["audio-brief"],
+      "writes": ["projects/<project-id>/audio-brief.json"]
+    },
+    {
+      "id": "creative-reviewer",
+      "file": "agent/reviewers/creative-reviewer.md",
+      "authority": ["creative-review"],
+      "writes": ["out/<project-id>/<revision-id>/<render-plan-hash>/review/creative-review.json"]
+    },
+    {
+      "id": "motion-reviewer",
+      "file": "agent/reviewers/motion-reviewer.md",
+      "authority": ["motion-review"],
+      "writes": ["out/<project-id>/<revision-id>/<render-plan-hash>/review/motion-review.json"]
+    }
+  ]
+}
