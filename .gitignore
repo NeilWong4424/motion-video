@@ -28,6 +28,11 @@ projects/*/.workflow/
 !projects/_template/
 !projects/_template/**
 
+# Committed golden projects: their source and immutable snapshot are tracked
+# evidence of the M1 kernel; only their derived out/ output stays ignored.
+!projects/golden-continuity/
+!projects/golden-continuity/**
+
 # OS / editor
 .DS_Store
 Thumbs.db

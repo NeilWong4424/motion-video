@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "brief@1",
+  "projectId": "golden-continuity",
+  "title": "Golden Continuity Film",
+  "language": "en",
+  "goal": "Prove one visual idea can evolve across five beats without ever resetting like slides.",
+  "audience": "Reviewers evaluating the continuity-first motion kernel.",
+  "message": "One idea. One world. No slides.",
+  "cta": "See the whole story",
+  "canvas": {"width": 1920, "height": 1080, "fps": 30},
+  "durationSeconds": 20,
+  "facts": [],
+  "suppliedAssetIds": [],
+  "constraints": [
+    "Only code-rendered type, shape and path elements.",
+    "No audio dependency.",
+    "Zero chapter cuts and zero full-frame wipes."
+  ],
+  "prohibitedContent": [],
+  "assumptions": [
+    "The neutral test style pack is acceptable for the kernel proof."
+  ]
+}

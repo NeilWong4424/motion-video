@@ -10,6 +10,7 @@ import {runResolve} from './commands/resolve.js';
 import {runPreview} from './commands/preview.js';
 import {runStills} from './commands/stills.js';
 import {runInspect} from './commands/inspect.js';
+import {runQc} from './commands/qc.js';
 
 /**
  * Run the motion CLI. Production passes no context and derives the immutable
@@ -85,6 +86,14 @@ export async function runMotionCli(argv: string[], context?: RepoContext): Promi
     .allowUnknownOption(false)
     .action(async (projectId: string) => {
       exitCode = await runInspect(ctx, projectId);
+    });
+
+  program
+    .command('qc')
+    .argument('<project-id>')
+    .allowUnknownOption(false)
+    .action(async (projectId: string) => {
+      exitCode = await runQc(ctx, projectId);
     });
 
   try {

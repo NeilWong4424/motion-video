@@ -1,0 +1,872 @@
+{
+  "schemaVersion": "motion-spec@1",
+  "projectId": "golden-continuity",
+  "treatmentHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "timeline": {
+    "beats": [
+      {
+        "id": "hook",
+        "durationFrames": 120,
+        "objective": "Land the keyword.",
+        "message": "One idea.",
+        "focalNodeId": "hero",
+        "liveContentNodeIds": [
+          "hero"
+        ],
+        "settleAt": {
+          "segmentId": "hook",
+          "progress": 0.6
+        },
+        "holdRange": {
+          "from": {
+            "segmentId": "hook",
+            "progress": 0.6
+          },
+          "to": {
+            "segmentId": "hook",
+            "progress": 1
+          }
+        }
+      },
+      {
+        "id": "card",
+        "durationFrames": 120,
+        "objective": "Make it a product.",
+        "message": "It becomes a card.",
+        "focalNodeId": "hero",
+        "liveContentNodeIds": [
+          "hero",
+          "cardShape"
+        ],
+        "settleAt": {
+          "segmentId": "card",
+          "progress": 0.6
+        },
+        "holdRange": {
+          "from": {
+            "segmentId": "card",
+            "progress": 0.6
+          },
+          "to": {
+            "segmentId": "card",
+            "progress": 1
+          }
+        }
+      },
+      {
+        "id": "dash",
+        "durationFrames": 120,
+        "objective": "Reveal the system.",
+        "message": "Inside is a dashboard.",
+        "focalNodeId": "cardShape",
+        "liveContentNodeIds": [
+          "hero",
+          "cardShape",
+          "chip"
+        ],
+        "settleAt": {
+          "segmentId": "dash",
+          "progress": 0.6
+        },
+        "holdRange": {
+          "from": {
+            "segmentId": "dash",
+            "progress": 0.6
+          },
+          "to": {
+            "segmentId": "dash",
+            "progress": 1
+          }
+        }
+      },
+      {
+        "id": "chart",
+        "durationFrames": 120,
+        "objective": "Prove it.",
+        "message": "A metric expands into a chart.",
+        "focalNodeId": "chartPath",
+        "liveContentNodeIds": [
+          "cardShape",
+          "chip",
+          "chartPath"
+        ],
+        "settleAt": {
+          "segmentId": "chart",
+          "progress": 0.6
+        },
+        "holdRange": {
+          "from": {
+            "segmentId": "chart",
+            "progress": 0.6
+          },
+          "to": {
+            "segmentId": "chart",
+            "progress": 1
+          }
+        }
+      },
+      {
+        "id": "cta",
+        "durationFrames": 60,
+        "objective": "Invite.",
+        "message": "The proof resolves into the brand.",
+        "focalNodeId": "logoMark",
+        "liveContentNodeIds": [
+          "logoMark",
+          "ctaText"
+        ],
+        "settleAt": {
+          "segmentId": "cta",
+          "progress": 0.6
+        },
+        "holdRange": {
+          "from": {
+            "segmentId": "cta",
+            "progress": 0.6
+          },
+          "to": {
+            "segmentId": "cta",
+            "progress": 1
+          }
+        }
+      }
+    ],
+    "bridges": [
+      {
+        "id": "hook-card",
+        "fromBeatId": "hook",
+        "toBeatId": "card",
+        "durationFrames": 15,
+        "narrativeReason": "The keyword settles and a card forms around it.",
+        "transitionFamily": "shared-element",
+        "vocabularyRole": "ordinary",
+        "eyeTrace": {
+          "outgoing": {
+            "nodeId": "hero",
+            "point": {
+              "x": 0.5,
+              "y": 0.45
+            }
+          },
+          "incoming": {
+            "nodeId": "hero",
+            "point": {
+              "x": 0.42,
+              "y": 0.4
+            }
+          }
+        },
+        "motionOwnership": "node",
+        "mode": "shared-element",
+        "nodeId": "hero",
+        "motionRange": {
+          "from": {
+            "segmentId": "hook-card",
+            "progress": 0
+          },
+          "to": {
+            "segmentId": "hook-card",
+            "progress": 1
+          }
+        }
+      },
+      {
+        "id": "card-dash",
+        "fromBeatId": "card",
+        "toBeatId": "dash",
+        "durationFrames": 15,
+        "narrativeReason": "The camera pushes into the card to reveal the dashboard within.",
+        "transitionFamily": "camera-navigation",
+        "vocabularyRole": "ordinary",
+        "eyeTrace": {
+          "outgoing": {
+            "nodeId": "cardShape",
+            "point": {
+              "x": 0.5,
+              "y": 0.5
+            }
+          },
+          "incoming": {
+            "nodeId": "cardShape",
+            "point": {
+              "x": 0.5,
+              "y": 0.5
+            }
+          }
+        },
+        "motionOwnership": "camera",
+        "mode": "camera-navigation",
+        "cameraSegmentId": "cam-push",
+        "destinationNodeId": "cardShape",
+        "spatialRelationship": "The dashboard lives inside the card's frame."
+      },
+      {
+        "id": "dash-chart",
+        "fromBeatId": "dash",
+        "toBeatId": "chart",
+        "durationFrames": 15,
+        "narrativeReason": "One dashboard chip morphs into the chart it represents.",
+        "transitionFamily": "morph-into-target",
+        "vocabularyRole": "signature",
+        "eyeTrace": {
+          "outgoing": {
+            "nodeId": "chip",
+            "point": {
+              "x": 0.4,
+              "y": 0.55
+            }
+          },
+          "incoming": {
+            "nodeId": "chartPath",
+            "point": {
+              "x": 0.45,
+              "y": 0.5
+            }
+          }
+        },
+        "motionOwnership": "node",
+        "mode": "morph-into-target",
+        "sourceNodeId": "chip",
+        "targetNodeId": "chartPath",
+        "motionRange": {
+          "from": {
+            "segmentId": "dash-chart",
+            "progress": 0
+          },
+          "to": {
+            "segmentId": "dash-chart",
+            "progress": 1
+          }
+        },
+        "preRollFrames": 10,
+        "settleFrames": 5
+      },
+      {
+        "id": "chart-cta",
+        "fromBeatId": "chart",
+        "toBeatId": "cta",
+        "durationFrames": 15,
+        "narrativeReason": "The chart's final point becomes the logo mark on the same action.",
+        "transitionFamily": "match-on-action",
+        "vocabularyRole": "ordinary",
+        "eyeTrace": {
+          "outgoing": {
+            "nodeId": "chartPath",
+            "point": {
+              "x": 0.6,
+              "y": 0.4
+            }
+          },
+          "incoming": {
+            "nodeId": "logoMark",
+            "point": {
+              "x": 0.5,
+              "y": 0.42
+            }
+          }
+        },
+        "motionOwnership": "node",
+        "mode": "match-on-action",
+        "outgoingNodeId": "chartPath",
+        "incomingNodeId": "logoMark",
+        "actionAt": {
+          "segmentId": "chart-cta",
+          "progress": 0.5
+        },
+        "action": "scale"
+      }
+    ]
+  },
+  "world": {
+    "coordinateSpace": "composition-pixels",
+    "origin": "top-left",
+    "transformOrigin": "top-left",
+    "childGeometry": "parent-local",
+    "nodes": [
+      {
+        "id": "cardShape",
+        "kind": "shape",
+        "space": "world",
+        "semanticRole": "content",
+        "renderer": {
+          "id": "base.shape",
+          "version": "1.0.0",
+          "props": {
+            "shape": "rounded-rect",
+            "width": 900,
+            "height": 520,
+            "fill": "#15171e",
+            "stroke": "#2a2f3a",
+            "strokeWidth": 2,
+            "radius": 28
+          }
+        },
+        "effects": [],
+        "geometryTrack": [
+          {
+            "at": {
+              "segmentId": "card",
+              "progress": 0
+            },
+            "value": {
+              "x": 510,
+              "y": 280,
+              "width": 900,
+              "height": 520
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "styleTrack": [
+          {
+            "at": {
+              "segmentId": "card",
+              "progress": 0
+            },
+            "value": {
+              "opacity": 1
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "visibleTrack": [
+          {
+            "at": {
+              "segmentId": "card",
+              "progress": 0
+            },
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "at": {
+              "segmentId": "chart",
+              "progress": 0.7
+            },
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "at": {
+              "segmentId": "chart",
+              "progress": 1
+            },
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ]
+      },
+      {
+        "id": "chip",
+        "kind": "shape",
+        "space": "world",
+        "semanticRole": "content",
+        "renderer": {
+          "id": "base.shape",
+          "version": "1.0.0",
+          "props": {
+            "shape": "rounded-rect",
+            "width": 220,
+            "height": 120,
+            "fill": "#1d2530",
+            "stroke": "#4f8cff",
+            "strokeWidth": 2,
+            "radius": 16
+          }
+        },
+        "effects": [],
+        "geometryTrack": [
+          {
+            "at": {
+              "segmentId": "dash",
+              "progress": 0
+            },
+            "value": {
+              "x": 640,
+              "y": 520,
+              "width": 220,
+              "height": 120
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "styleTrack": [
+          {
+            "at": {
+              "segmentId": "dash",
+              "progress": 0
+            },
+            "value": {
+              "opacity": 1
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "visibleTrack": [
+          {
+            "at": {
+              "segmentId": "dash",
+              "progress": 0
+            },
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "at": {
+              "segmentId": "chart",
+              "progress": 0.3
+            },
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "at": {
+              "segmentId": "chart",
+              "progress": 0.5
+            },
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ]
+      },
+      {
+        "id": "chartPath",
+        "kind": "path",
+        "space": "world",
+        "semanticRole": "content",
+        "renderer": {
+          "id": "base.path",
+          "version": "1.0.0",
+          "props": {
+            "d": "M0 200 L120 150 L240 170 L360 90 L480 110 L600 30",
+            "width": 620,
+            "height": 240,
+            "stroke": "#4f8cff",
+            "strokeWidth": 6
+          }
+        },
+        "effects": [],
+        "geometryTrack": [
+          {
+            "at": {
+              "segmentId": "chart",
+              "progress": 0
+            },
+            "value": {
+              "x": 660,
+              "y": 420,
+              "width": 620,
+              "height": 240
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "styleTrack": [
+          {
+            "at": {
+              "segmentId": "chart",
+              "progress": 0
+            },
+            "value": {
+              "opacity": 1
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "visibleTrack": [
+          {
+            "at": {
+              "segmentId": "dash",
+              "progress": 0.85
+            },
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "at": {
+              "segmentId": "chart",
+              "progress": 0
+            },
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "at": {
+              "segmentId": "cta",
+              "progress": 0.3
+            },
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "at": {
+              "segmentId": "cta",
+              "progress": 0.5
+            },
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ]
+      },
+      {
+        "id": "logoMark",
+        "kind": "path",
+        "space": "world",
+        "semanticRole": "content",
+        "renderer": {
+          "id": "base.path",
+          "version": "1.0.0",
+          "props": {
+            "d": "M20 100 L60 20 L100 100 L80 100 L60 60 L40 100 Z",
+            "width": 120,
+            "height": 120,
+            "fill": "#4f8cff",
+            "stroke": "#4f8cff",
+            "strokeWidth": 2
+          }
+        },
+        "effects": [],
+        "geometryTrack": [
+          {
+            "at": {
+              "segmentId": "cta",
+              "progress": 0
+            },
+            "value": {
+              "x": 900,
+              "y": 400,
+              "width": 120,
+              "height": 120
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "styleTrack": [
+          {
+            "at": {
+              "segmentId": "cta",
+              "progress": 0
+            },
+            "value": {
+              "opacity": 1
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "visibleTrack": [
+          {
+            "at": {
+              "segmentId": "cta",
+              "progress": 0
+            },
+            "value": 1,
+            "interpolation": "hold"
+          }
+        ]
+      },
+      {
+        "id": "hero",
+        "kind": "text",
+        "space": "world",
+        "semanticRole": "content",
+        "renderer": {
+          "id": "base.text",
+          "version": "1.0.0",
+          "props": {
+            "text": "MOMENTUM"
+          }
+        },
+        "effects": [],
+        "geometryTrack": [
+          {
+            "at": {
+              "segmentId": "hook",
+              "progress": 0
+            },
+            "value": {
+              "x": 560,
+              "y": 470,
+              "width": 800,
+              "height": 140
+            },
+            "interpolation": "hold"
+          },
+          {
+            "at": {
+              "segmentId": "hook",
+              "progress": 1
+            },
+            "value": {
+              "x": 560,
+              "y": 470,
+              "width": 800,
+              "height": 140
+            },
+            "interpolation": "ease",
+            "easing": "easeOutQuart"
+          },
+          {
+            "at": {
+              "segmentId": "card",
+              "progress": 0.5
+            },
+            "value": {
+              "x": 620,
+              "y": 300,
+              "width": 680,
+              "height": 90
+            },
+            "interpolation": "ease",
+            "easing": "easeOutQuart"
+          }
+        ],
+        "styleTrack": [
+          {
+            "at": {
+              "segmentId": "hook",
+              "progress": 0
+            },
+            "value": {
+              "opacity": 1,
+              "color": "#f5f7fa"
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "visibleTrack": [
+          {
+            "at": {
+              "segmentId": "hook",
+              "progress": 0
+            },
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "at": {
+              "segmentId": "dash",
+              "progress": 0.4
+            },
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "at": {
+              "segmentId": "dash",
+              "progress": 1
+            },
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ]
+      },
+      {
+        "id": "ctaText",
+        "kind": "text",
+        "space": "world",
+        "semanticRole": "content",
+        "renderer": {
+          "id": "base.text",
+          "version": "1.0.0",
+          "props": {
+            "text": "See the whole story"
+          }
+        },
+        "effects": [],
+        "geometryTrack": [
+          {
+            "at": {
+              "segmentId": "cta",
+              "progress": 0
+            },
+            "value": {
+              "x": 660,
+              "y": 560,
+              "width": 600,
+              "height": 60
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "styleTrack": [
+          {
+            "at": {
+              "segmentId": "cta",
+              "progress": 0
+            },
+            "value": {
+              "opacity": 1,
+              "color": "#9aa4b2"
+            },
+            "interpolation": "hold"
+          }
+        ],
+        "visibleTrack": [
+          {
+            "at": {
+              "segmentId": "cta",
+              "progress": 0
+            },
+            "value": 1,
+            "interpolation": "hold"
+          }
+        ]
+      }
+    ]
+  },
+  "camera": {
+    "id": "main-camera",
+    "segments": [
+      {
+        "id": "cam-hold-1",
+        "mode": "hold",
+        "segmentId": "hook",
+        "state": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
+      },
+      {
+        "id": "cam-hold-1b",
+        "mode": "hold",
+        "segmentId": "hook-card",
+        "state": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
+      },
+      {
+        "id": "cam-hold-2",
+        "mode": "hold",
+        "segmentId": "card",
+        "state": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
+      },
+      {
+        "id": "cam-push",
+        "mode": "move",
+        "segmentId": "card-dash",
+        "from": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        },
+        "to": {
+          "x": 240,
+          "y": 150,
+          "zoom": 1.25
+        },
+        "verb": "zoom",
+        "easing": "easeInOutQuint",
+        "reveals": "the dashboard chips inside the card"
+      },
+      {
+        "id": "cam-hold-3",
+        "mode": "hold",
+        "segmentId": "dash",
+        "state": {
+          "x": 240,
+          "y": 150,
+          "zoom": 1.25
+        }
+      },
+      {
+        "id": "cam-hold-3b",
+        "mode": "hold",
+        "segmentId": "dash-chart",
+        "state": {
+          "x": 240,
+          "y": 150,
+          "zoom": 1.25
+        }
+      },
+      {
+        "id": "cam-hold-4",
+        "mode": "hold",
+        "segmentId": "chart",
+        "state": {
+          "x": 240,
+          "y": 150,
+          "zoom": 1.25
+        }
+      },
+      {
+        "id": "cam-hold-4b",
+        "mode": "hold",
+        "segmentId": "chart-cta",
+        "state": {
+          "x": 240,
+          "y": 150,
+          "zoom": 1.25
+        }
+      },
+      {
+        "id": "cam-hold-5",
+        "mode": "hold",
+        "segmentId": "cta",
+        "state": {
+          "x": 240,
+          "y": 150,
+          "zoom": 1.25
+        }
+      }
+    ]
+  },
+  "motionCues": [
+    {
+      "id": "cue-hero",
+      "at": {
+        "segmentId": "hook",
+        "progress": 0.6
+      },
+      "role": "hero-reveal",
+      "description": "The keyword lands."
+    },
+    {
+      "id": "cue-travel",
+      "at": {
+        "segmentId": "card-dash",
+        "progress": 0.5
+      },
+      "role": "camera-travel",
+      "description": "Camera pushes into the card."
+    },
+    {
+      "id": "cue-morph",
+      "at": {
+        "segmentId": "dash-chart",
+        "progress": 0.5
+      },
+      "role": "morph-handoff",
+      "description": "Chip becomes chart."
+    },
+    {
+      "id": "cue-payoff",
+      "at": {
+        "segmentId": "chart",
+        "progress": 0.6
+      },
+      "role": "payoff",
+      "description": "The chart resolves upward."
+    },
+    {
+      "id": "cue-resolve",
+      "at": {
+        "segmentId": "cta",
+        "progress": 0.6
+      },
+      "role": "resolve",
+      "description": "Logo and CTA settle."
+    }
+  ]
+}
