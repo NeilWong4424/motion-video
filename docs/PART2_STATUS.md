@@ -42,10 +42,23 @@ credential architecture, no generated image/video substrate, no hosted platform.
 Music remains a manual third-party handoff. The engine never claims a render,
 preview, QC result, or delivery that is not present as current local evidence.
 
-## Not yet implemented (remaining plan tasks)
+## Also implemented
 
-- Task 14: semantic revision application, locks and project-local capability
-  gaps (the `motion revise --apply` flow).
-- Task 15: the offline `MUSIC_PROMPT.md` generator, local alignment/mux and the
-  delivery packager.
-- Task 16: the full golden matrix, regression suite and release gate.
+- **Semantic revisions** (Task 14): `motion revise --apply` applies a validated
+  SemanticPatch as a new immutable revision, enforcing locks against the actual
+  diff and a complete declared impact set; whole-artifact replacement is
+  rebuild-only.
+- **Offline audio** (Task 15): a deterministic `MUSIC_PROMPT.md` generator
+  (frame-accurate payoff, sanitized free text, hash-bound to the cut), a local
+  ffmpeg alignment/mux that time-shifts audio only and copies the video stream,
+  and a delivery packager (`not-provided | mixed`). No music API or key.
+- **Release gate** (Task 16): `pnpm check` runs environment, boundary, both
+  content-addressed manifests, the Part 1 documentation suite, lint, typecheck
+  and the full test suite. Operating guide in the README.
+
+## Local evidence
+
+Every claim above is backed by a passing automated gate and, for the render/QC/
+mux claims, real Remotion/ffmpeg output verified in tests. The engine never
+claims a render, preview, QC result, mux or delivery without current local
+evidence.

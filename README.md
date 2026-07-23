@@ -69,3 +69,62 @@ The current completion boundary and independent pressure-review record are in [`
 ## Engine implementation status
 
 Every executable facility named by this Prompt OS is a **required interface — not implemented** in Part 1. Do not claim a preview, render, validation, QC pass, revision, audio prompt, mux, or delivery until a later implementation produces verifiable local, hash-bound evidence.
+
+---
+
+# Part 2 — the motion engine (implemented)
+
+Part 2 implements the deterministic engine the Prompt OS describes, in-place
+alongside Part 1. The paragraph above records Part 1's original boundary; the
+engine now exists and is exercised by an automated gate and a rendered Golden
+Film. See [`docs/PART2_STATUS.md`](docs/PART2_STATUS.md) for the full status.
+
+The repository still makes **zero model calls**, holds no API key or credential
+architecture, generates no image/video substrate, and keeps music a manual
+third-party handoff.
+
+## Requirements
+
+- Node.js `>=24.12 <25`, pnpm `11.7.0` (via `corepack pnpm`), and local
+  `ffmpeg` + `ffprobe` on PATH.
+- The Remotion headless browser: `pnpm exec remotion browser ensure`.
+
+## Install and gate
+
+```bash
+pnpm install
+pnpm check   # env + boundary + manifests + Part 1 docs + lint + typecheck + tests
+```
+
+`pnpm check` is the release gate: it fails on a wrong toolchain, any
+network/secret/nondeterminism boundary violation, a stale capability/engine
+manifest, a broken Part 1 doc contract, a lint or type error, or a failing test.
+
+## The video pipeline (CLI)
+
+```text
+pnpm motion new <id>          # scaffold a draft project from the template
+# edit projects/<id>/brief.spec.json, treatment.json, motion.spec.json
+pnpm motion validate <id>     # strict validation + continuity diagnostics
+pnpm motion snapshot <id>     # freeze the initial immutable rev-0001
+pnpm motion resolve <id>      # -> immutable RenderPlan under out/<id>/<rev>/<hash>/
+pnpm motion preview <id>      # low-res silent preview (Remotion browser)
+pnpm motion stills <id> --frames 60,300
+pnpm motion qc <id>           # technical QC report bound to the plan/preview
+# author review/creative-review.json + review/motion-review.json (ship)
+pnpm motion approve <id> --reviewed-plan <hash> --actor human --reason "..."
+pnpm motion render <id>       # gated final silent master (QC + reviews + approval)
+pnpm motion revise <id> --patch patch.json --apply   # new revision via SemanticPatch
+pnpm audio:prompt -- --brief audio-brief.json        # deterministic MUSIC_PROMPT.md
+```
+
+Every derived output is immutable and content-addressed; a changed plan gets a
+new directory. Final render is impossible without current QC, both `ship`
+reviews, and an explicit approval bound to the exact plan and preview bytes.
+
+## The Golden Film
+
+`projects/golden-continuity` is a committed 20-second, 600-frame continuity-first
+film (keyword → product card → dashboard → chart → brand). It resolves,
+compiles, renders through the real Remotion browser, and passes technical QC —
+proving the seamless kernel reads as one evolving idea, not slides.

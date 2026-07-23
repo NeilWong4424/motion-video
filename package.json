@@ -23,7 +23,7 @@
     "capabilities:manifest:check": "node scripts/build-core-capability-manifest.mjs --check",
     "engine:manifest": "node scripts/build-engine-manifest.mjs",
     "engine:manifest:check": "node scripts/build-engine-manifest.mjs --check",
-    "check": "pnpm verify:environment && pnpm verify:boundary && pnpm verify:part1 && pnpm lint && pnpm typecheck && pnpm test"
+    "check": "pnpm verify:environment && pnpm verify:boundary && pnpm capabilities:manifest:check && pnpm engine:manifest:check && pnpm verify:part1 && pnpm lint && pnpm typecheck && pnpm test"
   },
   "dependencies": {
     "@fontsource-variable/noto-sans-sc": "5.3.0",
