@@ -67,9 +67,11 @@ export class DeterministicLayoutService implements LayoutService {
       this.diagnostics.push(errorDiagnostic('LAYOUT_OUT_OF_SAFE_AREA', {nodeId: node.id}));
     }
 
+    // Lines are positioned relative to the node's own box origin (0,0); the
+    // runtime translates the node to its geometry position.
     return {
       ...box,
-      lines: [{text, x: box.x, y: box.y, fontSize}],
+      lines: [{text, x: 0, y: 0, fontSize}],
     };
   }
 }

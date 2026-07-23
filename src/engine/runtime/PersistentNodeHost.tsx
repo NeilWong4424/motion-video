@@ -21,7 +21,12 @@ type Style = {opacity?: number; color?: string; backgroundColor?: string};
  * absent only through opacity/off-canvas geometry, never a beat remount.
  */
 export const PersistentNodeHost: React.FC<PersistentNodeHostProps> = ({node, frame}) => {
-  const visible = evaluateTrack(node.visibleTrack as RenderTrack<number>, frame);
+  // A node is hidden before its first visibility keyframe when that keyframe is
+  // after frame 0: it has not entered the world yet. Otherwise the track value
+  // (clamped) applies.
+  const firstVisFrame = node.visibleTrack[0]?.frame ?? 0;
+  const visible =
+    frame < firstVisFrame ? 0 : evaluateTrack(node.visibleTrack as RenderTrack<number>, frame);
   const geometry = evaluateTrack(node.geometryTrack as RenderTrack<Geometry>, frame);
   const style = node.styleTrack.length
     ? evaluateTrack(node.styleTrack as RenderTrack<Style>, frame)
@@ -41,10 +46,10 @@ export const PersistentNodeHost: React.FC<PersistentNodeHostProps> = ({node, fra
     .filter(Boolean)
     .join(' ');
 
-  const rendererProps = {...(node.renderer as {props?: unknown}), ...content} as Record<string, unknown>;
-  const mergedProps = {
-    ...(typeof (node as {rendererProps?: unknown}).rendererProps === 'object' ? {} : {}),
-    ...(rendererProps.props as Record<string, unknown> | undefined),
+  const sourceProps = (node.rendererProps ?? {}) as Record<string, unknown>;
+  const mergedProps: Record<string, unknown> = {
+    ...sourceProps,
+    ...(node.resolvedLines ? {lines: node.resolvedLines} : {}),
     ...content,
     ...(style.color ? {color: style.color} : {}),
   };

@@ -5,6 +5,11 @@ import {Command} from 'commander';
 import {deriveRepoContext, type RepoContext} from '../engine/project/paths.js';
 import {runNew} from './commands/new.js';
 import {runSnapshot} from './commands/snapshot.js';
+import {runValidate} from './commands/validate.js';
+import {runResolve} from './commands/resolve.js';
+import {runPreview} from './commands/preview.js';
+import {runStills} from './commands/stills.js';
+import {runInspect} from './commands/inspect.js';
 
 /**
  * Run the motion CLI. Production passes no context and derives the immutable
@@ -38,6 +43,48 @@ export async function runMotionCli(argv: string[], context?: RepoContext): Promi
     .allowUnknownOption(false)
     .action(async (projectId: string) => {
       exitCode = await runSnapshot(ctx, projectId);
+    });
+
+  program
+    .command('validate')
+    .argument('<project-id>')
+    .allowUnknownOption(false)
+    .action(async (projectId: string) => {
+      exitCode = await runValidate(ctx, projectId);
+    });
+
+  program
+    .command('resolve')
+    .argument('<project-id>')
+    .allowUnknownOption(false)
+    .action(async (projectId: string) => {
+      exitCode = await runResolve(ctx, projectId);
+    });
+
+  program
+    .command('preview')
+    .argument('<project-id>')
+    .allowUnknownOption(false)
+    .action(async (projectId: string) => {
+      exitCode = await runPreview(ctx, projectId);
+    });
+
+  program
+    .command('stills')
+    .argument('<project-id>')
+    .option('--frames <frames>', 'comma-separated integer frames', '0')
+    .allowUnknownOption(false)
+    .action(async (projectId: string, options: {frames: string}) => {
+      const frames = options.frames.split(',').map((f) => Number.parseInt(f.trim(), 10));
+      exitCode = await runStills(ctx, projectId, frames);
+    });
+
+  program
+    .command('inspect')
+    .argument('<project-id>')
+    .allowUnknownOption(false)
+    .action(async (projectId: string) => {
+      exitCode = await runInspect(ctx, projectId);
     });
 
   try {

@@ -62,9 +62,9 @@ export type ProjectRegistryEntry = {
   plan: RenderPlan | null;
 };
 
-export const projectRegistry = [${
+export const projectRegistry: readonly ProjectRegistryEntry[] = [${
     entries.length === 0 ? '' : `\n  ${body},\n`
-  }] satisfies readonly ProjectRegistryEntry[];
+  }];
 `;
 
   writeCanonicalTsSync(join(context.repoRoot, 'src', 'generated', 'project-registry.ts'), source);

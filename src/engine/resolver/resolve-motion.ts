@@ -98,6 +98,8 @@ export function resolveMotion(input: ResolveMotionInput): ResolveMotionResult {
         localBounds: n.localBounds,
         worldBounds: n.worldBounds,
         renderer: b.renderer,
+        rendererProps: node.renderer.props,
+        ...(n.resolvedLines ? {resolvedLines: n.resolvedLines} : {}),
         effects: b.effects.map((e) => ({
           id: e.id,
           version: e.version,

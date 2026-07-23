@@ -33,6 +33,10 @@ export const ResolvedNodeSchema = z.strictObject({
   localBounds: ResolvedRegionSchema,
   worldBounds: ResolvedRegionSchema,
   renderer: CapabilityBindingSchema,
+  rendererProps: z.unknown(),
+  resolvedLines: z
+    .array(z.strictObject({text: z.string(), x: z.number(), y: z.number(), fontSize: z.number().positive()}))
+    .optional(),
   effects: z.array(
     CapabilityBindingSchema.extend({
       fromFrame: z.number().int().nonnegative(),

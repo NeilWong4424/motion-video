@@ -12,6 +12,7 @@ export type ResolvedNodeTracks = {
   zIndex: number;
   localBounds: ResolvedRegion;
   worldBounds: ResolvedRegion;
+  resolvedLines?: Array<{text: string; x: number; y: number; fontSize: number}>;
   geometryTrack: ResolvedKeyframe[];
   styleTrack: ResolvedKeyframe[];
   contentTrack: ResolvedKeyframe[];
@@ -114,6 +115,7 @@ export function resolveNodeTracks(
       zIndex: index,
       localBounds: local,
       worldBounds,
+      ...(layoutResult.lines ? {resolvedLines: layoutResult.lines} : {}),
       geometryTrack: resolveTrack(timeline, node.geometryTrack),
       styleTrack: resolveTrack(timeline, node.styleTrack),
       contentTrack: node.contentTrack ? resolveTrack(timeline, node.contentTrack) : [],

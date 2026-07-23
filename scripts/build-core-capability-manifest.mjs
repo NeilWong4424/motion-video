@@ -17,6 +17,7 @@ const CORE_CAPABILITIES = [
   {kind: 'renderer', id: 'base.shape', version: '1.0.0', file: 'src/capabilities/base/shape-node.tsx', supportedNodeKinds: ['shape']},
   {kind: 'renderer', id: 'base.path', version: '1.0.0', file: 'src/capabilities/base/path-node.tsx', supportedNodeKinds: ['path']},
   {kind: 'renderer', id: 'base.group', version: '1.0.0', file: 'src/capabilities/base/group-node.tsx', supportedNodeKinds: ['group', 'ui', 'chart', 'logo']},
+  {kind: 'renderer', id: 'base.image', version: '1.0.0', file: 'src/capabilities/base/image-node.tsx', supportedNodeKinds: ['image', 'logo']},
 ];
 
 function hashFile(relPath) {
