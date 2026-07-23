@@ -14,7 +14,7 @@ const checkMode = process.argv.includes('--check');
 // Allowlisted source directories per graph. Missing dirs contribute an empty
 // sentinel so adding files later necessarily changes the hash.
 const RUNTIME_DIRS = ['src/engine/runtime', 'src/capabilities'];
-const TOOLING_DIRS = ['src/engine/resolver', 'src/engine/compiler', 'src/engine/renderer', 'src/engine/project', 'src/engine/revision', 'src/engine/qc'];
+const TOOLING_DIRS = ['src/engine/resolver', 'src/engine/compiler', 'src/engine/renderer', 'src/engine/project', 'src/engine/revision', 'src/engine/qc', 'src/engine/audio'];
 
 function collectFiles(relDir) {
   const abs = join(repoRoot, relDir);

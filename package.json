@@ -9,6 +9,7 @@
   "scripts": {
     "studio": "remotion studio src/index.ts",
     "motion": "node --import tsx src/cli/index.ts",
+    "audio:prompt": "node --import tsx scripts/audio-prompt.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
