@@ -18,6 +18,16 @@ const CORE_CAPABILITIES = [
   {kind: 'renderer', id: 'base.path', version: '1.0.0', file: 'src/capabilities/base/path-node.tsx', supportedNodeKinds: ['path']},
   {kind: 'renderer', id: 'base.group', version: '1.0.0', file: 'src/capabilities/base/group-node.tsx', supportedNodeKinds: ['group', 'ui', 'chart', 'logo']},
   {kind: 'renderer', id: 'base.image', version: '1.0.0', file: 'src/capabilities/base/image-node.tsx', supportedNodeKinds: ['image', 'logo']},
+  {kind: 'effect', id: 'text.mask-rise', version: '1.0.0', file: 'src/capabilities/text/mask-rise.tsx', supportedNodeKinds: ['text'], ownedChannels: ['geometry', 'opacity'], family: 'text'},
+  {kind: 'effect', id: 'text.word-stagger', version: '1.0.0', file: 'src/capabilities/text/word-stagger.tsx', supportedNodeKinds: ['text'], ownedChannels: ['opacity'], family: 'text'},
+  {kind: 'effect', id: 'text.line-reveal', version: '1.0.0', file: 'src/capabilities/text/line-reveal.tsx', supportedNodeKinds: ['text'], ownedChannels: ['geometry'], family: 'text'},
+  {kind: 'effect', id: 'text.tracking-resolve', version: '1.0.0', file: 'src/capabilities/text/tracking-resolve.tsx', supportedNodeKinds: ['text'], ownedChannels: ['style'], family: 'text'},
+  {kind: 'effect', id: 'text.highlight-sweep', version: '1.0.0', file: 'src/capabilities/text/highlight-sweep.tsx', supportedNodeKinds: ['text'], ownedChannels: ['filter'], family: 'text'},
+  {kind: 'effect', id: 'text.word-replace', version: '1.0.0', file: 'src/capabilities/text/word-replace.tsx', supportedNodeKinds: ['text'], ownedChannels: ['content'], family: 'text'},
+  {kind: 'effect', id: 'shape.shape-reveal', version: '1.0.0', file: 'src/capabilities/shape/shape-reveal.tsx', supportedNodeKinds: ['shape'], ownedChannels: ['geometry', 'opacity'], family: 'shape'},
+  {kind: 'effect', id: 'shape.geometry-morph', version: '1.0.0', file: 'src/capabilities/shape/geometry-morph.tsx', supportedNodeKinds: ['shape'], ownedChannels: ['geometry'], family: 'shape'},
+  {kind: 'effect', id: 'path.path-draw', version: '1.0.0', file: 'src/capabilities/path/path-draw.tsx', supportedNodeKinds: ['path'], ownedChannels: ['path'], family: 'path'},
+  {kind: 'effect', id: 'path.connector-draw', version: '1.0.0', file: 'src/capabilities/path/connector-draw.tsx', supportedNodeKinds: ['path'], ownedChannels: ['path'], family: 'path'},
 ];
 
 function hashFile(relPath) {
@@ -32,7 +42,9 @@ const entries = CORE_CAPABILITIES.map((cap) => ({
   implementationHash: hashFile(cap.file),
   scope: 'core',
   supportedNodeKinds: cap.supportedNodeKinds,
-})).sort((a, b) => a.id.localeCompare(b.id));
+  ...(cap.ownedChannels ? {ownedChannels: cap.ownedChannels} : {}),
+  ...(cap.family ? {family: cap.family} : {}),
+})).sort((a, b) => (a.kind === b.kind ? a.id.localeCompare(b.id) : a.kind.localeCompare(b.kind)));
 
 const body = entries.map((e) => `  ${JSON.stringify(e)},`).join('\n');
 const source = `import type {CapabilityManifestEntry} from '../engine/capability/types.js';

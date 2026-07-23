@@ -32,6 +32,9 @@ export type CapabilityResolveContext = {
 export type CapabilityRenderProps<R> = {
   resolved: R;
   frame: number;
+  /** Normalized 0..1 progress within the effect's resolved window. */
+  progress?: number;
+  children?: React.ReactNode;
 };
 
 export type CapabilityFixture = {
