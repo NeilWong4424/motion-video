@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "brief@1",
+  "projectId": "__PROJECT_ID__",
+  "title": "Draft project",
+  "language": "en",
+  "goal": "Describe the goal of this film.",
+  "audience": "Describe the audience.",
+  "message": "State the single core message.",
+  "canvas": {"width": 1920, "height": 1080, "fps": 30},
+  "durationSeconds": 20,
+  "facts": [],
+  "suppliedAssetIds": [],
+  "constraints": [],
+  "prohibitedContent": [],
+  "assumptions": ["This is a placeholder draft; edit before snapshot."]
+}

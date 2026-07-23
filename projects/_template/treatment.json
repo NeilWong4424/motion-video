@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "treatment@1",
+  "projectId": "__PROJECT_ID__",
+  "briefHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "message": "State the single core message.",
+  "narrativeArc": "Describe the arc across beats.",
+  "continuityPolicy": "seamless-default",
+  "compositionMode": "persistent-stage",
+  "motionProfile": "editorial",
+  "stylePackId": "styles/test-neutral@1.0.0",
+  "visualThesis": "State the visual thesis.",
+  "copyStrategy": "State the copy strategy.",
+  "transitionVocabulary": ["shared-element"],
+  "chapterCutBudget": 0,
+  "beatIntentions": [
+    {"id": "bi-1", "objective": "First intention.", "message": "First message."}
+  ],
+  "adjacentIntentionPairs": []
+}

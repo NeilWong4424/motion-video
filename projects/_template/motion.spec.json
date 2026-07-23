@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "motion-spec@1",
+  "projectId": "__PROJECT_ID__",
+  "treatmentHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "canvas": {"width": 1920, "height": 1080, "fps": 30},
+  "timeline": {
+    "beats": [
+      {
+        "id": "beat-1",
+        "durationFrames": 600,
+        "objective": "First beat objective.",
+        "message": "First beat message.",
+        "focalNodeId": "hero",
+        "liveContentNodeIds": ["hero"],
+        "settleAt": {"segmentId": "beat-1", "progress": 0.6},
+        "holdRange": {"from": {"segmentId": "beat-1", "progress": 0.6}, "to": {"segmentId": "beat-1", "progress": 1}}
+      }
+    ],
+    "bridges": []
+  },
+  "world": {
+    "coordinateSpace": "composition-pixels",
+    "origin": "top-left",
+    "transformOrigin": "top-left",
+    "childGeometry": "parent-local",
+    "nodes": [
+      {
+        "id": "hero",
+        "kind": "text",
+        "space": "world",
+        "semanticRole": "content",
+        "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Draft"}},
+        "effects": [],
+        "geometryTrack": [
+          {"at": {"segmentId": "beat-1", "progress": 0}, "value": {"x": 760, "y": 480}, "interpolation": "hold"}
+        ],
+        "styleTrack": [
+          {"at": {"segmentId": "beat-1", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}
+        ],
+        "visibleTrack": [
+          {"at": {"segmentId": "beat-1", "progress": 0}, "value": 1, "interpolation": "hold"}
+        ]
+      }
+    ]
+  },
+  "camera": {
+    "id": "main-camera",
+    "segments": [
+      {"id": "cam-hold", "mode": "hold", "segmentId": "beat-1", "state": {"x": 0, "y": 0, "zoom": 1}}
+    ]
+  },
+  "motionCues": []
+}
