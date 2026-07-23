@@ -34,6 +34,9 @@ const DEFAULT_EXCLUDED_DIRS = new Set([
 const SELF_EXCLUDED_FILES = new Set([
   'src/engine/boundary/production-source-policy.ts',
   'src/engine/boundary/scan-production-source.ts',
+  // The render-only offline guard necessarily references loopback origins and
+  // the network APIs it neutralizes; its behavior is proven by runtime tests.
+  'src/engine/runtime/offline-guard.ts',
 ]);
 
 function isExecutable(path: string): boolean {

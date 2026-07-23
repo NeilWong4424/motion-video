@@ -4,14 +4,16 @@ import {baseTextRenderer} from './text-node.js';
 import {baseShapeRenderer} from './shape-node.js';
 import {basePathRenderer} from './path-node.js';
 import {baseGroupRenderer} from './group-node.js';
+import {baseImageRenderer} from './image-node.js';
 
-export {baseTextRenderer, baseShapeRenderer, basePathRenderer, baseGroupRenderer};
+export {baseTextRenderer, baseShapeRenderer, basePathRenderer, baseGroupRenderer, baseImageRenderer};
 
 export const baseRenderers: readonly NodeRendererDefinition<unknown>[] = [
   baseTextRenderer as NodeRendererDefinition<unknown>,
   baseShapeRenderer as NodeRendererDefinition<unknown>,
   basePathRenderer as NodeRendererDefinition<unknown>,
   baseGroupRenderer as NodeRendererDefinition<unknown>,
+  baseImageRenderer as NodeRendererDefinition<unknown>,
 ];
 
 export function registerBaseRenderers(registry: CapabilityRegistry): void {
