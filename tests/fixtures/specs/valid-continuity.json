@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "motion-spec@1",
+  "projectId": "valid-continuity",
+  "treatmentHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "canvas": {"width": 1920, "height": 1080, "fps": 30},
+  "timeline": {
+    "beats": [
+      {"id": "hook", "durationFrames": 120, "objective": "Hook", "message": "m", "focalNodeId": "hero", "liveContentNodeIds": ["hero"], "settleAt": {"segmentId": "hook", "progress": 0.6}, "holdRange": {"from": {"segmentId": "hook", "progress": 0.6}, "to": {"segmentId": "hook", "progress": 1}}},
+      {"id": "proof", "durationFrames": 150, "objective": "Proof", "message": "m", "focalNodeId": "hero", "liveContentNodeIds": ["hero", "card"], "settleAt": {"segmentId": "proof", "progress": 0.6}, "holdRange": {"from": {"segmentId": "proof", "progress": 0.6}, "to": {"segmentId": "proof", "progress": 1}}},
+      {"id": "cta", "durationFrames": 120, "objective": "CTA", "message": "m", "focalNodeId": "card", "liveContentNodeIds": ["hero", "card"], "settleAt": {"segmentId": "cta", "progress": 0.6}, "holdRange": {"from": {"segmentId": "cta", "progress": 0.6}, "to": {"segmentId": "cta", "progress": 1}}}
+    ],
+    "bridges": [
+      {"id": "hook-proof", "fromBeatId": "hook", "toBeatId": "proof", "durationFrames": 20, "narrativeReason": "hero settles into card", "transitionFamily": "shared-element", "vocabularyRole": "ordinary", "eyeTrace": {"outgoing": {"nodeId": "hero", "point": {"x": 0.5, "y": 0.4}}, "incoming": {"nodeId": "hero", "point": {"x": 0.5, "y": 0.45}}}, "motionOwnership": "node", "mode": "shared-element", "nodeId": "hero", "motionRange": {"from": {"segmentId": "hook-proof", "progress": 0}, "to": {"segmentId": "hook-proof", "progress": 1}}},
+      {"id": "proof-cta", "fromBeatId": "proof", "toBeatId": "cta", "durationFrames": 25, "narrativeReason": "camera enters card", "transitionFamily": "camera-navigation", "vocabularyRole": "ordinary", "eyeTrace": {"outgoing": {"nodeId": "card", "point": {"x": 0.5, "y": 0.5}}, "incoming": {"nodeId": "card", "point": {"x": 0.5, "y": 0.5}}}, "motionOwnership": "camera", "mode": "camera-navigation", "cameraSegmentId": "cam-move", "destinationNodeId": "card", "spatialRelationship": "card is inside the hero region"}
+    ]
+  },
+  "world": {
+    "coordinateSpace": "composition-pixels",
+    "origin": "top-left",
+    "transformOrigin": "top-left",
+    "childGeometry": "parent-local",
+    "nodes": [
+      {"id": "hero", "kind": "text", "space": "world", "semanticRole": "content", "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Hero"}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "hook", "progress": 0}, "value": {"x": 700, "y": 400, "width": 500, "height": 200}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "hook", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "hook", "progress": 0}, "value": 1, "interpolation": "hold"}]},
+      {"id": "card", "kind": "shape", "space": "world", "semanticRole": "content", "renderer": {"id": "base.shape", "version": "1.0.0", "props": {"shape": "rounded-rect", "width": 600, "height": 360}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "proof", "progress": 0}, "value": {"x": 660, "y": 360, "width": 600, "height": 360}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "proof", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "proof", "progress": 0}, "value": 1, "interpolation": "hold"}]}
+    ]
+  },
+  "camera": {
+    "id": "main-camera",
+    "segments": [
+      {"id": "cam-hold-1", "mode": "hold", "segmentId": "hook", "state": {"x": 0, "y": 0, "zoom": 1}},
+      {"id": "cam-move", "mode": "move", "segmentId": "proof-cta", "from": {"x": 0, "y": 0, "zoom": 1}, "to": {"x": 100, "y": 60, "zoom": 1.4}, "verb": "zoom", "easing": "easeInOutQuint", "reveals": "the dashboard inside the card"},
+      {"id": "cam-hold-2", "mode": "hold", "segmentId": "cta", "state": {"x": 100, "y": 60, "zoom": 1.4}}
+    ]
+  },
+  "motionCues": []
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "motion-spec@1",
+  "projectId": "invalid-tiny-anchor",
+  "treatmentHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "canvas": {"width": 1920, "height": 1080, "fps": 30},
+  "timeline": {
+    "beats": [
+      {"id": "a", "durationFrames": 120, "objective": "A", "message": "m", "focalNodeId": "bigA", "liveContentNodeIds": ["bigA", "dot"], "settleAt": {"segmentId": "a", "progress": 0.6}, "holdRange": {"from": {"segmentId": "a", "progress": 0.6}, "to": {"segmentId": "a", "progress": 1}}},
+      {"id": "b", "durationFrames": 120, "objective": "B", "message": "m", "focalNodeId": "bigB", "liveContentNodeIds": ["bigB", "dot"], "settleAt": {"segmentId": "b", "progress": 0.6}, "holdRange": {"from": {"segmentId": "b", "progress": 0.6}, "to": {"segmentId": "b", "progress": 1}}}
+    ],
+    "bridges": [
+      {"id": "a-b", "fromBeatId": "a", "toBeatId": "b", "durationFrames": 20, "narrativeReason": "the dot persists", "transitionFamily": "shared-element", "vocabularyRole": "ordinary", "eyeTrace": {"outgoing": {"nodeId": "dot", "point": {"x": 0.01, "y": 0.01}}, "incoming": {"nodeId": "dot", "point": {"x": 0.01, "y": 0.01}}}, "motionOwnership": "node", "mode": "shared-element", "nodeId": "dot", "motionRange": {"from": {"segmentId": "a-b", "progress": 0}, "to": {"segmentId": "a-b", "progress": 1}}}
+    ]
+  },
+  "world": {
+    "coordinateSpace": "composition-pixels",
+    "origin": "top-left",
+    "transformOrigin": "top-left",
+    "childGeometry": "parent-local",
+    "nodes": [
+      {"id": "bigA", "kind": "text", "space": "world", "semanticRole": "content", "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Big A"}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "a", "progress": 0}, "value": {"x": 100, "y": 100, "width": 1720, "height": 880}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "a", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "a", "progress": 0}, "value": 1, "interpolation": "hold"}]},
+      {"id": "bigB", "kind": "text", "space": "world", "semanticRole": "content", "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Big B"}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "b", "progress": 0}, "value": {"x": 100, "y": 100, "width": 1720, "height": 880}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "b", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "b", "progress": 0}, "value": 1, "interpolation": "hold"}]},
+      {"id": "dot", "kind": "shape", "space": "world", "semanticRole": "decorative", "renderer": {"id": "base.shape", "version": "1.0.0", "props": {"shape": "ellipse", "width": 6, "height": 6}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "a", "progress": 0}, "value": {"x": 10, "y": 10, "width": 6, "height": 6}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "a", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "a", "progress": 0}, "value": 1, "interpolation": "hold"}]}
+    ]
+  },
+  "camera": {
+    "id": "main-camera",
+    "segments": [
+      {"id": "cam-hold", "mode": "hold", "segmentId": "a", "state": {"x": 0, "y": 0, "zoom": 1}}
+    ]
+  },
+  "motionCues": []
+}

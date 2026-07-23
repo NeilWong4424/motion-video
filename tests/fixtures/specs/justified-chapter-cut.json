@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "motion-spec@1",
+  "projectId": "justified-cut",
+  "treatmentHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "canvas": {"width": 1920, "height": 1080, "fps": 30},
+  "timeline": {
+    "beats": [
+      {"id": "before", "durationFrames": 120, "objective": "Before", "message": "m", "focalNodeId": "hero", "liveContentNodeIds": ["hero"], "settleAt": {"segmentId": "before", "progress": 0.6}, "holdRange": {"from": {"segmentId": "before", "progress": 0.6}, "to": {"segmentId": "before", "progress": 1}}},
+      {"id": "mid", "durationFrames": 120, "objective": "Mid", "message": "m", "focalNodeId": "hero", "liveContentNodeIds": ["hero"], "settleAt": {"segmentId": "mid", "progress": 0.6}, "holdRange": {"from": {"segmentId": "mid", "progress": 0.6}, "to": {"segmentId": "mid", "progress": 1}}},
+      {"id": "after", "durationFrames": 120, "objective": "After the jump", "message": "m", "focalNodeId": "epilogue", "liveContentNodeIds": ["epilogue"], "settleAt": {"segmentId": "after", "progress": 0.6}, "holdRange": {"from": {"segmentId": "after", "progress": 0.6}, "to": {"segmentId": "after", "progress": 1}}}
+    ],
+    "bridges": [
+      {"id": "before-mid", "fromBeatId": "before", "toBeatId": "mid", "durationFrames": 20, "narrativeReason": "hero holds and continues", "transitionFamily": "shared-element", "vocabularyRole": "ordinary", "eyeTrace": {"outgoing": {"nodeId": "hero", "point": {"x": 0.5, "y": 0.4}}, "incoming": {"nodeId": "hero", "point": {"x": 0.5, "y": 0.42}}}, "motionOwnership": "node", "mode": "shared-element", "nodeId": "hero", "motionRange": {"from": {"segmentId": "before-mid", "progress": 0}, "to": {"segmentId": "before-mid", "progress": 1}}},
+      {"id": "mid-after", "fromBeatId": "mid", "toBeatId": "after", "durationFrames": 0, "narrativeReason": "one year later", "transitionFamily": "chapter-cut", "vocabularyRole": "signature", "eyeTrace": {"outgoing": {"nodeId": "hero", "point": {"x": 0.5, "y": 0.5}}, "incoming": {"nodeId": "epilogue", "point": {"x": 0.52, "y": 0.5}}}, "motionOwnership": "node", "mode": "chapter-cut", "reason": "time-jump", "exceptionJustification": "A deliberate one-year time jump with no honest spatial relationship.", "maxEyeTraceDistanceNormalized": 0.1}
+    ]
+  },
+  "world": {
+    "coordinateSpace": "composition-pixels",
+    "origin": "top-left",
+    "transformOrigin": "top-left",
+    "childGeometry": "parent-local",
+    "nodes": [
+      {"id": "hero", "kind": "text", "space": "world", "semanticRole": "content", "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Hero"}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "before", "progress": 0}, "value": {"x": 700, "y": 400, "width": 500, "height": 200}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "before", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "before", "progress": 0}, "value": 1, "interpolation": "hold"}]},
+      {"id": "epilogue", "kind": "text", "space": "world", "semanticRole": "content", "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "One year later"}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "after", "progress": 0}, "value": {"x": 700, "y": 400, "width": 500, "height": 200}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "after", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "after", "progress": 0}, "value": 1, "interpolation": "hold"}]}
+    ]
+  },
+  "camera": {
+    "id": "main-camera",
+    "segments": [
+      {"id": "cam-hold", "mode": "hold", "segmentId": "before", "state": {"x": 0, "y": 0, "zoom": 1}}
+    ]
+  },
+  "motionCues": []
+}

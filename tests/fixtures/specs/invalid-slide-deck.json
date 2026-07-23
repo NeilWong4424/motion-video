@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "motion-spec@1",
+  "projectId": "invalid-slides",
+  "treatmentHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "canvas": {"width": 1920, "height": 1080, "fps": 30},
+  "timeline": {
+    "beats": [
+      {"id": "s1", "durationFrames": 120, "objective": "Slide 1", "message": "m", "focalNodeId": "t1", "liveContentNodeIds": ["t1"], "settleAt": {"segmentId": "s1", "progress": 0.6}, "holdRange": {"from": {"segmentId": "s1", "progress": 0.6}, "to": {"segmentId": "s1", "progress": 1}}},
+      {"id": "s2", "durationFrames": 120, "objective": "Slide 2", "message": "m", "focalNodeId": "t2", "liveContentNodeIds": ["t2"], "settleAt": {"segmentId": "s2", "progress": 0.6}, "holdRange": {"from": {"segmentId": "s2", "progress": 0.6}, "to": {"segmentId": "s2", "progress": 1}}},
+      {"id": "s3", "durationFrames": 120, "objective": "Slide 3", "message": "m", "focalNodeId": "t3", "liveContentNodeIds": ["t3"], "settleAt": {"segmentId": "s3", "progress": 0.6}, "holdRange": {"from": {"segmentId": "s3", "progress": 0.6}, "to": {"segmentId": "s3", "progress": 1}}},
+      {"id": "s4", "durationFrames": 120, "objective": "Slide 4", "message": "m", "focalNodeId": "t4", "liveContentNodeIds": ["t4"], "settleAt": {"segmentId": "s4", "progress": 0.6}, "holdRange": {"from": {"segmentId": "s4", "progress": 0.6}, "to": {"segmentId": "s4", "progress": 1}}}
+    ],
+    "bridges": [
+      {"id": "s1-s2", "fromBeatId": "s1", "toBeatId": "s2", "durationFrames": 0, "narrativeReason": "next scene", "transitionFamily": "chapter-cut", "vocabularyRole": "signature", "eyeTrace": {"outgoing": {"nodeId": "t1", "point": {"x": 0.5, "y": 0.5}}, "incoming": {"nodeId": "t2", "point": {"x": 0.5, "y": 0.5}}}, "motionOwnership": "node", "mode": "chapter-cut", "reason": "new-chapter", "exceptionJustification": "next scene", "maxEyeTraceDistanceNormalized": 0.1},
+      {"id": "s2-s3", "fromBeatId": "s2", "toBeatId": "s3", "durationFrames": 0, "narrativeReason": "next scene", "transitionFamily": "chapter-cut", "vocabularyRole": "signature", "eyeTrace": {"outgoing": {"nodeId": "t2", "point": {"x": 0.5, "y": 0.5}}, "incoming": {"nodeId": "t3", "point": {"x": 0.5, "y": 0.5}}}, "motionOwnership": "node", "mode": "chapter-cut", "reason": "new-chapter", "exceptionJustification": "next scene", "maxEyeTraceDistanceNormalized": 0.1},
+      {"id": "s3-s4", "fromBeatId": "s3", "toBeatId": "s4", "durationFrames": 0, "narrativeReason": "next scene", "transitionFamily": "chapter-cut", "vocabularyRole": "signature", "eyeTrace": {"outgoing": {"nodeId": "t3", "point": {"x": 0.5, "y": 0.5}}, "incoming": {"nodeId": "t4", "point": {"x": 0.5, "y": 0.5}}}, "motionOwnership": "node", "mode": "chapter-cut", "reason": "new-chapter", "exceptionJustification": "next scene", "maxEyeTraceDistanceNormalized": 0.1}
+    ]
+  },
+  "world": {
+    "coordinateSpace": "composition-pixels",
+    "origin": "top-left",
+    "transformOrigin": "top-left",
+    "childGeometry": "parent-local",
+    "nodes": [
+      {"id": "t1", "kind": "text", "space": "world", "semanticRole": "content", "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "One"}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "s1", "progress": 0}, "value": {"x": 100, "y": 100, "width": 1720, "height": 880}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "s1", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "s1", "progress": 0}, "value": 1, "interpolation": "hold"}]},
+      {"id": "t2", "kind": "text", "space": "world", "semanticRole": "content", "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Two"}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "s2", "progress": 0}, "value": {"x": 100, "y": 100, "width": 1720, "height": 880}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "s2", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "s2", "progress": 0}, "value": 1, "interpolation": "hold"}]},
+      {"id": "t3", "kind": "text", "space": "world", "semanticRole": "content", "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Three"}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "s3", "progress": 0}, "value": {"x": 100, "y": 100, "width": 1720, "height": 880}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "s3", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "s3", "progress": 0}, "value": 1, "interpolation": "hold"}]},
+      {"id": "t4", "kind": "text", "space": "world", "semanticRole": "content", "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Four"}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "s4", "progress": 0}, "value": {"x": 100, "y": 100, "width": 1720, "height": 880}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "s4", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "s4", "progress": 0}, "value": 1, "interpolation": "hold"}]},
+      {"id": "dot1", "kind": "shape", "space": "world", "semanticRole": "decorative", "renderer": {"id": "base.shape", "version": "1.0.0", "props": {"shape": "ellipse", "width": 8, "height": 8}}, "effects": [], "geometryTrack": [{"at": {"segmentId": "s1", "progress": 0}, "value": {"x": 10, "y": 10, "width": 8, "height": 8}, "interpolation": "hold"}], "styleTrack": [{"at": {"segmentId": "s1", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}], "visibleTrack": [{"at": {"segmentId": "s1", "progress": 0}, "value": 1, "interpolation": "hold"}]}
+    ]
+  },
+  "camera": {
+    "id": "main-camera",
+    "segments": [
+      {"id": "cam-hold", "mode": "hold", "segmentId": "s1", "state": {"x": 0, "y": 0, "zoom": 1}}
+    ]
+  },
+  "motionCues": []
+}
