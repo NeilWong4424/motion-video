@@ -1,0 +1,141 @@
+{
+  "brief": {
+    "schemaVersion": "brief@1",
+    "projectId": "continuity-demo",
+    "title": "Continuity Demo",
+    "language": "en",
+    "goal": "Show one idea evolving across two beats.",
+    "audience": "Product teams evaluating the engine.",
+    "message": "One persistent world, not slides.",
+    "canvas": {"width": 1920, "height": 1080, "fps": 30},
+    "durationSeconds": 20,
+    "facts": [
+      {"id": "fact-1", "statement": "The engine renders deterministically.", "sourceLabel": "design-spec.md"}
+    ],
+    "suppliedAssetIds": [],
+    "constraints": ["No audio dependency."],
+    "prohibitedContent": [],
+    "assumptions": ["Neutral test style pack is acceptable."]
+  },
+  "treatment": {
+    "schemaVersion": "treatment@1",
+    "projectId": "continuity-demo",
+    "briefHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "message": "One persistent world, not slides.",
+    "narrativeArc": "Hook holds, then the same hero settles into a card.",
+    "continuityPolicy": "seamless-default",
+    "compositionMode": "persistent-stage",
+    "motionProfile": "editorial",
+    "stylePackId": "styles/test-neutral@1.0.0",
+    "visualThesis": "The hero word is the film's spine.",
+    "copyStrategy": "One headline that persists and transforms.",
+    "transitionVocabulary": ["shared-element"],
+    "chapterCutBudget": 0,
+    "beatIntentions": [
+      {"id": "bi-hook", "objective": "Land the hook.", "message": "One persistent world."},
+      {"id": "bi-proof", "objective": "Prove it.", "message": "Not slides."}
+    ],
+    "adjacentIntentionPairs": [
+      {"fromBeatIntentionId": "bi-hook", "toBeatIntentionId": "bi-proof", "cameraRationale": "Hold; the hero transforms in place."}
+    ]
+  },
+  "motion": {
+    "schemaVersion": "motion-spec@1",
+    "projectId": "continuity-demo",
+    "treatmentHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "canvas": {"width": 1920, "height": 1080, "fps": 30},
+    "timeline": {
+      "beats": [
+        {
+          "id": "hook",
+          "durationFrames": 300,
+          "objective": "Land the hook.",
+          "message": "One persistent world.",
+          "focalNodeId": "hero",
+          "liveContentNodeIds": ["hero"],
+          "settleAt": {"segmentId": "hook", "progress": 0.6},
+          "holdRange": {"from": {"segmentId": "hook", "progress": 0.6}, "to": {"segmentId": "hook", "progress": 1}}
+        },
+        {
+          "id": "proof",
+          "durationFrames": 270,
+          "objective": "Prove it.",
+          "message": "Not slides.",
+          "focalNodeId": "hero",
+          "liveContentNodeIds": ["hero"],
+          "settleAt": {"segmentId": "proof", "progress": 0.5},
+          "holdRange": {"from": {"segmentId": "proof", "progress": 0.5}, "to": {"segmentId": "proof", "progress": 1}}
+        }
+      ],
+      "bridges": [
+        {
+          "id": "hook-to-proof",
+          "fromBeatId": "hook",
+          "toBeatId": "proof",
+          "durationFrames": 30,
+          "narrativeReason": "The hero word settles into the proof card.",
+          "transitionFamily": "shared-element",
+          "vocabularyRole": "ordinary",
+          "eyeTrace": {
+            "outgoing": {"nodeId": "hero", "point": {"x": 0.5, "y": 0.4}},
+            "incoming": {"nodeId": "hero", "point": {"x": 0.5, "y": 0.45}}
+          },
+          "motionOwnership": "node",
+          "mode": "shared-element",
+          "nodeId": "hero",
+          "motionRange": {"from": {"segmentId": "hook-to-proof", "progress": 0}, "to": {"segmentId": "hook-to-proof", "progress": 1}}
+        }
+      ]
+    },
+    "world": {
+      "coordinateSpace": "composition-pixels",
+      "origin": "top-left",
+      "transformOrigin": "top-left",
+      "childGeometry": "parent-local",
+      "nodes": [
+        {
+          "id": "hero",
+          "kind": "text",
+          "space": "world",
+          "semanticRole": "content",
+          "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Persistent"}},
+          "effects": [],
+          "geometryTrack": [
+            {"at": {"segmentId": "hook", "progress": 0}, "value": {"x": 760, "y": 480}, "interpolation": "hold"},
+            {"at": {"segmentId": "proof", "progress": 1}, "value": {"x": 760, "y": 520}, "interpolation": "ease"}
+          ],
+          "styleTrack": [
+            {"at": {"segmentId": "hook", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}
+          ],
+          "visibleTrack": [
+            {"at": {"segmentId": "hook", "progress": 0}, "value": 1, "interpolation": "hold"}
+          ]
+        }
+      ]
+    },
+    "camera": {
+      "id": "main-camera",
+      "segments": [
+        {"id": "cam-hold", "mode": "hold", "segmentId": "hook", "state": {"x": 0, "y": 0, "zoom": 1}}
+      ]
+    },
+    "motionCues": [
+      {"id": "cue-payoff", "at": {"segmentId": "proof", "progress": 0.5}, "role": "payoff", "description": "Hero settles."}
+    ]
+  },
+  "audio": {
+    "schemaVersion": "audio-brief@1",
+    "projectId": "continuity-demo",
+    "revisionId": "rev-0001",
+    "renderPlanHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "fps": 30,
+    "durationFrames": 600,
+    "style": "warm editorial underscore",
+    "instrumentation": ["felt piano", "sub bass"],
+    "hook": "A rising two-note motif.",
+    "cues": [
+      {"id": "c-intro", "startFrame": 0, "role": "intro", "text": "Soft entrance."},
+      {"id": "c-payoff", "startFrame": 450, "role": "payoff", "text": "Hero settles; hit the downbeat."}
+    ]
+  }
+}
