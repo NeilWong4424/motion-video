@@ -13,6 +13,7 @@ import {runInspect} from './commands/inspect.js';
 import {runQc} from './commands/qc.js';
 import {runApprove} from './commands/approve.js';
 import {runRender} from './commands/render.js';
+import {runRevise} from './commands/revise.js';
 
 /**
  * Run the motion CLI. Production passes no context and derives the immutable
@@ -125,6 +126,16 @@ export async function runMotionCli(argv: string[], context?: RepoContext): Promi
     .allowUnknownOption(false)
     .action(async (projectId: string) => {
       exitCode = await runRender(ctx, projectId);
+    });
+
+  program
+    .command('revise')
+    .argument('<project-id>')
+    .requiredOption('--patch <local-json>', 'path to a SemanticPatch JSON file')
+    .option('--apply', 'commit the patch as a new revision', false)
+    .allowUnknownOption(false)
+    .action(async (projectId: string, options: {patch: string; apply: boolean}) => {
+      exitCode = await runRevise(ctx, projectId, {patch: options.patch, apply: options.apply});
     });
 
   try {
