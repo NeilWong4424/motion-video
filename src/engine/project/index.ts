@@ -6,3 +6,6 @@ export * from './create-project.js';
 export * from './load-project.js';
 export * from './snapshot.js';
 export * from './build-project-registry.js';
+export * from './sanitize-svg.js';
+export * from './asset-store.js';
+export * from './font-manifest.js';

@@ -12,3 +12,5 @@ export * from './validate-bridge-realization.js';
 export * from './validate-resolved-continuity.js';
 export * from './bind-capabilities.js';
 export * from './resolve-motion.js';
+export * from './layout-catalog.js';
+export * from './resolve-layout.js';

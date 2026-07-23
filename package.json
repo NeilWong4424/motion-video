@@ -23,8 +23,11 @@
     "check": "pnpm verify:environment && pnpm verify:boundary && pnpm verify:part1 && pnpm lint && pnpm typecheck && pnpm test"
   },
   "dependencies": {
+    "@fontsource-variable/noto-sans-sc": "5.3.0",
+    "@fontsource-variable/noto-sans-tc": "5.3.0",
     "@remotion/bundler": "4.0.495",
     "@remotion/cli": "4.0.495",
+    "@remotion/layout-utils": "4.0.495",
     "@remotion/media-utils": "4.0.495",
     "@remotion/renderer": "4.0.495",
     "commander": "15.0.0",

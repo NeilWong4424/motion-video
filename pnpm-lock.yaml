@@ -8,12 +8,21 @@ importers:
 
   .:
     dependencies:
+      '@fontsource-variable/noto-sans-sc':
+        specifier: 5.3.0
+        version: 5.3.0
+      '@fontsource-variable/noto-sans-tc':
+        specifier: 5.3.0
+        version: 5.3.0
       '@remotion/bundler':
         specifier: 4.0.495
         version: 4.0.495(postcss@8.5.21)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@remotion/cli':
         specifier: 4.0.495
         version: 4.0.495(postcss@8.5.21)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3)
+      '@remotion/layout-utils':
+        specifier: 4.0.495
+        version: 4.0.495
       '@remotion/media-utils':
         specifier: 4.0.495
         version: 4.0.495(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -377,6 +386,12 @@ packages:
     resolution: {integrity: sha512-+CNAzxglkrpNf/kKywqQfk74QjtceuOE7Qm+AF8miRvPF/wmmK5+OJOgVh3AVTT3RP2mH3+FOaxlE5v72owk0A==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
+  '@fontsource-variable/noto-sans-sc@5.3.0':
+    resolution: {integrity: sha512-lNar1dF7Ik/lHNPo/7JWG0TolXY29LtsqYgMvEysooZ5bsO9uH4shJmRrwyJ3PjyTPljhpMJEK0jDuLSU4vJ1w==}
+
+  '@fontsource-variable/noto-sans-tc@5.3.0':
+    resolution: {integrity: sha512-sniyvTx+yRXlce9bjBV0i3kBG3/YFJiz6SZA9plNJLCR4TbY8il+G759gAXWHZu01eAclbJEN2YR+qbQjZTjkg==}
+
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
     engines: {node: '>=18.18.0'}
@@ -680,6 +695,9 @@ packages:
     resolution: {integrity: sha512-KG1kM7sNiSNi09b/azJgJ9kbUvX7XQmHDCXblptnbgtXIyh91ar53AsDwH4xwJNqebS1MSo4x3fTbGoXpohbmA==}
     cpu: [x64]
     os: [win32]
+
+  '@remotion/layout-utils@4.0.495':
+    resolution: {integrity: sha512-xLf68sT0DzzEWylXdExl+8bX96xaJKvfxSxBo4a33HkrGQ187tUsO6zpf3A6vD5DtTeP+o+TDFooFNnJSdAhog==}
 
   '@remotion/licensing@4.0.495':
     resolution: {integrity: sha512-7Z4m+fEBvRFJm7ZQqez9fbufLBLkhHZK2fcC4mtwFI2FutVcFUfUTY8/54ehLW1KoGr5TXca7xz6EdrXO6+Y5Q==}
@@ -2582,6 +2600,10 @@ snapshots:
       '@eslint/core': 1.2.1
       levn: 0.4.1
 
+  '@fontsource-variable/noto-sans-sc@5.3.0': {}
+
+  '@fontsource-variable/noto-sans-tc@5.3.0': {}
+
   '@humanfs/core@0.19.2':
     dependencies:
       '@humanfs/types': 0.15.0
@@ -2877,6 +2899,8 @@ snapshots:
 
   '@remotion/compositor-win32-x64-msvc@4.0.495':
     optional: true
+
+  '@remotion/layout-utils@4.0.495': {}
 
   '@remotion/licensing@4.0.495': {}
 
