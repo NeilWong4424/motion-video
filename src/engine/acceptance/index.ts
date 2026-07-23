@@ -23,3 +23,21 @@ export {
   type TrustedCandidateWriteRequest,
   type CandidateWriteReceipt,
 } from './candidate-writer.js';
+
+export {
+  ROUTE_RULES,
+  routeRule,
+  type RouteRule,
+  type ParentSpec,
+  type AcceptedArtifactKind,
+  type SemanticProducer,
+} from './route-matrix.js';
+
+export {
+  acceptArtifact,
+  type AcceptanceInput,
+  type AcceptanceResult,
+  type ArtifactAcceptance,
+  type ObservedParent,
+  type PromptBinding,
+} from './acceptance.js';

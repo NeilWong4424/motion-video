@@ -45,7 +45,15 @@ export type ControlKind = 'ready' | 'running' | 'candidate-ready' | 'paused' | '
 export type WorkflowControl =
   | {kind: 'ready'; state: WorkflowState}
   | {kind: 'running'; state: WorkflowState; actionId: string; interfaceOrRole: string}
-  | {kind: 'candidate-ready'; state: WorkflowState; candidateByteHash: Sha256}
+  | {
+      kind: 'candidate-ready';
+      state: WorkflowState;
+      candidateByteHash: Sha256;
+      candidateByteLength: number;
+      acceptanceRouteId: string;
+      candidatePath: string;
+      actionId: string;
+    }
   | {kind: 'paused'; state: WorkflowState; pauseId: string; pauseKind: string}
   | {kind: 'terminal'; state: 'STOP' | 'COMPLETE'; outcomeKind: TerminalOutcomeKind};
 
@@ -107,6 +115,7 @@ export type InvocationReceivedPayload = {
 export type DecisionRecordedPayload = {
   decision:
     | {kind: 'advance'; fromState: WorkflowState; toState: WorkflowState}
+    | {kind: 'delegate-role'; state: WorkflowState; actionId: string; role: string}
     | {kind: 'abandon'; actor: {type: 'human'; id: HumanActorId}; reason: DurableInstructionText}
     | {kind: 'delivery-complete'; deliveryManifestHash: Sha256}
     | {kind: string; [field: string]: unknown};
@@ -116,11 +125,33 @@ export type RoleResultRecordedPayload = {
   actionId: string;
   inputBindingHash: string;
   resultReceiptHash: string;
+  /**
+   * On `written`, the recorder's mechanical candidate capture: exact byte hash,
+   * length, the acceptance route, the candidate path, and the producer state the
+   * candidate is mapped back to. The reducer moves control to `candidate-ready`.
+   */
+  written?: {
+    candidateByteHash: string;
+    candidateByteLength: number;
+    acceptanceRouteId: string;
+    candidatePath: string;
+    producerState: WorkflowState;
+  };
   [field: string]: unknown;
 };
 
 export type InterfaceResultRecordedPayload = {
   actionId: string;
+  /**
+   * On acceptance success, the embedded ArtifactAcceptance identity the reducer uses
+   * to apply the route's one success-state continuation.
+   */
+  acceptance?: {
+    acceptanceRouteId: string;
+    candidateByteHash: string;
+    successState: WorkflowState;
+    contentHash: string;
+  };
   [field: string]: unknown;
 };
 

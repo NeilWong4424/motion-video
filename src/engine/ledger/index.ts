@@ -50,6 +50,7 @@ export {
 } from './recorder.js';
 export type {
   LedgerEvent,
+  LedgerEventBindingProjection,
   WorkflowCheckpoint,
   WorkflowControl,
   WorkflowState,

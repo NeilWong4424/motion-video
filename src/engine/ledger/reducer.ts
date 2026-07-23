@@ -17,9 +17,11 @@
 import {computeEventBindingHash} from './chain.js';
 import type {
   DecisionRecordedPayload,
+  InterfaceResultRecordedPayload,
   InvocationReceivedPayload,
   LedgerEventBindingProjection,
   ProjectInitializedPayload,
+  RoleResultRecordedPayload,
   WorkflowCheckpoint,
   WorkflowState,
 } from './types.js';
@@ -127,6 +129,23 @@ export function reduce(
           }
           return {...previous, control: {kind: 'ready', state: d.toState}};
         }
+        case 'delegate-role': {
+          // Move ready → running for a role delegation in the current state.
+          const from = currentReadyState(previous);
+          const d = decision as {
+            kind: 'delegate-role';
+            state: WorkflowState;
+            actionId: string;
+            role: string;
+          };
+          if (d.state !== from) {
+            throw new Error(`LEDGER_REDUCER_DELEGATE_STATE: at ${from} got ${d.state}`);
+          }
+          return {
+            ...previous,
+            control: {kind: 'running', state: from, actionId: d.actionId, interfaceOrRole: d.role},
+          };
+        }
         case 'abandon': {
           return {
             ...previous,
@@ -144,8 +163,64 @@ export function reduce(
       }
     }
 
-    case 'role-result-recorded':
-    case 'interface-result-recorded':
+    case 'role-result-recorded': {
+      if (previous === null) throw new Error('LEDGER_REDUCER_NO_PRIOR');
+      const p = binding.payload as RoleResultRecordedPayload;
+      if (!p.written) {
+        // blocked/advisory role results are deferred routes in this build.
+        throw new Error('LEDGER_REDUCER_ROUTE_NOT_IMPLEMENTED: non-written role result');
+      }
+      // A written result may only be consumed while a role action is running.
+      if (previous.control.kind !== 'running') {
+        throw new Error(`LEDGER_REDUCER_WRITTEN_NOT_RUNNING: ${previous.control.kind}`);
+      }
+      const w = p.written;
+      // The candidate's mapped producer state must equal the running action's state.
+      if (w.producerState !== previous.control.state) {
+        throw new Error(`LEDGER_REDUCER_WRITTEN_STATE: ${w.producerState} != ${previous.control.state}`);
+      }
+      return {
+        ...previous,
+        control: {
+          kind: 'candidate-ready',
+          state: w.producerState,
+          candidateByteHash: w.candidateByteHash,
+          candidateByteLength: w.candidateByteLength,
+          acceptanceRouteId: w.acceptanceRouteId,
+          candidatePath: w.candidatePath,
+          actionId: p.actionId,
+        },
+      };
+    }
+
+    case 'interface-result-recorded': {
+      if (previous === null) throw new Error('LEDGER_REDUCER_NO_PRIOR');
+      const p = binding.payload as InterfaceResultRecordedPayload;
+      if (!p.acceptance) {
+        // Non-acceptance interface results are deferred routes in this build.
+        throw new Error('LEDGER_REDUCER_ROUTE_NOT_IMPLEMENTED: non-acceptance interface result');
+      }
+      // Acceptance may only be consumed while a candidate is ready, and only for the
+      // exact candidate byte hash + route captured at candidate-ready.
+      if (previous.control.kind !== 'candidate-ready') {
+        throw new Error(`LEDGER_REDUCER_ACCEPT_NOT_CANDIDATE_READY: ${previous.control.kind}`);
+      }
+      const a = p.acceptance;
+      if (a.candidateByteHash !== previous.control.candidateByteHash) {
+        throw new Error('LEDGER_REDUCER_ACCEPT_HASH_MISMATCH');
+      }
+      if (a.acceptanceRouteId !== previous.control.acceptanceRouteId) {
+        throw new Error('LEDGER_REDUCER_ACCEPT_ROUTE_MISMATCH');
+      }
+      if (a.contentHash !== a.candidateByteHash) {
+        throw new Error('LEDGER_REDUCER_ACCEPT_CONTENT_HASH');
+      }
+      return {
+        ...previous,
+        control: {kind: 'ready', state: a.successState},
+      };
+    }
+
     case 'operator-input-recorded':
       throw new Error(`LEDGER_REDUCER_ROUTE_NOT_IMPLEMENTED: ${binding.eventKind}`);
 
