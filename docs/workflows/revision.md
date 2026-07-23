@@ -2,38 +2,58 @@
 
 ## Purpose / Use when
 
-Use after the initial snapshot whenever a user or reviewer requests a visual-source change. This workflow preserves locks and routes every change through a new revision. Its proposed executable interfaces are not implemented in Part 1.
+Use for every visual-source change after the initial snapshot, whether the instruction comes from the user or from an accepted review issue. The workflow preserves the current revision until a complete, validated revision attempt commits. Its deterministic acceptance, validation, and commit interfaces are requirements for Part 2 and are not implemented here.
 
 ## Reads
 
-Read the verbatim request, base revision, expected Brief/Treatment/Motion hashes, `expectedLockSetHash`, current source artifacts, semantic locks, diagnostics, and the `PatchCause` declared by the exact closed contract in `../../agent/contracts/revision-contract.md`. Read review issue IDs and the repair-cycle ID only for a `review-repair`; do not invent operations, causes, or target shapes in this workflow.
+Read the exact durable locator-tokenized source instruction; current revision ID; accepted Brief, Treatment, and MotionSpec identities; exact lock-set hash; current locks; any accepted review issue IDs and repair-cycle ID; and the closed `PatchCause` contract in [`revision-contract.md`](../../agent/contracts/revision-contract.md). If the instruction supplies new local locators, also read the exact ephemeral invocation locators and rights declarations, but never persist the original host paths.
 
 ## Writes
 
-None. The Revision Interpreter alone may author the documented `SemanticPatch@1` artifact; this workflow never directly edits source, applies the patch, validates hashes, or claims a revision was created. Deterministic validation/application remains a future interface.
+This workflow directly writes no semantic artifact. Revision Interpreter may semantically author only one immutable `SemanticPatch@1` candidate for this Ledger-allocated output:
 
-## Must
+```text
+projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/revision.patch.json
+```
 
-- Require `SemanticPatch@1` for every post-snapshot visual change and preserve all expected source hashes, `expectedLockSetHash`, locks, and unrelated semantic entities.
-- Use only the discriminated operations and stable semantic targets declared in the central revision contract. Array-index targets, raw JSON Pointers, unknown operations, duplicate operation keys, and empty operation/impact sets are invalid.
-- Use bounded mode for fine-grained permitted changes. A bounded patch cannot add, remove, or reorder Beats, bridges, nodes, camera segments, or motion cues; it must not contain `replace-brief`, `replace-treatment`, or `replace-motion-spec`, including a disguised whole-artifact replacement assembled from smaller operations.
-- In bounded mode, `set-continuity-bridge` may target only an existing `bridgeId`; its non-empty `changes` may contain only the central `BoundedBridgeChanges` fields (`narrativeReason`, `transitionFamily`, `vocabularyRole`, `motionOwnership`, `combinationMeaning`, or `eyeTrace`). Its `expectedMode` must equal the existing bridge's mode. It must preserve the bridge ID, adjacency, order, duration/range, participant and mechanism bindings, and variant discriminator; it may not add or remove a bridge, replace the whole bridge, or replace one bridge variant with another. The exact closed operation contract in `../../agent/contracts/revision-contract.md` remains authoritative.
-- A Beat retime uses only `timingPolicy: "recompute-segment-and-shift-following"`: it changes the Beat duration, leaves every SegmentRef/range byte unchanged, then recomputes that segment and all later global frames. Declare every transitive resolved-timing impact and revalidate camera coverage, bridge/range equality, holds, settles, cues, and total duration. A lock protects derived timing too; locked camera/transition/logo timing therefore blocks an incompatible Beat retime. No implicit trim-point or range remap is permitted.
-- Use rebuild mode only for genuine structural replacement and follow the central `PatchCause` union exactly. A direct `user-request` rebuild requires the exact non-empty verbatim user instruction and carries no review issue IDs or repair cycle. A `review-repair` rebuild additionally requires the central contract's non-empty current triggering review issue IDs and matching stable repair-cycle ID.
-- A `remove-lock` operation requires an exact verbatim user authorization naming the target and removal. Apply lock removal alone: it must not share a patch with any mutation or impact whose legality depends on that removal. A later, separately instructed revision may target the new lock set.
-- Create a new revision, calculate the declared impact set, invalidate dependent previews/reviews/QC/approval/audio evidence, then route through validation and all required gates again.
-- Keep locks explicit and stop when an operation would touch a locked or unrelated field.
-- After Revision Interpreter writes a patch draft, unavailable canonical patch hashing/validation/recording requires that role's `RoleResult@1` with `status: "awaiting-interface"`. If a valid canonically bound patch exists but the later non-role application/rebuild interface is unavailable, Revision Interpreter returns `written` and the orchestrator emits `WorkflowDecision@1.status="blocked"`. Both paths stop and must not claim a new revision exists.
+In rebuild mode, Brief Planner, Creative Direction, and Motion Planner may author only their stage-specific canonical candidate bytes for allocations beneath the active revision-attempt root. Every role has `writes: []` and submits bytes to the trusted candidate writer; no role directly opens or overwrites a current or candidate path.
 
-## Must not
+## Required flow
 
-- Directly edit source, create a second snapshot path, disguise a structural request as bounded, remove a lock to evade it in the same patch, silently redesign unrelated material, or reuse stale approval/audio evidence.
-- Let a reviewer mutate source or let a patch bypass the capability-gap route.
+1. Restore and verify the Ledger. Never infer the base revision or locks from filenames.
+2. When the request includes new local locators, enter `REVISION_SOURCE_UPDATE`. Run safe local-source ingress, externally accept the immutable `LocalAssetManifest@1` candidate, delegate Researcher if evidence is needed, externally accept the resulting findings, and only then route to Revision Interpreter. Existing staged bytes are never overwritten with different bytes.
+3. Revision Interpreter binds the current source hashes, lock-set hash, durable instruction, cause, and complete declared impact. Its `written` result is still only a candidate and must pass `ARTIFACT_ACCEPTANCE`.
+4. Dispatch by the accepted patch discriminator:
+   - `bounded` contains only non-empty fine-grained `operations` plus a complete non-empty `declaredImpactSet`. It routes to the deterministic semantic-revision applier.
+   - `rebuild` contains `rebuildFrom` and non-empty `authorizedScopes`; it contains no operations and no embedded Brief, Treatment, or MotionSpec replacement payload. It routes to `REBUILD_AUTHORING`.
+5. In `REBUILD_AUTHORING`, `ActiveRevisionAttempt.stage` selects exactly one lawful owner and order:
+   - `brief` → Brief Planner → acceptance → Creative Direction → acceptance → Motion Planner → acceptance
+   - `treatment` → Creative Direction → acceptance → Motion Planner → acceptance
+   - `motion-spec` → Motion Planner → acceptance
+6. Each rebuild owner reads the accepted staged parent produced earlier in the same attempt, not the old parent or an inline replacement supplied by Revision Interpreter. Every candidate path is immutable and every acceptance binds its exact route, prompt, parents, and bytes.
+7. After the complete owner chain, canonical-source validation computes the actual diff, checks it against `authorizedScopes`, `declaredImpactSet`, locks, parents, and current base hashes, and only then permits deterministic commit. A bounded apply follows the same post-apply validation before commit.
+8. Only successful commit creates the new immutable revision manifest and lock set, switches `currentRevisionId`, and invalidates dependent RenderPlan, preview, QC, reviews, approval, silent master, AudioBrief, music prompt, returned track, mux, and delivery identities.
 
-## Stop conditions
+## Bounded-change rules
 
-Stop on stale base/source/lock-set hashes, ambiguous or index-based target, lock conflict or attempted lock evasion, undeclared impact, empty operations/impact, out-of-scope request, a bounded bridge edit outside the central finite field set or one that would replace its variant, or a structural change without the cause-specific linkage required by the central `PatchCause` union.
+- Use only the closed operations and stable semantic targets in [`revision-contract.md`](../../agent/contracts/revision-contract.md). Array indexes, raw JSON Pointers, unknown operations, duplicate operation keys, empty operations, and disguised whole-artifact replacement are invalid.
+- `set-continuity-bridge` may update only the fields allowed by the bridge's unchanged mode variant. It preserves the bridge ID, variant, Beat adjacency, duration/range, participants, mechanisms, and order. Adding, removing, reordering, changing mode, or changing participants/mechanisms requires a rebuild beginning at `motion-spec`.
+- Beat retiming uses only `recompute-segment-and-shift-following`. Declare every derived timing effect and revalidate camera coverage, bridge equality, holds, settles, cues, and total duration.
+- `remove-lock` must be a revision by itself. It cannot share a patch with a mutation or impact that becomes legal only because the lock was removed.
+
+## Rebuild rules
+
+- A direct user rebuild carries the exact non-empty durable instruction (all non-locator bytes preserved, locators tokenized) and no invented review linkage.
+- A review repair additionally binds the exact current accepted issue IDs and repair-cycle ID.
+- The directive scopes what the artifact owners may rebuild; it never transfers their authority to Revision Interpreter or the orchestrator.
+- Current revision files and checkpoint remain unchanged while candidates are authored, accepted, and validated. Partial owner chains are never published as current source.
+
+## Pause and refusal conditions
+
+Pause in the current state for missing user facts/rights, unavailable acceptance/validation/apply interfaces, or safely reconcilable action uncertainty. Re-entry retries the same candidate or interface with the same input binding; it does not ask a semantic owner to rewrite accepted bytes.
+
+Refuse stale base/source/lock hashes, ambiguous targets, lock evasion, undeclared impact, invalid cause linkage, a bounded structural change, an out-of-scope request, or a source update that cannot be staged safely. Use terminal `STOP` only when the current request is genuinely non-resumable or explicitly abandoned; an unavailable interface alone is never terminal.
 
 ## Output schema
 
-`SemanticPatch@1` is exactly the mode-and-cause discriminated union in `../../agent/contracts/revision-contract.md`; its mode literals are only `bounded` and `rebuild`, and its cause literals and fields come only from the central `PatchCause` union. The role may author that documentation artifact in Part 1, but hashing, validation, application, revision creation, and rebuilding are not implemented. Missing role-owned patch binding uses `RoleResult@1.status="awaiting-interface"`; a missing later applier uses orchestrator `WorkflowDecision@1.status="blocked"`. Both route to `STOP`.
+`SemanticPatch@1` is exactly the `bounded` or `rebuild` discriminated union in [`revision-contract.md`](../../agent/contracts/revision-contract.md). Part 1 defines the prompt-owned candidate and future interface contracts only; it does not claim acceptance, application, commit, or a revised video.

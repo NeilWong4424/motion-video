@@ -6,14 +6,17 @@ The repository itself does not contain or invoke a model. It does not ask for cr
 
 ## Part 1 boundary
 
-This phase defines prompts, workflow states, authority, artifacts, diagnostics, and future deterministic interfaces. It contains no Remotion runtime, resolver, compiler, renderer, QC implementation, revision engine, audio tool, delivery tool, or CLI. Interface names in these documents are requirements for later work, not executable features or evidence that output exists.
+This phase defines prompts, workflow states, authority, artifacts, a checked-in planning-only core catalog, diagnostics, and future deterministic interfaces. It contains no Remotion runtime, capability implementation, resolver, compiler, renderer, QC implementation, revision engine, audio tool, delivery tool, or CLI. Catalog entries marked `part2-required` are contracts, not executable features or evidence that output exists.
 
 ## Start here
 
 - Codex reads [`AGENTS.md`](AGENTS.md).
 - Claude Code reads [`CLAUDE.md`](CLAUDE.md); `/video` also routes through [`.claude/skills/video/SKILL.md`](.claude/skills/video/SKILL.md).
 - Both hosts then follow [`agent/video-workflow.md`](agent/video-workflow.md).
-- Ownership and handoffs are defined in [`agent/contracts/authority-matrix.md`](agent/contracts/authority-matrix.md) and [`agent/contracts/artifact-contracts.md`](agent/contracts/artifact-contracts.md).
+- [`agent/prompt-manifest.json`](agent/prompt-manifest.json) is the machine entrypoint for the exhaustive contract, interface, role, and execution-resource inventories. Its `resources` scope is explicit: every non-role file directly loaded as a normative procedure, canonical data file, deterministic document template, or operator project template. Explanatory maps, reports, and examples are documentation rather than execution resources; individual craft files are exhaustively indexed by `craft/skill-manifest.json`.
+- Recoverable local state and exact re-entry are defined in [`agent/contracts/workflow-ledger.md`](agent/contracts/workflow-ledger.md).
+- Ownership and handoffs are defined in [`agent/contracts/authority-matrix.md`](agent/contracts/authority-matrix.md), [`agent/contracts/artifact-acceptance.md`](agent/contracts/artifact-acceptance.md), and [`agent/contracts/artifact-contracts.md`](agent/contracts/artifact-contracts.md).
+- Cold-start motion profiles, style packs, and capability IDs are locally closed by [`agent/contracts/catalog-registry-contract.md`](agent/contracts/catalog-registry-contract.md) and [`catalog/core-registry.json`](catalog/core-registry.json); Part 2 must implement them before render.
 
 ## Operator experience
 
@@ -24,27 +27,32 @@ If omitted, Fast input uses explicit, overridable production assumptions: `1920Ã
 For controlled work, create a local `projects/<project-id>/` folder from the files in [`projects/_template`](projects/_template):
 
 - `BRIEF_INPUT.md` supports both a one-sentence request and a structured brief.
-- `LOCAL_SOURCES.md` records local paths, provenance, rights, and use limits.
+- `LOCAL_SOURCES.md` helps the human declare each source's kind, visual-generation provenance, requested/allowed uses, rights evidence, attribution, and limits. The canonical manifest is an accepted immutable candidate; arbitrary original host paths remain ephemeral intake locators and staged bytes are content-addressed.
 - `REVISION_REQUEST.md` identifies the requested change, locks, and what must stay unchanged.
-- `project.policy.example.json` documents the optional, explicit host-approval policy; human Preview Approval remains the default.
+- `project.policy.example.json` documents the optional policy fields only. An actual policy becomes authoritative only after an attributed `ProjectPolicyIngressRequest`, immutable candidate projection, and external acceptance at Preview Gate; human Preview Approval remains the default.
 
-The user sees one workflow, not a conversation between agents. Internally, the orchestrator inspects current state, delegates one artifact to its owner, selects only relevant craft modules, verifies gate evidence, and either records the next lawful step or returns a typed blocker. See [`docs/PROMPT_OS_MAP.md`](docs/PROMPT_OS_MAP.md) for the complete layer map and [`examples/invocations.md`](examples/invocations.md) for honest Part 1 invocations.
+The user sees one workflow, not a conversation between agents. Internally, the orchestrator restores the local append-only Ledger, records a head-bound decision, delegates immutable candidate authorship only to an artifact-owning role, routes that candidate through external acceptance, selects only relevant craft modules, and either records the next lawful step, a same-state resumable pause, or a terminal outcome. A successful acceptance is embedded atomically in the corresponding `interface-result-recorded` event; it is not a separate Ledger event, and role bytes are not accepted merely because a role wrote them. Capability Builder is the write-free exception: it returns ephemeral advisory guidance and never authors a candidate. See [`docs/PROMPT_OS_MAP.md`](docs/PROMPT_OS_MAP.md) for the complete layer map and [`examples/invocations.md`](examples/invocations.md) for honest Part 1 invocations.
 
 ## Prompt layers
 
 | Layer | Responsibility | Cannot do |
 | --- | --- | --- |
 | Orchestrator | Classify requests, route owners, enforce state/gates, invalidate stale evidence | Design the film or write role-owned artifacts |
-| Agent prompts | Author one canonical artifact each | Cross another role's authority or bypass a gate |
+| Workflow Ledger | Preserve revision, hashes, locks, counters, pending work, and pauses across host calls | Make creative decisions or become a platform/database |
+| Artifact acceptance | Validate canonical bytes, owner, parents, assets, and external identity; embed the result in one atomic interface-result event | Emit a separate acceptance event, change semantic content, or approve it |
+| Artifact-owning agent prompts | Author one immutable candidate of their owned artifact type | Accept their own bytes, cross another role's authority, or bypass a gate |
+| Capability Builder | Return an ephemeral, write-free capability-gap advisory | Author a candidate, implementation, receipt, registration, or gate artifact |
 | Cold reviewers | Evaluate exact hash-bound preview evidence | Repair, approve, or invent missing evidence |
 | On-demand craft skills | Supply narrow motion judgment | Own artifacts, state, or implementation |
 | Future deterministic engine | Validate, resolve, preview, QC, render, revise, and package | Exists only in Part 2 |
 
 ## Fixed creative policy
 
-A Beat is a narrative state, not a slide. The default is one Persistent World with stable identity and measurable bridges. The whole film may use a maximum of one zero-duration `chapter-cut`, and only for an honest, documented break with eye-trace evidence. A reviewer decision of `ship` satisfies one review gate; it is not Preview Approval. Explicit human approval is the default.
+A Beat is a narrative state, not a slide. The default is one Persistent World with stable identity and measurable bridges: five positive-duration continuity families, plus at most one zero-duration `chapter-cut` exception for an honest documented break with eye-trace evidence. A chapter cut is not a sixth positive family. A reviewer decision of `ship` satisfies one review gate; it is not Preview Approval. Explicit human approval is the default. With no accepted current Project Policy, the deterministic effective policy is `implicit-human-only`; it never auto-approves and grants no host authority.
 
-Audio follows one order only: approved and locked silent picture, `AudioBrief`, deterministic future `MUSIC_PROMPT.md`, manual use of a third-party music generator by the user, then optional local alignment/mux. The repository does not generate music, contact a provider, or store credentials.
+An unresolved capability gap does not authorize code. Capability Builder may advise only; after a separate exact human implementation authorization, the future project-local implementation interface remains resumable in `WAITING_FOR_CAPABILITY_IMPLEMENTATION`, and Motion Planner resumes only from an externally accepted implementation receipt and its bound registry snapshot.
+
+Audio follows one order only: approved and locked silent picture, an externally accepted `AudioBrief`, deterministic future `MUSIC_PROMPT.md`, a `WAITING_FOR_MANUAL_MUSIC` pause while the user manually operates a third-party music generator, safe local ingress for any returned track, then optional local alignment/mux. A user may instead make an exact no-track selection after the prompt exists. The repository does not generate music, contact a provider, or store credentials.
 
 ## Verify Part 1
 
@@ -54,7 +62,7 @@ No dependency installation is required for the documentation tests on a supporte
 npm test
 ```
 
-The suite checks prompt inventory, unique authority, state and gate contracts, continuity behavior, audio handoff, local-only scope, link integrity, valid JSON, and the absence of deferred engine files.
+The suite checks prompt/resource inventory, unique authority, state and gate contracts, continuity behavior, audio handoff, local-only scope, link integrity, valid JSON, and the absence of deferred engine files.
 
 The current completion boundary and independent pressure-review record are in [`docs/PART1_STATUS.md`](docs/PART1_STATUS.md) and [`docs/reviews/PROMPT_PRESSURE_REPORT.md`](docs/reviews/PROMPT_PRESSURE_REPORT.md).
 

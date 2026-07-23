@@ -7,5 +7,8 @@ projects/*/assets/
 projects/*/references/
 projects/*/revisions/
 projects/*/capabilities/
+projects/*/sources/
+projects/*/audio/
+projects/*/.workflow/
 !projects/_template/
 !projects/_template/**

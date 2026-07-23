@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "catalog-registry-snapshot@1",
+  "snapshotId": "core-registry-v1",
+  "scope": "core",
+  "parentSnapshotHash": null,
+  "implementationBindingHashes": [],
+  "motionProfiles": [
+    {
+      "id": "core.motion.content-adaptive@1",
+      "description": "Content-led motion with readable holds, motivated travel, and profile-relative timing rather than fixed universal frame counts.",
+      "timingPolicy": "content-adaptive"
+    }
+  ],
+  "stylePacks": [
+    {
+      "id": "core.style.adaptive-minimal@1",
+      "description": "A neutral local starting system whose concrete palette, type, spacing, and shape choices remain Treatment-owned and evidence-constrained.",
+      "constraints": [
+        "accessible-contrast",
+        "local-fonts-only",
+        "no-generated-media",
+        "seamless-default"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "core.camera.global-2d",
+      "version": "1.0.0",
+      "kind": "camera",
+      "implementationStatus": "part2-required",
+      "intentSchemaId": "core.schema.camera.global-2d.intent@1",
+      "resolvedSchemaId": "core.schema.camera.global-2d.resolved@1",
+      "intent": "One deterministic global 2D camera with held and motivated travel segments."
+    },
+    {
+      "id": "core.effect.clip-mask",
+      "version": "1.0.0",
+      "kind": "effect",
+      "implementationStatus": "part2-required",
+      "intentSchemaId": "core.schema.effect.clip-mask.intent@1",
+      "resolvedSchemaId": "core.schema.effect.clip-mask.resolved@1",
+      "intent": "Deterministic local mask and reveal transitions over declared nodes."
+    },
+    {
+      "id": "core.effect.content-transition",
+      "version": "1.0.0",
+      "kind": "effect",
+      "implementationStatus": "part2-required",
+      "intentSchemaId": "core.schema.effect.content-transition.intent@1",
+      "resolvedSchemaId": "core.schema.effect.content-transition.resolved@1",
+      "intent": "Deterministic in-place text or state transition without a full-frame reset."
+    },
+    {
+      "id": "core.effect.opacity-transform",
+      "version": "1.0.0",
+      "kind": "effect",
+      "implementationStatus": "part2-required",
+      "intentSchemaId": "core.schema.effect.opacity-transform.intent@1",
+      "resolvedSchemaId": "core.schema.effect.opacity-transform.resolved@1",
+      "intent": "Frame-driven opacity and 2D transform tracks with declared easing and ranges."
+    },
+    {
+      "id": "core.effect.path-trim",
+      "version": "1.0.0",
+      "kind": "effect",
+      "implementationStatus": "part2-required",
+      "intentSchemaId": "core.schema.effect.path-trim.intent@1",
+      "resolvedSchemaId": "core.schema.effect.path-trim.resolved@1",
+      "intent": "Deterministic reveal of a declared local vector path."
+    },
+    {
+      "id": "core.renderer.group",
+      "version": "1.0.0",
+      "kind": "renderer",
+      "implementationStatus": "part2-required",
+      "intentSchemaId": "core.schema.renderer.group.intent@1",
+      "resolvedSchemaId": "core.schema.renderer.group.resolved@1",
+      "intent": "Stable mounted 2D group with parent-local child geometry."
+    },
+    {
+      "id": "core.renderer.local-image",
+      "version": "1.0.0",
+      "kind": "renderer",
+      "implementationStatus": "part2-required",
+      "intentSchemaId": "core.schema.renderer.local-image.intent@1",
+      "resolvedSchemaId": "core.schema.renderer.local-image.resolved@1",
+      "intent": "Rights-checked, render-use-eligible decoded static local raster asset only; SVG/XML is not render substrate."
+    },
+    {
+      "id": "core.renderer.path",
+      "version": "1.0.0",
+      "kind": "renderer",
+      "implementationStatus": "part2-required",
+      "intentSchemaId": "core.schema.renderer.path.intent@1",
+      "resolvedSchemaId": "core.schema.renderer.path.resolved@1",
+      "intent": "Local pure-code 2D path bound to declared geometry and tokens."
+    },
+    {
+      "id": "core.renderer.shape",
+      "version": "1.0.0",
+      "kind": "renderer",
+      "implementationStatus": "part2-required",
+      "intentSchemaId": "core.schema.renderer.shape.intent@1",
+      "resolvedSchemaId": "core.schema.renderer.shape.resolved@1",
+      "intent": "Local pure-code 2D geometric primitive bound to declared tokens."
+    },
+    {
+      "id": "core.renderer.text",
+      "version": "1.0.0",
+      "kind": "renderer",
+      "implementationStatus": "part2-required",
+      "intentSchemaId": "core.schema.renderer.text.intent@1",
+      "resolvedSchemaId": "core.schema.renderer.text.resolved@1",
+      "intent": "Local text renderer bound to copy IDs, design tokens, and available glyphs."
+    }
+  ]
+}

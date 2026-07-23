@@ -18,7 +18,7 @@ None. This module performs no artifact writes.
 - Bind every delivery statement to one exact project, revision, plan, and evidence set; preserve immutable, content-addressed attempts.
 - Keep editable project source by reference and distinguish silent from optional locally mixed delivery.
 - Require fresh approval and evidence after any change that invalidates locks or bindings.
-- State that render, audio-prompt compilation, alignment, mux, and delivery commands are deferred non-role interfaces not implemented in Part 1. If one is required during Part 1, the orchestrator emits `WorkflowDecision@1.status="blocked"` and transitions to `STOP`; do not fabricate a RoleResult producer or claim `DELIVERY` complete.
+- State that render, audio-prompt compilation, alignment, mux, and delivery commands are deferred non-role interfaces not implemented in Part 1. Temporary interface absence always preserves the exact same-state deferred-interface pause; do not fabricate a RoleResult producer or claim `DELIVERY` complete.
 
 ## Must not
 
@@ -27,7 +27,7 @@ None. This module performs no artifact writes.
 
 ## Stop conditions
 
-Stop when evidence is missing, stale, mismatched, or points across revisions/plans; when the actual AudioBrief or selected prompt attempt is absent, stale, or not content-addressed; or on output collision or an undeclared local audio payoff. Whenever Part 1 would need an actual render, prompt compiler, alignment, mux, or delivery tool, the orchestrator emits `WorkflowDecision@1.status="blocked"` and transitions to `STOP`; no role owns that missing-interface result.
+Refuse or pause according to recoverability when evidence is missing, stale, mismatched, or points across revisions/plans; when the actual AudioBrief or selected prompt attempt is absent, stale, or not content-addressed; or on output collision or an undeclared local audio payoff. Whenever Part 1 lacks a required render, prompt compiler, alignment, mux, or delivery tool, the orchestrator records the typed same-state pause; no role owns that missing-interface result. Terminal policy remains exclusively in the central workflow contract.
 
 ## Output schema
 

@@ -14,6 +14,7 @@ const expectedFiles = [
   'agent/prompt-manifest.json',
   'agent/contracts/authority-matrix.md',
   'agent/contracts/artifact-contracts.md',
+  'agent/contracts/artifact-acceptance.md',
   'agent/contracts/capability-gap-contract.md',
   'agent/contracts/engine-interface.md',
   'agent/contracts/diagnostics.md',
@@ -25,6 +26,7 @@ const expectedFiles = [
   'agent/contracts/role-result.md',
   'agent/contracts/treatment-contract.md',
   'agent/contracts/workflow-decision.md',
+  'agent/contracts/workflow-ledger.md',
   'agent/templates/music-prompt-document.md',
   'agent/prompts/brief-planner.md',
   'agent/prompts/researcher.md',
@@ -101,31 +103,47 @@ const canonicalStates = [
   'PREVIEW',
   'TECHNICAL_QC',
   'CREATIVE_AND_MOTION_REVIEW',
-  'BOUNDED_FIX',
+  'ARTIFACT_ACCEPTANCE',
+  'CAPABILITY_ADVISORY',
+  'WAITING_FOR_CAPABILITY_IMPLEMENTATION',
+  'REVISION_SOURCE_UPDATE',
   'REVISION_INTERPRET',
+  'REBUILD_AUTHORING',
   'APPLY_SEMANTIC_REVISION',
   'PREVIEW_GATE',
+  'RECORD_PREVIEW_APPROVAL',
+  'APPROVED',
   'SILENT_FINAL',
   'AUDIO_BRIEF',
   'AUDIO_PROMPT',
-  'STOP_MANUAL_MUSIC_GENERATION',
+  'WAITING_FOR_MANUAL_MUSIC',
   'OPTIONAL_LOCAL_MUX',
   'DELIVERY',
+  'COMPLETE',
+  'STOP',
 ];
 
 const roleWrites = {
-  'brief-planner': ['projects/<project-id>/brief.spec.json'],
-  researcher: ['projects/<project-id>/research.findings.json'],
-  'creative-direction': ['projects/<project-id>/treatment.json'],
+  'brief-planner': [
+    'projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/brief.spec.json',
+    'projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/brief.spec.json',
+  ],
+  researcher: ['projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/research.findings.json'],
+  'creative-direction': [
+    'projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/treatment.json',
+    'projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/treatment.json',
+  ],
   'motion-planner': [
-    'projects/<project-id>/motion.spec.json',
-    'projects/<project-id>/capability-gaps/<gap-id>.json',
+    'projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/motion.spec.json',
+    'projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/motion.spec.json',
+    'projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/capability-gap.json',
+    'projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/capability-gap.json',
   ],
   'capability-builder': [],
-  'revision-interpreter': ['projects/<project-id>/revision.patch.json'],
-  'sound-designer': ['projects/<project-id>/audio-brief.json'],
-  'creative-reviewer': ['out/<project-id>/<revision-id>/<render-plan-hash>/review/creative-review.json'],
-  'motion-reviewer': ['out/<project-id>/<revision-id>/<render-plan-hash>/review/motion-review.json'],
+  'revision-interpreter': ['projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/revision.patch.json'],
+  'sound-designer': ['projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/audio-brief.json'],
+  'creative-reviewer': ['out/<project-id>/<revision-id>/<render-plan-hash>/reviews/creative/<review-attempt-id>/review.json'],
+  'motion-reviewer': ['out/<project-id>/<revision-id>/<render-plan-hash>/reviews/motion/<review-attempt-id>/review.json'],
 };
 
 function file(path) {
@@ -153,23 +171,27 @@ test('every role prompt exposes the same auditable contract sections', () => {
   }
 });
 
-test('the role manifest gives each canonical artifact exactly one owner', () => {
+test('the role manifest separates semantic candidate ownership from host write capability', () => {
   const manifest = JSON.parse(read('agent/prompt-manifest.json'));
   assert.equal(manifest.contractVersion, 'prompt-os/v1');
   assert.deepEqual(
-    Object.fromEntries(manifest.roles.filter((role) => role.id !== 'orchestrator').map((role) => [role.id, role.writes])),
+    Object.fromEntries(manifest.roles.filter((role) => role.id !== 'orchestrator').map((role) => [role.id, role.candidateOutputs])),
     roleWrites,
   );
 
-  const concreteWrites = manifest.roles.flatMap((role) => role.writes.map((path) => [path, role.id]));
-  const duplicates = concreteWrites.filter(([path], index) => concreteWrites.findIndex(([candidate]) => candidate === path) !== index);
-  assert.deepEqual(duplicates, [], 'Two roles claim the same write target');
+  for (const role of manifest.roles) assert.deepEqual(role.writes, [], `${role.id} has direct write capability`);
+  const semanticOutputs = manifest.roles.flatMap((role) => role.candidateOutputs.map((path) => [path, role.id]));
+  const duplicates = semanticOutputs.filter(([path], index) => semanticOutputs.findIndex(([candidate]) => candidate === path) !== index);
+  assert.deepEqual(duplicates, [], 'Two roles claim the same candidate output');
+  const writer = manifest.interfaces.find(({id}) => id === 'trusted-candidate-writer');
+  assert.deepEqual(new Set(writer?.writes), new Set(semanticOutputs.map(([path]) => path)));
 
   const capabilityBuilder = manifest.roles.find((role) => role.id === 'capability-builder');
   assert.equal(capabilityBuilder.availability, 'interface-stub');
-  assert.deepEqual(capabilityBuilder.futureWrites, [
-    'projects/<project-id>/capabilities/<capability-id>/capability.manifest.json',
-  ]);
+  assert.deepEqual(capabilityBuilder.writes, []);
+  assert.deepEqual(capabilityBuilder.candidateOutputs, []);
+  assert.equal(capabilityBuilder.implementationOwner, 'project-local-capability-implementation-and-registration');
+  assert.equal('futureWrites' in capabilityBuilder, false);
 });
 
 test('orchestration closes re-entry, approval provenance and repair-cycle semantics', () => {
@@ -178,10 +200,11 @@ test('orchestration closes re-entry, approval provenance and repair-cycle semant
   const engine = read('agent/contracts/engine-interface.md');
   const diagnostics = read('agent/contracts/diagnostics.md');
 
-  for (const route of ['new project', 'existing visual revision', 'review request', 'audio request', 'delivery request']) {
+  for (const route of ['new project', 'visual revision', 'review retry', 'audio request', 'delivery retry']) {
     assert.match(workflow, new RegExp(route, 'i'), `Missing request re-entry route: ${route}`);
   }
-  assert.match(workflow, /currentRevisionId\s*!==?\s*null[\s\S]+RESOLVE/i);
+  assert.match(workflow, /visual revision, no paths[\s\S]+REVISION_INTERPRET/i);
+  assert.match(workflow, /review retry[\s\S]+earliest unmet.+resolve\/preview\/QC\/review state/i);
   assert.match(workflow, /RECORD_PREVIEW_APPROVAL[\s\S]+APPROVED[\s\S]+SILENT_FINAL/i);
   assert.match(workflow, /failure|refusal/i);
   assert.match(workflow, /TECHNICAL_QC[\s\S]+(?:block|fail)[\s\S]+(?:must not|cannot).+(?:review|PREVIEW_GATE)/i);
@@ -194,7 +217,9 @@ test('orchestration closes re-entry, approval provenance and repair-cycle semant
   assert.match(artifacts, /policyHash/);
   assert.match(engine, /Approval recorder/i);
   assert.match(engine, /PreviewApproval@1/);
-  assert.match(engine, /QC.+both review.+policy/is);
+  assert.match(engine, /passing QC/i);
+  assert.match(engine, /both accepted completed `ship` reviews/i);
+  assert.match(engine, /policy binding/i);
   assert.match(diagnostics, /same revision|same RenderPlan/i);
   assert.match(diagnostics, /preview.+sampled.+QC.+review.+approval/is);
   assert.match(diagnostics, /byte|hash/i);
@@ -216,9 +241,9 @@ test('the orchestrator declares the full state machine and cannot design or bypa
     assert.match(workflow, new RegExp(`\\b${state}\\b`), `Missing workflow state: ${state}`);
   }
   assert.match(workflow, /orchestrator.+must not.+design/i);
-  assert.match(workflow, /maximum.+one.+chapter cut/i);
+  assert.match(workflow, /(?:maximum|at most).+one.+chapter cut/i);
   assert.match(workflow, /Engine implementation status/i);
-  assert.match(workflow, /required interface.+not implemented/i);
+  assert.match(workflow, /required future interfaces.+not implemented/i);
 });
 
 test('continuity prompts reject slide resets and require measurable bridge evidence', () => {
@@ -243,7 +268,8 @@ test('research and creative authority remain separate', () => {
   const manifest = JSON.parse(read('agent/prompt-manifest.json'));
   const researcher = manifest.roles.find((role) => role.id === 'researcher');
   const creative = manifest.roles.find((role) => role.id === 'creative-direction');
-  assert.deepEqual(researcher.writes, ['projects/<project-id>/research.findings.json']);
+  assert.deepEqual(researcher.writes, []);
+  assert.deepEqual(researcher.candidateOutputs, ['projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/research.findings.json']);
   assert.ok(!researcher.authority.includes('treatment'));
   assert.ok(creative.authority.includes('treatment'));
   assert.match(read('agent/prompts/researcher.md'), /local source path/i);
@@ -334,6 +360,19 @@ test('all manifest file references resolve inside the repository', () => {
   assert.deepEqual(invalid, [], `Manifest paths escape repository: ${invalid.join(', ')}`);
   assert.deepEqual(missing, [], `Manifest paths do not resolve: ${missing.join(', ')}`);
   assert.equal(new Set(referenced).size, referenced.length, 'Manifest contains duplicate prompt paths');
+
+  assert.ok(Array.isArray(promptManifest.interfaces) && promptManifest.interfaces.length > 0);
+  assert.equal(new Set(promptManifest.interfaces.map((entry) => entry.id)).size, promptManifest.interfaces.length);
+  for (const entry of promptManifest.interfaces) {
+    assert.match(entry.status, /not-implemented/, entry.id);
+    assert.ok(existsSync(file(entry.contract)), `${entry.id} contract does not resolve`);
+    assert.ok(Array.isArray(entry.writes), `${entry.id} lacks a closed write set`);
+  }
+  const ledger = promptManifest.interfaces.find((entry) => entry.id === 'workflow-ledger-recorder');
+  assert.deepEqual(ledger?.writes, [
+    'projects/<project-id>/.workflow/action-results/<action-id>/<result-receipt-hash>.json',
+    'projects/<project-id>/.workflow/ledger.jsonl',
+  ]);
 });
 
 test('Part 1 status does not pretend the deferred engine exists', () => {

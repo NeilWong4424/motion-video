@@ -17,6 +17,7 @@ None. This module performs no artifact writes.
 - State the rule plainly: a Beat is a narrative state, not a slide.
 - Preserve one global clock, a Persistent World mounted for the full film, stable identity for a persisting node, and one global camera.
 - Declare one bridge for every adjacent Beat pair. Prefer, in order: same-node shared-element transformation; camera navigation revealing a real spatial relationship; morph into the real target; match on action; directional push; then a justified chapter cut.
+- Bind every bridge through its exact `treatmentCameraRationaleId`. A `camera-navigation` bridge consumes the same-position `travel` rationale and preserves its `revealedSpatialRelation`; every non-camera bridge consumes the same-position `hold` rationale and cannot introduce boundary camera travel.
 - Keep the target preroll mounted early and frozen when a split handoff is unavoidable; it must be the stable real target, never a drawn substitute.
 - Prohibit a dead frame: no bare, transparent, accidental black, or unmotivated empty frame during a handoff.
 - Require a declared content transition for changing text or content inside a bridge. For an exact handoff, terminal geometry equals the next stable state within the declared tolerance.

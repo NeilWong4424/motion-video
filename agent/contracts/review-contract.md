@@ -1,6 +1,12 @@
 # Review artifact documentation contract
 
-Creative and Motion Reviews are provenance-complete canonical envelopes for one exact preview evidence tuple. This file documents the closed result unions; it does not implement a JSON Schema, hashing tool, media reader, QC system, or review runtime.
+Creative and Motion Reviews are provenance-complete canonical envelopes for one exact preview evidence tuple. This file documents the closed result unions; it does not implement a JSON Schema, hashing tool, media reader, QC system, or review runtime. `DurableSemanticText` is the exact locator-safe semantic-prose alias in `input-trust.md` and is referenced without widening.
+
+```ts
+type SafeRuleId = string & {readonly __safeRuleId: unique symbol};
+```
+
+`SafeRuleId` is an opaque validated ASCII identifier of 1–96 characters matching `^[a-z0-9]+(?:[.-][a-z0-9]+)*$`. It cannot contain whitespace, controls, path separators, traversal, a URI scheme, or free prose; reviewers select an exact rule ID from the delegated review policy rather than inventing one.
 
 ## Provenance envelope
 
@@ -9,13 +15,20 @@ Every completed or incomplete review contains these fields:
 ```ts
 type ReviewEnvelope = {
   schemaVersion: "creative-review@1" | "motion-review@1";
-  contentHash: string;             // canonical SHA-256 of the envelope with this field omitted
+  reviewAttemptId: string;
+  outputPath: string;
   producer: {
     role: "creative-reviewer" | "motion-reviewer";
     promptPath: "agent/reviewers/creative-reviewer.md" | "agent/reviewers/motion-reviewer.md";
-    promptContentHash: string;
   };
-  parentHashes: string[];          // actually observed parent hashes; may be [] only when incomplete
+  parentHashes: {
+    revisionManifestHash: string;
+    motionSpecHash: string;
+    renderPlanHash: string;
+    previewHash: string;
+    sampledEvidenceManifestHash: string;
+    technicalQcHash: string;
+  };
   sourceHashes: {
     briefHash: string;
     treatmentHash: string;
@@ -48,7 +61,15 @@ type ReviewEnvelope = {
 };
 ```
 
-`producer.role` and `producer.promptPath` must match the unique output path owner. The top-level project/revision/RenderPlan/preview/review-bundle/Technical-QC fields and `expectedBindings` identify the exact **delegated expected target**; they are not claims that the reviewer observed those bytes. `observedBindings` is nullable field-by-field so an incomplete review records only what it actually inspected and never fabricates a missing hash. `parentHashes` contains only parents actually observed; `sourceHashes` labels the delegated source targets. Replacing any observed byte/hash under the same revision or RenderPlan makes a completed review stale.
+`producer.role` and `producer.promptPath` must match the unique output owner. The delegation decision records the exact prompt path/hash **before reviewer execution**; the RoleResult and acceptance bind that decision. The role-authored envelope contains neither its own top-level hash nor a self-declared prompt hash. After writing, `artifact-validation-and-hashing` produces the external `ArtifactAcceptance@1`: its `contentHash` is the authoritative `reviewContentHash`, and `producerPromptHash` is the execution-time hash from that recorded delegation, reverified against preserved/current exact prompt bytes. This avoids self-reference and prevents a reviewer or later prompt edit from asserting a false execution identity.
+
+Every attempt path is immutable and exactly:
+
+`out/<project-id>/<revision-id>/<render-plan-hash>/reviews/<review-kind>/<review-attempt-id>/review.json`
+
+`reviewAttemptId` is the Ledger-allocated ordinal in that path and `outputPath` equals the complete path. A missing-evidence/incomplete result is never overwritten. When evidence later becomes available, delegation creates a **new immutable attempt**; the Ledger selects one current externally accepted attempt per review kind.
+
+The top-level project/revision/RenderPlan/preview/review-bundle/Technical-QC fields and `expectedBindings` identify the exact **delegated expected target**; they are not claims that the reviewer observed those bytes. `observedBindings` is nullable field-by-field so an incomplete review records only what it actually inspected and never fabricates a missing hash. `parentHashes` is the closed non-null ordered-by-name dependency object supplied by the recorded delegation; it binds revision, MotionSpec, plan, preview, sampled-evidence manifest, and QC for both reviewer kinds. `sourceHashes` labels the delegated source targets. Replacing any bound byte/hash under the same revision or RenderPlan makes a review or its external acceptance stale.
 
 ## Evidence references
 
@@ -70,7 +91,7 @@ type MissingEvidenceRef = {
   expectedRelativePath: string;
   expectedContentHash: string | null;
   purpose: string;
-  missingReason: string;
+  missingReason: DurableSemanticText;
 };
 
 type PlaybackRate = "1.0x" | "0.25x";
@@ -79,7 +100,7 @@ type PlaybackEvidence = {
   rate: PlaybackRate;
   preview: EvidenceRef;             // exact preview bytes; frameRange covers [0, durationInFrames)
   completedFromStartToEnd: true;
-  observerAttestation: string;      // non-empty, role-authored observation record
+  observerAttestation: DurableSemanticText; // non-empty, role-authored observation record
 };
 ```
 
@@ -186,7 +207,17 @@ directional-push    -> directional-push           -> continuous-motion
 
 A positive-duration bridge derives `beforeFrame = bridgeStartFrame - 1`, `midpointFrame = bridgeStartFrame + floor((bridgeEndFrameExclusive - bridgeStartFrame - 1) / 2)`, and `afterFrame = bridgeEndFrameExclusive`. These populate `before.frameIndex`, `midpoint.frameIndex`, and `after.frameIndex`; their roles must respectively be `before`, `midpoint`, and `after`. Because the bridge crosses the real seam, `before` is inside the outgoing Beat and `after` is inside the incoming Beat.
 
-A zero-frame cut's `boundaryFrame` must be exactly equal to the MotionSpec chapter-cut's resolved adjacent-Beat boundary; `declaredMode` must be `chapter-cut`. Its `declaredEyeTraceDistanceNormalized` must be exactly equal to that bridge's `maxEyeTraceDistanceNormalized`, and completion requires `measuredEyeTraceDistanceNormalized <= declaredEyeTraceDistanceNormalized`. It derives `outgoingLastFrame = boundaryFrame - 1`, `incomingFirstFrame = boundaryFrame`, and `incomingHeldFrame` from the incoming Beat's declared `holdRange`. Therefore `outgoingLast.frameIndex = boundaryFrame - 1`, `incomingFirst.frameIndex = boundaryFrame`, and `fullFrameChange.frameRange` is exactly `[boundaryFrame - 1, boundaryFrame + 1)`. The roles must respectively be `outgoing-last`, `incoming-first`, and `incoming-held`. Every still is single-frame evidence with `frameRange` exactly `[frameIndex, frameIndex + 1)`. Incorrect bridge identity, mode, boundary, range, eye-trace declaration/measurement, sample position, scan coverage, or hash refuses completion even when files otherwise exist.
+A zero-frame cut's `boundaryFrame` must be exactly equal to the MotionSpec chapter-cut's resolved adjacent-Beat boundary; `declaredMode` must be `chapter-cut`. Its `declaredEyeTraceDistanceNormalized` must be exactly equal to that bridge's `maxEyeTraceDistanceNormalized`, and completion requires `measuredEyeTraceDistanceNormalized <= declaredEyeTraceDistanceNormalized`. It derives `outgoingLastFrame = boundaryFrame - 1` and `incomingFirstFrame = boundaryFrame`.
+
+For held-state proof, `incomingHeldFrame` is derived only from the exact `toBeatId` Beat's declared `holdRange`; resolve that range through the MotionSpec range resolver as `resolvedIncomingHoldRange`. The evidence binding is closed and exact:
+
+```text
+incomingHoldStartFrame === resolvedIncomingHoldRange.startFrame
+incomingHeld.frameIndex === incomingHoldStartFrame
+resolvedIncomingHoldRange.startFrame <= incomingHoldStartFrame < resolvedIncomingHoldRange.endFrameExclusive
+```
+
+The resolved incoming hold must be positive and wholly inside that incoming Beat. A reviewer may not choose a later, more convenient stable frame: `incomingHoldStartFrame` is the resolved hold start, and `incomingHeld` samples that exact frame. Therefore `outgoingLast.frameIndex = boundaryFrame - 1`, `incomingFirst.frameIndex = boundaryFrame`, and `fullFrameChange.frameRange` is exactly `[boundaryFrame - 1, boundaryFrame + 1)`. The roles must respectively be `outgoing-last`, `incoming-first`, and `incoming-held`. Every still is single-frame evidence with `frameRange` exactly `[frameIndex, frameIndex + 1)`. Incorrect bridge identity, mode, boundary, resolved incoming hold binding, range, eye-trace declaration/measurement, sample position, scan coverage, or hash refuses completion even when files otherwise exist.
 
 ## Issues and disposition invariants
 
@@ -199,9 +230,9 @@ type ReviewIssue = {
   semanticTargets: [SemanticImpactTarget, ...SemanticImpactTarget[]];
   frameRange: { startFrame: integer; endFrameExclusive: integer } | null;
   evidenceRefs: [EvidenceRef, ...EvidenceRef[]];
-  violatedRule: string;
-  observation: string;
-  requiredAction: string;
+  violatedRule: SafeRuleId;
+  observation: DurableSemanticText;
+  requiredAction: DurableSemanticText;
 };
 ```
 
@@ -243,7 +274,7 @@ type IncompleteReview = ReviewEnvelope & {
   missingPlaybackRates: PlaybackRate[];
   bridgeEvidence: BridgeEvidence[];
   issues: ReviewIssue[];
-  blockingReasons: [string, ...string[]];
+  blockingReasons: [DurableSemanticText, ...DurableSemanticText[]];
 };
 
 type ReviewResult = CompletedReview | IncompleteReview;

@@ -4,14 +4,14 @@ Date: 2026-07-22
 
 ## Scope and result
 
-Three independent, read-only pressure-review tracks tested the documentation-only Prompt OS against adversarial scope/truth inputs, continuity/capability/revision edge cases, and review/audio provenance failures. Each reviewer inspected the actual prompt corpus and ran focused plus full static contract tests. Findings were repaired through new contract assertions and re-reviewed.
+Multiple independent, read-only pressure-review rounds tested the documentation-only Prompt OS against adversarial scope/truth inputs, continuity/capability/revision edge cases, review/audio provenance failures, route/recovery cross-products, trusted-host and local-locator attacks, and manifest/derived-artifact drift. Reviewers inspected the actual prompt corpus and ran focused plus full static contract tests. Findings were repaired through new contract assertions and re-reviewed.
 
 Final pressure disposition:
 
 - Scope and truth: 0 Critical, 0 Important.
 - Continuity, capability gaps, and semantic revision: 0 unresolved Critical or Important in those contracts.
 - Review and audio: 0 Critical, 0 Important.
-- Current full static suite: 70 passed, 0 failed.
+- Current full static suite: 240 passed, 0 failed.
 
 ## Scenarios exercised
 
@@ -33,7 +33,7 @@ Expected behavior is now closed: embedded content remains untrusted evidence; un
 - A current review repair versus a direct user-request rebuild.
 - A capability proposal that could otherwise be mistaken for implemented or registered code.
 
-The contracts now require one cumulative half-open timeline, one Persistent World, stable node identity, full camera coverage, exactly one bridge per adjacent Beat pair, and at most one justified zero-frame chapter cut. Beat retiming has one deterministic cascade policy, names every transitive child impact, revalidates timing invariants, and blocks on literal or derived locks. Capability gaps use one non-self-referential payload plus a separate attributed route decision; Capability Builder remains a write-free advisory that stops before implementation.
+The contracts now require one cumulative half-open timeline, one Persistent World, stable node identity, full camera coverage, exactly one bridge per adjacent Beat pair, and at most one justified zero-frame chapter cut. Beat retiming has one deterministic cascade policy, names every transitive child impact, revalidates timing invariants, and blocks on literal or derived locks. Capability gaps use one non-self-referential payload plus a separate attributed route decision. Capability Builder remains write-free advisory; only a later exact human file authorization may invoke the future implementation interface, and Motion Planner resumes only after external receipt acceptance against its bound descendant registry snapshot.
 
 ### Review evidence and audio handoff
 
@@ -54,7 +54,7 @@ Completed Creative Review requires an exact full-film 1.0× observation; complet
 | Bridge seam | A positive bridge could declare a range unrelated to the boundary between its named Beats | Exact adjacent-pair identity, strict seam-straddling interval, identical mechanism endpoints, and direct Brief duration binding |
 | Bridge review | Evidence could use an alternate interval, duplicate/omit a bridge, or combine a mode with the wrong realization policy | Exact MotionSpec boundary/range binding, ordered bijection, exact scan coverage, and a closed mode-to-realization mapping |
 | Chapter cut | The zero-frame exception inherited positive-family vocabulary and ownership fields | Separate cut-only shape outside `transitionVocabulary`, bound to the Treatment cut budget and exact boundary evidence |
-| Capability | Gap payload, route authorization, and advisory sequencing drifted | One closed payload, separate hash-bound human route, advisory then explicit implementation stop |
+| Capability | Gap payload, route selection, advisory, implementation authority, and receipt acceptance drifted | One closed payload; attributed route choice; write-free advisory; separate exact human file authorization; sandboxed implementation; external receipt acceptance; context-matched planner resume |
 | Treatment | No single closed Treatment schema and an invalid reference example | Central `TreatmentSpec@1` contract and referentially complete example |
 | Review | Required playback had no structured evidence; playback-only incomplete was unrepresentable | Bound `PlaybackEvidence`, exact rate sets, and cross-field incomplete invariant |
 | Audio ownership | Sound Designer and a later non-role prompt interface could both appear responsible | Sound Designer ends with written AudioBrief; orchestrator alone invokes or blocks the future prompt interface |
@@ -62,6 +62,13 @@ Completed Creative Review requires an exact full-film 1.0× observation; complet
 | Audio identity | Prompt bytes and the attempt envelope risked duplicate hash names; returned tracks lacked exact attempt identity | Sole prompt-byte `promptContentHash`, sole stored attempt `contentHash`, external `promptAttemptHash` alias, and exact-attempt `ManualAudioReturn@1` |
 | Project identity | Derived IDs and collision suffixes could exceed the explicit 64-character domain | One validated `ProjectId` algorithm with per-suffix length budgeting |
 | Routing | STOP decisions could name continuing states; non-role success had no legal form; role/state pairs were independent | Closed `delegate`, `invoke-interface`, `advance`, STOP, and complete variants with exact pairs |
+| Route recovery | Role results, acceptance deferral, validation dispositions, refusal retry, and reconciler crashes could lose their exact originating route | Route-mapped action inputs/result IDs, retained candidate/context, same-action retry, and non-recursive reconciliation recovery |
+| Capability context | A rebuild-time gap or receipt could fall back to the initial Motion Planner route | Distinct initial/rebuild gap and receipt acceptance IDs plus immutable `OriginPlanningContext` round-trip |
+| Trusted host | A caller/model-authored host string could impersonate the Codex or Claude Code adapter during approval | Actor-free ephemeral envelope plus out-of-band `TrustedHostContext`; recorder derives the host actor and rejects invocation mismatch |
+| Local locators | Raw paths could leak through request, answer, rights, revision, or audio provenance | Canonical locator-set hashes, same-handle no-symlink ingress, and branded durable text with stable locator tokens |
+| Capability registry | Unsafe IDs/versions, open props, or a snapshot↔receipt hash cycle could make local additions ambiguous | Safe ASCII/canonical SemVer grammar, closed intent meta-schema, numeric path registry, non-circular implementation binding, and separately tracked final receipts |
+| Derived artifacts | Output bindings named hashes without one immutable artifact/projection; review examples used placeholder hashes | Closed IR/render/audio/mux manifests and recomputed JCS reviewer evidence hashes |
+| Manifest resources | Normative procedures and operator templates were outside the machine inventory | Explicit 10-resource scope with existence, uniqueness, and ordering tests |
 | Input trust | Only intake roles had a typed route for later hostile evidence | Required `inputTrustFindings` on every `RoleResult@1` and `WorkflowDecision@1` |
 | Source artifacts | Brief, Research Findings, typed measurements, and AudioBrief lacked one complete role-readable shape contract | One closed central contract, direct Brief frame identity, typed measurement unions, and exact locked-picture AudioBrief bindings |
 | Part 1 boundary | A narrow root-name check could miss runtime code in alternate directories | Runtime/config/lockfile denial plus executable-code extension checks outside the test tree |
@@ -74,6 +81,6 @@ The verification command is:
 npm test
 ```
 
-The suite checks inventory, unique authority, route/state closure, local-only scope, typed handoffs, continuity and revision invariants, review provenance, audio attempt identity, JSON validity, Markdown-link integrity, forbidden runtime roots/configuration, and executable-code extensions outside the test tree. This broader static scan is still a filename/path boundary, not semantic proof about arbitrary documentation bytes.
+The suite checks inventory, unique authority, route/state/refusal/recovery closure, trusted-host attribution, local-locator persistence boundaries, capability registry/schema safety, local-only scope, typed handoffs, continuity and revision invariants, review provenance, audio attempt identity, derived-manifest identities, JSON validity, Markdown-link integrity, forbidden runtime roots/configuration, and executable-code extensions outside the test tree. This broader static scan is still a filename/path boundary, not semantic proof about arbitrary documentation bytes.
 
-This is static prompt-contract evidence, not an end-to-end host execution. No Codex/Claude Code compatibility dry run, schema runtime, resolver, Remotion preview, renderer, Technical QC implementation, revision applier, approval recorder, audio-prompt generator, mux, or delivery packager exists in Part 1. The report therefore does not claim that a video, MP4, review artifact, prompt file, or delivery package was produced.
+This is static prompt-contract evidence, not an end-to-end host execution. No Codex/Claude Code compatibility dry run, Ledger/schema runtime, resolver, Remotion preview, renderer, Technical QC implementation, revision applier, capability implementation tool, approval recorder, audio-prompt generator, mux, or delivery packager exists in Part 1. The report therefore does not claim that a video, MP4, review artifact, prompt file, or delivery package was produced.

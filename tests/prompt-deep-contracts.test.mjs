@@ -22,19 +22,21 @@ test('capability gaps are durable and code-building authority stays future-only'
   const manifest = JSON.parse(read('agent/prompt-manifest.json'));
   const planner = manifest.roles.find((role) => role.id === 'motion-planner');
   const builder = manifest.roles.find((role) => role.id === 'capability-builder');
-  assert.deepEqual(planner.writes, [
-    'projects/<project-id>/motion.spec.json',
-    'projects/<project-id>/capability-gaps/<gap-id>.json',
+  assert.deepEqual(planner.writes, []);
+  assert.deepEqual(planner.candidateOutputs, [
+    'projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/motion.spec.json',
+    'projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/motion.spec.json',
+    'projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/capability-gap.json',
+    'projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/capability-gap.json',
   ]);
   assert.deepEqual(builder.writes, []);
+  assert.deepEqual(builder.candidateOutputs, []);
   assert.equal(builder.availability, 'interface-stub');
-  assert.deepEqual(builder.futureWrites, [
-    'projects/<project-id>/capabilities/<capability-id>/capability.manifest.json',
-  ]);
-  assert.ok(builder.futureWrites.every((path) => !path.includes('**')));
+  assert.equal(builder.implementationOwner, 'project-local-capability-implementation-and-registration');
+  assert.equal('futureWrites' in builder, false);
 
   const plannerPrompt = read('agent/prompts/motion-planner.md');
-  assert.match(plannerPrompt, /capability-gaps\/<gap-id>\.json/);
+  assert.match(plannerPrompt, /candidate-attempt-id>\/capability-gap\.json/);
   assert.match(plannerPrompt, /content hash/i);
   assert.match(plannerPrompt, /route.+authoriz/i);
   assert.doesNotMatch(plannerPrompt, /inline only/i);
@@ -45,21 +47,24 @@ test('the semantic revision contract is discriminated, lock-bound and resistant 
   const prompt = read('agent/prompts/revision-interpreter.md');
   for (const operation of [
     'replace-copy', 'set-token', 'retime-beat', 'retime-bridge', 'set-node-state',
-    'swap-renderer', 'set-effects', 'set-continuity-bridge', 'replace-brief',
-    'replace-treatment', 'replace-motion-spec', 'set-lock', 'remove-lock',
+    'swap-renderer', 'set-effects', 'set-continuity-bridge', 'set-lock', 'remove-lock',
   ]) {
     assert.match(contract, new RegExp(operation));
+  }
+  for (const forbidden of ['replace-brief', 'replace-treatment', 'replace-motion-spec']) {
+    assert.doesNotMatch(contract, new RegExp(forbidden));
   }
   for (const entity of ['brief', 'treatment', 'beat', 'bridge', 'node', 'camera', 'motion-cue', 'token']) {
     assert.match(contract, new RegExp(`entity[^\\n]+${entity}`, 'i'));
   }
   assert.match(contract, /expectedLockSetHash/);
-  assert.match(contract, /bounded[\s\S]+must not[\s\S]+replace-(?:brief|treatment|motion-spec)/i);
+  assert.match(contract, /type BoundedSemanticPatch[\s\S]+operations:[\s\S]+rebuildFrom\?:\s*never/i);
   assert.match(contract, /cause[\s\S]+user-request[\s\S]+review-repair/i);
   assert.match(contract, /review-repair[\s\S]+triggeringReviewIssueIds[\s\S]+repairCycleId/i);
   assert.match(contract, /user-request[\s\S]+triggeringReviewIssueIds[^\n]+never/i);
-  assert.match(contract, /rebuild[\s\S]+replace-(?:brief|treatment|motion-spec)/i);
-  assert.match(contract, /remove-lock[\s\S]+verbatim user instruction/i);
+  assert.match(contract, /rebuildFrom:\s*"brief"\s*\|\s*"treatment"\s*\|\s*"motion-spec"/i);
+  assert.match(contract, /rebuild[\s\S]+replacement payloads are forbidden/i);
+  assert.match(contract, /remove-lock[\s\S]+durable instruction/i);
   assert.match(prompt, /agent\/contracts\/revision-contract\.md/);
   assert.match(prompt, /expectedLockSetHash/);
   assert.match(prompt, /remove-lock[\s\S]+must not[\s\S]+evade/i);
@@ -116,10 +121,10 @@ test('all roles use one typed RoleResult and treat inspected content as untruste
   const resultContract = read('agent/contracts/role-result.md');
   const trustContract = read('agent/contracts/input-trust.md');
   assert.match(resultContract, /status.+written[\s\S]+status.+blocked/is);
-  assert.match(resultContract, /awaiting-interface/i);
+  assert.doesNotMatch(resultContract, /status:\s*"awaiting-interface"/i);
   assert.match(resultContract, /status.+advisory/is);
-  assert.match(resultContract, /advisory[\s\S]+must not[\s\S]+(?:artifactPath|gate evidence)/i);
-  assert.match(resultContract, /observedBindings/);
+  assert.match(resultContract, /advisory[\s\S]+(?:must not|never)[\s\S]+(?:artifact path|gate evidence)/i);
+  assert.match(resultContract, /status:\s*"written"[\s\S]+artifactCandidate:\s*AllowedArtifactCandidateForRoleRoute<R>/i);
   assert.match(trustContract, /untrusted evidence/i);
   assert.match(trustContract, /embedded instructions/i);
   assert.match(trustContract, /must not.+follow.+link/is);
@@ -145,13 +150,16 @@ test('research measurements are typed and partial findings have a clear blocked 
 test('AudioBrief binds all locked-picture evidence and prompt-tool absence blocks only AUDIO_PROMPT', () => {
   const prompt = read('agent/prompts/sound-designer.md');
   const artifacts = read('agent/contracts/artifact-contracts.md');
+  const workflow = read('agent/video-workflow.md');
   for (const field of ['previewApprovalHash', 'renderManifestHash', 'silentMasterHash']) {
     assert.match(prompt, new RegExp(field));
     assert.match(artifacts, new RegExp(field));
   }
   assert.match(prompt, /both.+review.+ship/is);
   assert.match(prompt, /Technical QC.+pass/is);
-  assert.match(prompt, /unavailable[\s\S]+AUDIO_PROMPT[\s\S]+not[\s\S]+AUDIO_BRIEF/i);
+  assert.match(prompt, /After a valid write[\s\S]+return `written`[\s\S]+unavailable later prompt interface/i);
+  assert.match(workflow, /AUDIO_PROMPT[\s\S]+audio-prompt-generator success[\s\S]+WAITING_FOR_MANUAL_MUSIC/i);
+  assert.match(workflow, /Recoverable waiting never writes terminal `STOP`/i);
 });
 
 test('craft manifest is read-only, on-demand and authority-compatible', () => {

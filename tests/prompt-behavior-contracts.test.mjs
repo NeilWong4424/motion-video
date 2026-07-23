@@ -120,5 +120,5 @@ test('unsupported product expansion is routed out of scope', () => {
   assert.match(workflow, /web (?:application|product|dashboard)/i);
   assert.match(workflow, /queue|database/i);
   assert.match(workflow, /AI-generated (?:image|video)/i);
-  assert.match(workflow, /must not[\s\S]+expand.+scope/i);
+  assert.match(workflow, /(?:must not|do not)[\s\S]+expand.+scope/i);
 });

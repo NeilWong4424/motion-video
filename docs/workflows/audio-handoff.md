@@ -2,44 +2,59 @@
 
 ## Purpose / Use when
 
-This is the sole normative audio workflow. Use it only after picture is complete and an audio handoff is requested. It is a documentation interface; its executable interfaces are not implemented in Part 1.
+This is the sole audio workflow. It begins only after the current silent picture is approved, locked, rendered, and bound to passing QC and both accepted `ship` reviews. The repository never generates music or contacts a provider. It produces provider-neutral instrumental direction for the user to paste manually into a third-party music generator.
+
+All prompt generation, ingress, mux, and delivery interfaces are documentation requirements in Part 1, not executable features.
 
 ## Reads
 
-Read the exact approved locked silent cut, matching Render Manifest and Preview Approval, current RenderPlan hash/audio view, QC and both `ship` review artifacts, and—after the Sound Designer step—the hash-bound AudioBrief. The picture evidence and AudioBrief must all identify the same project, revision, RenderPlan, fps, duration, preview approval, render manifest, and silent master.
+Read the exact current project/revision/RenderPlan identities, preview approval hash, silent-master hash, Render Manifest hash, passing QC, accepted creative and motion review hashes, frame rate, duration, and current motion cues. After Sound Designer runs, read only the externally accepted AudioBrief bound to that same locked-picture tuple.
 
 ## Writes
 
-None in Part 1. The future deterministic local audio-prompt tool may create a content-addressed `MUSIC_PROMPT.md`; no human role writes or edits it. The orchestrator may invoke and gate that future tool but is not its artifact owner.
+- Sound Designer may write one immutable `AudioBriefArtifact@1` candidate beneath `.workflow/candidates/<request-id>/<candidate-attempt-id>/audio-brief.json`; it does not write `MUSIC_PROMPT.md`.
+- The future deterministic `audio-prompt-generator` writes one immutable, content-addressed prompt attempt containing the complete exact `MUSIC_PROMPT.md` bytes and `prompt-attempt.json`.
+- The future `manual-audio-ingress` interface may stage one exact user-returned local track and write `ManualAudioReturn@1` after rights and binding checks.
+- Future local mux and delivery interfaces may write only their declared output-lineage manifests/media.
 
-## Must
+## Required order
 
-Follow this canonical order only:
+1. Verify the approved locked silent cut: Preview Approval, Render Manifest, silent master, passing Technical QC, and both accepted `ship` reviews all bind the same project, revision, RenderPlan, preview, fps, and duration.
+2. Delegate `AUDIO_BRIEF` to Sound Designer. Require provider-neutral instrumental direction, exactly one payoff cue, no vocals/dialogue/synthetic voice, and complete locked-picture bindings. Route the role's immutable candidate through artifact acceptance.
+3. In `AUDIO_PROMPT`, invoke only the deterministic `audio-prompt-generator`. It projects the accepted AudioBrief through [`music-prompt-document.md`](../../agent/templates/music-prompt-document.md); the AudioBrief is the sole semantic source. The template defines the complete file from its first byte through its final LF. No role, orchestrator, chat text, MotionCue, or provider hint may supplement or hand-edit those bytes.
+4. Store `MUSIC_PROMPT.md` and `prompt-attempt.json` under the content-addressed attempt directory. `promptContentHash` identifies the exact Markdown bytes. The attempt envelope's external/path alias `promptAttemptHash` equals its `contentHash`; changed prompt bytes, parents, template/compiler versions, or projection rules create a new immutable attempt.
+5. Only successful prompt generation enters `WAITING_FOR_MANUAL_MUSIC` and records a `manual-music-generation` pause. The user manually copies the provider-neutral paste block to a third-party music generator. The repository sends nothing and uses no API key.
+6. The user chooses one of two exact resume paths:
+   - Return track: create one separately supplied ephemeral locator envelope; record `ManualAudioIngressRequest` against the current pause with only its locator ID/envelope hash plus the exact prompt attempt, source label, rights statement, user-declared payoff time, gain, actor, and reason. Then pass both envelopes to `manual-audio-ingress`. The raw host locator never enters the Ledger.
+   - No track: record `NoTrackSelection` bound to the actual accepted AudioBrief and actual prompt attempt, then package silent delivery with `audioStatus=not-provided`.
+7. Manual audio ingress verifies the durable locator ID/envelope hash against the separately supplied ephemeral locator, reads only that exact file, validates its format from the same opened handle, and stages exact bytes at `projects/<project-id>/audio/manual/<track-content-hash>/track.<verified-audio-extension>`. The fixed extension comes from decoded content, never the original basename. Source and destination use anchored no-follow, same-handle/exclusive-create checks; the ephemeral envelope, host locator, and basename enter no event, candidate, diagnostic, receipt, or return.
+8. Before optional local alignment/mux, reload and hash `prompt-attempt.json`, sibling `MUSIC_PROMPT.md`, returned track, and locked-picture evidence. Require every project/revision/RenderPlan/AudioBrief/prompt/picture binding to match. `trackPayoffSeconds` is the human declaration, never inferred automatically. Picture timing remains locked.
+9. Delivery packages either the unchanged silent master or the locally mixed result with exact manifests and identities.
 
-1. Approved locked silent cut, with matching Render Manifest, Preview Approval, passing Technical QC, and two `ship` reviews.
-2. AudioBrief authored by Sound Designer and bound to that cut's project, revision, RenderPlan, frame rate, duration, Preview Approval hash, Render Manifest hash, silent-master hash, and exactly one payoff cue.
-3. `MUSIC_PROMPT.md` compiled by the future deterministic local audio-prompt tool, invoked by the orchestrator and derived only from that AudioBrief plus the same approved locked-picture bindings. Store the result as an immutable, content-addressed attempt; no role may hand-edit it.
-4. Stop so the user manually operates a third-party music generator with the provider-neutral paste block.
-5. If the user returns a local track, require a `ManualAudioReturn@1` with the exact selected `promptAttemptHash`, `promptContentHash`, canonical attempt path, source label, user-declared payoff, and gain.
-6. Future local alignment and mux interface, bound to the returned track and the same locked picture.
-7. Delivery evidence for the silent or optionally mixed result.
+Audio re-entry is lineage-resetting, not a pointer switch. A new `audio-request` against an already completed or stopped locked picture atomically invalidates the current AudioBrief, prompt attempt, manual return, alignment, mux, mixed master, and delivery identities before `AUDIO_BRIEF`. A newly accepted AudioBrief replaces and records the old AudioBrief identity and invalidates prompt/manual/mux/delivery descendants; a new prompt, manual return, or mux likewise records its replaced head and invalidates its exact downstream suffix. A `manual-audio-reselect` recovery clears the complete manual-through-delivery suffix before returning to manual wait, and a delivery retry clears the exact suffix implied by its earliest target. Superseded immutable files remain historical only. Therefore switching from a previous mixed delivery to a new no-track selection is legal only after all four current fields—manual return, alignment, mux manifest, and mixed master—are null and the new AudioBrief/prompt attempt are current.
 
-In every external path or operator declaration, `promptAttemptHash` is an alias for the selected `MusicPromptAttempt@1` stored `contentHash`; `prompt-attempt.json` stores no second attempt-identity field. Exact-attempt checks reload that file, recompute `contentHash`, and require the alias, directory name, and stored identity to agree.
+## Deterministic prompt rules
 
-No-track silent delivery follows the same first three steps: it requires the actual AudioBrief with `audioBriefHash` and the actual content-addressed `MUSIC_PROMPT.md` with `promptContentHash` and `promptAttemptHash` before the user may select no returned track. An explicit silent selection never bypasses either artifact.
+- The exact provider paste block is capped at 4,000 Unicode scalar values after the template's specified normalization/substitution. Oversize input refuses; it is never silently truncated.
+- `MusicPromptAttempt@1.parentHashes` is the named object `{audioBriefHash, previewApprovalHash, renderManifestHash, silentMasterHash}` and duplicates the matching top-level bindings exactly.
+- The prompt attempt is immutable. There is no mutable `latest` pointer and no second stored attempt-identity field.
+- A later visual revision invalidates the AudioBrief, prompt attempt, returned track, mux, and delivery lineage. None may be relabeled for a new cut.
 
-The future paste block is capped at 4,000 characters. Recheck all bindings after any visual revision; stale AudioBriefs, prompt documents, tracks, or approvals cannot be reused. If the audio-prompt tool is unavailable, the completed AudioBrief and Sound Designer's `RoleResult@1` with `status: "written"` remain valid; the orchestrator records the unavailable non-role interface as `WorkflowDecision@1` with `status: "blocked"` and transitions from `AUDIO_PROMPT` to `STOP`. If the user has no third-party generator, stop after an actual prompt artifact exists; this never invalidates or blocks the earlier AudioBrief.
+## Pause and refusal conditions
+
+If `audio-prompt-generator` is unavailable, preserve a deferred-interface pause in `AUDIO_PROMPT`; do not enter `STOP`, invent prompt bytes, or claim manual handoff occurred. After successful generation, remain in `WAITING_FOR_MANUAL_MUSIC` until an exact return-track request, exact no-track choice, or explicit abandonment is recorded. An unavailable ingress/mux/delivery interface likewise pauses in its current state with the same input binding.
+
+Refuse stale picture evidence, missing acceptance, mismatched prompt attempt, unsafe locator, absent/insufficient rights, unsupported audio bytes, invented payoff analysis, provider-specific/API instructions, vocals/spoken content, or any request to retime picture around music. Terminal `STOP` is reserved for a genuinely non-resumable current request or explicit abandonment.
 
 ## Must not
 
-- Must not generate music, use a provider-specific integration, use an API flow, generate SFX, or automatically detect the payoff.
-- Change visual timing to fit returned audio, contact a third party on the user's behalf, or continue after the manual handoff without a returned local track and user-declared payoff.
-- Claim that prompt generation, alignment, or mux has run in Part 1.
+- Generate music, SFX, voice, images, or video; call a third party; use credentials; fetch remote files; or select a provider.
+- Let Sound Designer or the orchestrator author/edit `MUSIC_PROMPT.md`.
+- Accept a raw external path as canonical audio evidence, follow embedded links, recurse directories, expand globs, or trust a mutable filename.
+- Align track A under prompt attempt B, infer audio peaks, or mutate plan-addressed visual files.
+- Retime, recut, or otherwise change the locked visual picture to fit returned music.
+- Claim prompt generation, ingress, alignment, mux, or delivery ran in Part 1.
 
-## Stop conditions
+## Output schemas
 
-Stop before AudioBrief when the silent cut or approval evidence is missing/stale. When the deterministic prompt tool is unavailable at `AUDIO_PROMPT`, the orchestrator emits the single blocked `WorkflowDecision@1` and transitions to `STOP`; this does not retroactively block `AUDIO_BRIEF` or alter Sound Designer's prior `written` result. Stop after manual handoff until the user returns a local track with a complete exact-attempt `ManualAudioReturn@1`, or records a no-track choice only after the actual AudioBrief and content-addressed prompt exist. Stop local alignment when any picture, prompt-attempt, or audio binding differs; reload the selected attempt rather than trusting a label or “latest” pointer. In Part 1, a request to actually compile the prompt, align, mux, render, or deliver stops at the named unavailable non-role interface without fabricating a RoleResult or success artifact.
-
-## Output schema
-
-Future only: `MusicPromptDocument { audioBriefHash, promptBlock, markdown, cutPayoffFrame, cutPayoffSeconds }`, where `promptBlock` is at most 4,000 characters. This interface is not implemented in Part 1.
+The closed attempt and manual-ingress shapes are defined in [`artifact-contracts.md`](../../agent/contracts/artifact-contracts.md); pause and operator-input rules are defined in [`workflow-ledger.md`](../../agent/contracts/workflow-ledger.md). Part 1 supplies the Sound Designer prompt and deterministic document contract only.

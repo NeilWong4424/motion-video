@@ -94,11 +94,11 @@ test('CapabilityGap payload, route decision, and advisory sequencing use one con
   assert.match(contract, /type CapabilityGapRouteDecision/i);
   assert.match(contract, /gapPath[\s\S]+gapContentHash[\s\S]+decision[\s\S]+actor[\s\S]+reason/i);
   assert.match(contract, /payload[\s\S]+must not[\s\S]+(?:routeRequest|authoriz)/i);
-  for (const text of [workflow, planner, builder]) {
+  for (const text of [planner, builder]) {
     assert.match(text, /agent\/contracts\/capability-gap-contract\.md/);
     assert.doesNotMatch(text, /authorizedByActor|authorizationReason|chosenRoute/);
   }
-  assert.match(workflow, /CAPABILITY_ADVISORY[\s\S]+STOP_AWAITING_SEPARATE_IMPLEMENTATION/i);
+  assert.match(workflow, /CAPABILITY_ADVISORY[\s\S]+WAITING_FOR_CAPABILITY_IMPLEMENTATION/i);
 });
 
 test('TreatmentSpec has one normative closed documentation contract', () => {
@@ -110,7 +110,7 @@ test('TreatmentSpec has one normative closed documentation contract', () => {
   }
   assert.match(contract, /closed/i);
   assert.match(creative, /agent\/contracts\/treatment-contract\.md/);
-  assert.match(revision, /agent\/contracts\/treatment-contract\.md/);
+  assert.match(revision, /owner sequence|owner-scoped/i);
   assert.match(creative, /"id": "beat-2"/);
 });
 
@@ -120,7 +120,7 @@ test('WorkflowDecision closes no-delegation, project identity, and quick default
   assert.match(contract, /decisionKind[\s\S]+out-of-scope/i);
   assert.match(contract, /delegatedRole:\s*null/i);
   assert.match(contract, /projectId:\s*ProjectId\s*\|\s*null/i);
-  assert.match(contract, /first available[\s\S]+-2[\s\S]+-3/i);
+  assert.match(contract, /Try `base`, `base-2`, `base-3`/i);
   assert.match(contract, /1920[×x]1080/i);
   assert.match(contract, /30\s*fps/i);
   assert.match(workflow, /agent\/contracts\/workflow-decision\.md/);
@@ -129,48 +129,54 @@ test('WorkflowDecision closes no-delegation, project identity, and quick default
 test('every allocated ProjectId satisfies one bounded invariant including collision suffixes', () => {
   const contract = read('agent/contracts/workflow-decision.md');
   assert.match(contract, /type ProjectId/i);
-  assert.match(contract, /final candidate[\s\S]+64 characters/i);
-  assert.match(contract, /suffix[\s\S]+64\s*-\s*suffix\.length/i);
-  assert.match(contract, /truncate[\s\S]+normalized base[\s\S]+trim.+trailing.+hyphen/i);
-  assert.match(contract, /revalidate[\s\S]+final candidate[\s\S]+same.+invariant/i);
-  assert.match(contract, /suffix\.length[^\n]+(?:63|cannot form|needs-user)/i);
+  assert.match(contract, /ProjectId[\s\S]+at most 64 characters/i);
+  assert.match(contract, /suffix `s`[\s\S]+64\s*-\s*s\.length/i);
+  assert.match(contract, /truncate the base[\s\S]+trim its trailing hyphen/i);
+  assert.match(contract, /append `s`, and revalidate/i);
+  assert.match(contract, /no non-empty legal candidate can form[\s\S]+pause/i);
 });
 
-test('non-delegating WorkflowDecision variants cannot point at a continuing state', () => {
+test('non-delegating WorkflowDecision distinguishes resumable pauses from terminal refusal', () => {
   const contract = read('agent/contracts/workflow-decision.md');
   const baseStart = contract.indexOf('type WorkflowDecisionBase');
   const base = contract.slice(baseStart, contract.indexOf('\n};', baseStart) + 3);
   assert.doesNotMatch(base, /toState:/);
-  for (const kind of ['needs-user', 'blocked', 'out-of-scope']) {
+  for (const kind of ['blocked', 'out-of-scope']) {
     const start = contract.indexOf(`decisionKind: "${kind}"`);
     const end = contract.indexOf('\n  | (WorkflowDecisionBase & {', start + 1);
     const variant = contract.slice(start, end === -1 ? undefined : end);
     assert.match(variant, /toState:\s*"STOP"/, `${kind} must terminate at STOP`);
   }
+  assert.match(contract, /type PauseDecisionFor<P extends NonUserWorkflowPause>[\s\S]+fromState:\s*P\["state"\];[\s\S]+toState:\s*P\["state"\]/i);
+  assert.match(contract, /type NeedsUserDecisionFor<P extends RequiredUserInputPause>[\s\S]+fromState:\s*P\["state"\];[\s\S]+toState:\s*P\["state"\]/i);
+  assert.doesNotMatch(contract, /decisionKind:\s*"needs-user"[\s\S]{0,500}toState:\s*"STOP"/i);
   assert.match(contract, /type OutOfScopeCode\s*=/);
   assert.doesNotMatch(contract, /outOfScopeCodes:\s*\[string,/);
-  assert.match(contract, /decisionKind:\s*"complete"[\s\S]+fromState:\s*"DELIVERY"[\s\S]+toState:\s*"COMPLETE"/i);
+  assert.match(contract, /fromState:\s*"WAITING_FOR_MANUAL_MUSIC"; toState:\s*"COMPLETE"; interfaceId:\s*"delivery-packager"/i);
+  assert.match(contract, /fromState:\s*"DELIVERY"; toState:\s*"COMPLETE"; interfaceId:\s*"delivery-packager"/i);
 });
 
 test('WorkflowDecision represents non-role interface calls without fabricated delegation', () => {
   const contract = read('agent/contracts/workflow-decision.md');
   assert.match(contract, /type InterfaceInvocationRoute\s*=/i);
   assert.match(contract, /decisionKind:\s*"invoke-interface"[\s\S]+status:\s*"continue"[\s\S]+delegatedRole:\s*null/i);
-  for (const [state, interfaceId] of [
-    ['VALIDATE', 'canonical-source-hashing-and-validation'],
-    ['SNAPSHOT', 'initial-snapshot'],
-    ['APPLY_SEMANTIC_REVISION', 'semantic-revision-apply'],
-    ['RESOLVE', 'resolver-compiler'],
-    ['PREVIEW', 'preview-evidence-renderer'],
-    ['TECHNICAL_QC', 'technical-qc'],
-    ['RECORD_PREVIEW_APPROVAL', 'approval-recorder'],
-    ['SILENT_FINAL', 'silent-final-renderer'],
-    ['AUDIO_PROMPT', 'audio-prompt-generator'],
-    ['OPTIONAL_LOCAL_MUX', 'local-alignment-mux'],
-    ['DELIVERY', 'delivery-packager'],
+  for (const [fromState, toState, interfaceId] of [
+    ['VALIDATE', 'SNAPSHOT', 'canonical-source-hashing-and-validation'],
+    ['SNAPSHOT', 'VALIDATE', 'initial-snapshot'],
+    ['APPLY_SEMANTIC_REVISION', 'VALIDATE', 'semantic-revision-apply'],
+    ['WAITING_FOR_CAPABILITY_IMPLEMENTATION', 'WAITING_FOR_CAPABILITY_IMPLEMENTATION', 'project-local-capability-implementation-and-registration'],
+    ['RESOLVE', 'PREVIEW', 'resolver-compiler'],
+    ['PREVIEW', 'TECHNICAL_QC', 'preview-evidence-renderer'],
+    ['TECHNICAL_QC', 'CREATIVE_AND_MOTION_REVIEW', 'technical-qc'],
+    ['RECORD_PREVIEW_APPROVAL', 'APPROVED', 'approval-recorder'],
+    ['SILENT_FINAL', 'AUDIO_BRIEF', 'silent-final-renderer'],
+    ['AUDIO_PROMPT', 'WAITING_FOR_MANUAL_MUSIC', 'audio-prompt-generator'],
+    ['OPTIONAL_LOCAL_MUX', 'DELIVERY', 'local-alignment-mux'],
   ]) {
-    assert.match(contract, new RegExp(`toState: "${state}"[\\s\\S]+interfaceId: "${interfaceId}"`, 'i'));
+    assert.match(contract, new RegExp(`fromState: "${fromState}"[^\\n]+toState: "${toState}"[^\\n]+interfaceId: "${interfaceId}"`, 'i'));
   }
+  assert.match(contract, /fromState: "WAITING_FOR_MANUAL_MUSIC"; toState: "COMPLETE"; interfaceId: "delivery-packager"/i);
+  assert.match(contract, /fromState: "DELIVERY"; toState: "COMPLETE"; interfaceId: "delivery-packager"/i);
   assert.match(contract, /type OrchestrationAdvanceRoute\s*=/i);
   assert.match(contract, /decisionKind:\s*"advance"[\s\S]+delegatedRole:\s*null[\s\S]+interfaceId:\s*null/i);
 });
@@ -178,23 +184,23 @@ test('WorkflowDecision represents non-role interface calls without fabricated de
 test('role delegation target state and role authority are one discriminated pair', () => {
   const contract = read('agent/contracts/workflow-decision.md');
   assert.match(contract, /type RoleDelegationTarget\s*=/i);
-  for (const [state, role] of [
-    ['FACT_CHECK', 'researcher'],
-    ['BRIEF', 'brief-planner'],
-    ['TREATMENT', 'creative-direction'],
-    ['MOTION_SPEC', 'motion-planner'],
-    ['CAPABILITY_ADVISORY', 'capability-builder'],
-    ['REVISION_INTERPRET', 'revision-interpreter'],
-    ['AUDIO_BRIEF', 'sound-designer'],
-    ['CREATIVE_AND_MOTION_REVIEW', 'creative-reviewer'],
-    ['CREATIVE_AND_MOTION_REVIEW', 'motion-reviewer'],
+  for (const [fromState, toState, role] of [
+    ['FACT_CHECK', 'FACT_CHECK', 'researcher'],
+    ['BRIEF', 'BRIEF', 'brief-planner'],
+    ['TREATMENT', 'TREATMENT', 'creative-direction'],
+    ['MOTION_SPEC', 'MOTION_SPEC', 'motion-planner'],
+    ['CAPABILITY_GAP', 'CAPABILITY_ADVISORY', 'capability-builder'],
+    ['REVISION_INTERPRET', 'REVISION_INTERPRET', 'revision-interpreter'],
+    ['AUDIO_BRIEF', 'AUDIO_BRIEF', 'sound-designer'],
+    ['CREATIVE_AND_MOTION_REVIEW', 'CREATIVE_AND_MOTION_REVIEW', 'creative-reviewer'],
+    ['CREATIVE_AND_MOTION_REVIEW', 'CREATIVE_AND_MOTION_REVIEW', 'motion-reviewer'],
   ]) {
-    assert.match(contract, new RegExp(`toState: "${state}"[\\s\\S]+delegatedRole: (?:"${role}"|"creative-reviewer" \\| "motion-reviewer")`, 'i'));
+    assert.match(contract, new RegExp(`fromState: "${fromState}"; toState: "${toState}"; delegatedRole: (?:"${role}"|"creative-reviewer" \\| "motion-reviewer")`, 'i'));
   }
   const delegateStart = contract.indexOf('decisionKind: "delegate"');
   const delegateEnd = contract.indexOf('\n  | (WorkflowDecisionBase &', delegateStart);
   const delegateVariant = contract.slice(delegateStart, delegateEnd);
-  assert.match(contract, /WorkflowDecisionBase\s*&\s*RoleDelegationTarget\s*&\s*\{[\s\S]+decisionKind:\s*"delegate"/i);
+  assert.match(contract, /type RoleDelegationDecisionFor<R extends RoleDelegationRoute>\s*=\s*[\s\S]+WorkflowDecisionBase\s*&\s*R\s*&\s*NormalActionIdentityFor<R>[\s\S]+decisionKind:\s*"delegate"/i);
   assert.doesNotMatch(delegateVariant, /toState:\s*Exclude|delegatedRole:\s*WorkflowRoleId/);
 });
 
@@ -240,16 +246,16 @@ test('silent delivery cannot bypass AudioBrief and the actual prompt attempt', (
   assert.match(artifacts, /promptContentHash/i);
   assert.match(delivery, /silent[\s\S]+audioBriefHash[\s\S]+promptContentHash/i);
   assert.doesNotMatch([artifacts, workflow, delivery].join('\n'), /musicPromptHash/i);
-  assert.match(workflow, /delivery request[\s\S]+actual[\s\S]+MUSIC_PROMPT\.md/i);
+  assert.match(workflow, /No-track is valid only after the actual AudioBrief and prompt attempt exist/i);
 });
 
 test('ManualAudioReturn binds one exact prompt attempt and rejects cross-attempt mixing', () => {
   const artifacts = read('agent/contracts/artifact-contracts.md');
   const interfaces = read('agent/contracts/engine-interface.md');
   const audio = read('docs/workflows/audio-handoff.md');
-  assert.match(artifacts, /type ManualAudioReturn[\s\S]+promptAttemptHash:\s*string[\s\S]+promptContentHash:\s*string[\s\S]+promptAttemptPath:\s*string/i);
+  assert.match(artifacts, /type ManualAudioReturn[\s\S]+promptAttemptHash:\s*string[\s\S]+promptContentHash:\s*string[\s\S]+promptAttemptPath:\s*RepositoryArtifactPath/i);
   assert.match(artifacts, /reload[\s\S]+prompt-attempt\.json[\s\S]+recompute[\s\S]+promptAttemptHash/i);
-  assert.match(artifacts, /must equal[\s\S]+selected[\s\S]+prompt attempt/i);
+  assert.match(artifacts, /Track A cannot be aligned under attempt B/i);
   assert.match(interfaces, /cross-attempt/i);
   assert.match(audio, /promptAttemptHash/i);
 });
@@ -279,18 +285,18 @@ test('music prompt attempts have one content-addressed path and complete binding
     assert.match(template, new RegExp(field));
   }
   assert.match(artifacts, /promptAttemptHash/);
-  const storedAttemptFields = /`MusicPromptAttempt@1` is `\{([^}]*)\}`/.exec(artifacts)?.[1];
+  const storedAttemptFields = /type MusicPromptAttempt\s*=\s*\{([\s\S]*?)\n\};/.exec(artifacts)?.[1];
   assert.ok(storedAttemptFields, 'MusicPromptAttempt@1 needs an explicit stored-field projection');
   assert.match(storedAttemptFields, /\bcontentHash\b/);
   assert.doesNotMatch(storedAttemptFields, /\bpromptAttemptHash\b/);
   assert.match(artifacts, /promptAttemptHash[\s\S]+(?:external|path)[\s\S]+alias[\s\S]+(?:equals|equal to)[\s\S]+contentHash/i);
-  assert.match(artifacts, /prompt-attempt\.json[\s\S]+does not store[\s\S]+(?:second|separate)[\s\S]+promptAttemptHash/i);
-  assert.match(template, /prompt-attempt\.json[\s\S]+records[\s\S]+contentHash[\s\S]+promptContentHash/i);
+  assert.match(artifacts, /prompt-attempt\.json[\s\S]+stores no second `promptAttemptHash`/i);
+  assert.match(template, /prompt-attempt\.json[\s\S]+stores[\s\S]+contentHash[\s\S]+promptContentHash/i);
   assert.match(template, /does not store[\s\S]+promptAttemptHash/i);
-  assert.match(audioWorkflow, /promptAttemptHash[\s\S]+alias[\s\S]+MusicPromptAttempt@1[\s\S]+contentHash/i);
+  assert.match(audioWorkflow, /attempt envelope's external\/path alias `promptAttemptHash` equals its `contentHash`/i);
 });
 
-test('missing Part 2 interfaces use the defined role status and workflow stop', () => {
+test('missing Part 2 interfaces use same-state pauses and never a role-owned wait result', () => {
   const paths = [
     'agent/contracts/role-result.md',
     'craft/delivery.md',
@@ -299,22 +305,22 @@ test('missing Part 2 interfaces use the defined role status and workflow stop', 
   ];
   const corpus = paths.map(read).join('\n');
   assert.doesNotMatch(corpus, /AWAITING_ENGINE_INTERFACE/);
-  assert.match(corpus, /status:\s*"awaiting-interface"|status`?\s+(?:is|=)\s+`?awaiting-interface/i);
+  assert.doesNotMatch(corpus, /status:\s*"awaiting-interface"|status`?\s+(?:is|=)\s+`?awaiting-interface/i);
+  assert.doesNotMatch(corpus, /unavailable[\s\S]{0,300}(?:transitions?|followed by)[\s\S]{0,80}`STOP`/i);
   const workflow = read('agent/video-workflow.md');
-  assert.match(workflow, /AWAITING_ENGINE_INTERFACE.+not a canonical state/i);
-  assert.match(workflow, /awaiting-interface[\s\S]+STOP/i);
+  assert.match(workflow, /Recoverable waiting never writes terminal `STOP`/i);
+  assert.match(workflow, /deferred-interface retry[\s\S]+same interface only/i);
 });
 
 test('the orchestrator alone records an unavailable AUDIO_PROMPT interface boundary', () => {
   const workflow = read('agent/video-workflow.md');
   const audio = read('docs/workflows/audio-handoff.md');
   const soundDesigner = read('agent/prompts/sound-designer.md');
-  const audioState = workflow.slice(workflow.indexOf('\nAUDIO_PROMPT\n'), workflow.indexOf('\nSTOP_MANUAL_MUSIC_GENERATION\n'));
-  assert.match(audioState, /unavailable[\s\S]+WorkflowDecision\(status=blocked\)[\s\S]+STOP/i);
-  assert.doesNotMatch(audioState, /RoleResult/);
-  assert.match(audio, /orchestrator[\s\S]+WorkflowDecision@1[\s\S]+status:\s*["`]blocked["`]/i);
-  assert.doesNotMatch(audio, /delegated owner returns `RoleResult@1` with `status: "awaiting-interface"`/i);
-  assert.match(soundDesigner, /valid AudioBrief write[\s\S]+return `written`/i);
+  assert.match(workflow, /AUDIO_PROMPT[\s\S]+audio-prompt-generator success[\s\S]+WAITING_FOR_MANUAL_MUSIC/i);
+  assert.match(workflow, /unavailable future interfaces[\s\S]+preserve their exact workflow state/i);
+  assert.match(audio, /If `audio-prompt-generator` is unavailable[\s\S]+deferred-interface pause in `AUDIO_PROMPT`/i);
+  assert.doesNotMatch(audio, /status:\s*["`]awaiting-interface["`]/i);
+  assert.match(soundDesigner, /After a valid write, return `written`[\s\S]+unavailable later prompt interface/i);
 });
 
 test('delivery interface names the mandatory AudioBrief and prompt-attempt evidence', () => {
@@ -365,14 +371,14 @@ test('role-authored source artifacts inherit one closed central contract', () =>
   const research = example('agent/prompts/researcher.md');
   const audio = example('agent/prompts/sound-designer.md');
   assert.deepEqual(Object.keys(brief).sort(), [
-    'assumptions', 'audience', 'canvas', 'constraints', 'cta', 'durationInFrames',
+    'assetManifestHash', 'researchFindingsHash', 'assumptions', 'audience', 'canvas', 'constraints', 'cta', 'durationInFrames',
     'durationSeconds', 'goal', 'inputTrustFindings', 'language', 'message',
     'prohibitedContent', 'projectId', 'schemaVersion', 'suppliedAssetIds', 'title',
     'verifiedFacts',
   ].sort());
   assert.equal(brief.durationInFrames, brief.durationSeconds * brief.canvas.fps);
   assert.deepEqual(Object.keys(research).sort(), [
-    'findings', 'inferences', 'inputTrustFindings', 'measurements', 'projectId',
+    'assetManifestHash', 'findings', 'inferences', 'inputTrustFindings', 'measurements', 'projectId',
     'schemaVersion', 'sources', 'status', 'unresolved',
   ].sort());
   assert.deepEqual(Object.keys(audio).sort(), [

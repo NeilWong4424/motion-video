@@ -1,7 +1,7 @@
 {
   "contractVersion": "craft-skills/v1",
   "part": 1,
-  "implementationStatus": "Documentation interfaces only. A role returns RoleResult@1 status awaiting-interface only for a missing canonical handoff of its own written artifact. An unavailable later non-role engine, render, audio-prompt, alignment, mux, or delivery interface is recorded by the orchestrator as WorkflowDecision@1 status blocked, followed by STOP.",
+  "implementationStatus": "Documentation interfaces only. A role returns RoleResult@1 status written after valid candidate bytes exist; the orchestrator routes ordinary artifact acceptance separately. A recoverable unavailable interface is recorded by the orchestrator and Workflow Ledger as a same-state pause, never fabricated success.",
   "loaderBootstrap": {
     "machineEntry": "craft/skill-manifest.json",
     "selectionRule": "Read this manifest first, select matching skill IDs, then load only each selected file and the transitive files declared by requires.",
@@ -184,11 +184,11 @@
       "writes": [],
       "loadPolicy": "on-demand",
       "readerRoles": ["sound-designer"],
-      "workflowStates": ["AUDIO_BRIEF", "AUDIO_PROMPT"],
-      "triggerConditions": ["Musical intent must be authored for an approved locked silent cut, or an existing AudioBrief must be checked for prompt regeneration."],
+      "workflowStates": ["AUDIO_BRIEF"],
+      "triggerConditions": ["Musical intent must be authored for an approved locked silent cut."],
       "requires": [],
       "entryConditions": ["The approved locked silent cut and matching plan, approval, review, QC, master, and manifest bindings are present."],
-      "exitEvidence": ["One hash-bound AudioBrief declares exactly one payoff cue and Sound Designer returns RoleResult@1 status written; an unavailable later AUDIO_PROMPT interface is recorded only by the orchestrator as a blocked WorkflowDecision followed by STOP."]
+      "exitEvidence": ["One bound AudioBrief candidate declares exactly one payoff cue and Sound Designer returns RoleResult@1 status written; acceptance and later AUDIO_PROMPT execution belong only to the orchestrator and deterministic interfaces."]
     },
     {
       "id": "delivery",
@@ -197,11 +197,11 @@
       "writes": [],
       "loadPolicy": "on-demand",
       "readerRoles": ["orchestrator"],
-      "workflowStates": ["SILENT_FINAL", "AUDIO_PROMPT", "STOP_MANUAL_MUSIC_GENERATION", "OPTIONAL_LOCAL_MUX", "DELIVERY"],
+      "workflowStates": ["SILENT_FINAL", "AUDIO_PROMPT", "WAITING_FOR_MANUAL_MUSIC", "OPTIONAL_LOCAL_MUX", "DELIVERY"],
       "triggerConditions": ["The orchestrator must assess silent, audio-handoff, optional-mix, or final delivery evidence."],
       "requires": [],
       "entryConditions": ["Current revision, plan, QC, review, approval, render manifest, silent master, actual AudioBrief, actual content-addressed MUSIC_PROMPT.md, and selected output bindings are available."],
-      "exitEvidence": ["The orchestrator identifies a valid content-addressed delivery evidence set or records the unavailable deterministic delivery interface as WorkflowDecision@1 status blocked and transitions to STOP."]
+      "exitEvidence": ["The orchestrator identifies a valid content-addressed delivery evidence set or records a same-state deferred-interface pause without claiming success."]
     }
   ]
 }

@@ -1,13 +1,69 @@
 {
   "contractVersion": "prompt-os/v1",
   "orchestrator": "agent/video-workflow.md",
+  "resourceInventoryScope": "Every non-role local file directly loaded as normative procedure, canonical data, deterministic document template, or operator project template; explanatory maps, reports, examples, and craft files indexed by craft/skill-manifest.json are excluded.",
+  "resources": [
+    {
+      "id": "audio-handoff-procedure",
+      "kind": "normative-workflow-procedure",
+      "path": "docs/workflows/audio-handoff.md"
+    },
+    {
+      "id": "brief-input-template",
+      "kind": "non-authoritative-operator-template",
+      "path": "projects/_template/BRIEF_INPUT.md"
+    },
+    {
+      "id": "capability-gap-procedure",
+      "kind": "normative-workflow-procedure",
+      "path": "docs/workflows/capability-gap.md"
+    },
+    {
+      "id": "core-capability-registry",
+      "kind": "canonical-local-registry",
+      "path": "catalog/core-registry.json"
+    },
+    {
+      "id": "craft-skill-manifest",
+      "kind": "on-demand-skill-index",
+      "path": "craft/skill-manifest.json"
+    },
+    {
+      "id": "local-source-declaration-template",
+      "kind": "non-authoritative-operator-template",
+      "path": "projects/_template/LOCAL_SOURCES.md"
+    },
+    {
+      "id": "music-prompt-document",
+      "kind": "deterministic-document-template",
+      "path": "agent/templates/music-prompt-document.md"
+    },
+    {
+      "id": "project-policy-example",
+      "kind": "non-authoritative-operator-template",
+      "path": "projects/_template/project.policy.example.json"
+    },
+    {
+      "id": "revision-procedure",
+      "kind": "normative-workflow-procedure",
+      "path": "docs/workflows/revision.md"
+    },
+    {
+      "id": "revision-request-template",
+      "kind": "non-authoritative-operator-template",
+      "path": "projects/_template/REVISION_REQUEST.md"
+    }
+  ],
   "contracts": [
     "agent/contracts/workflow-decision.md",
+    "agent/contracts/workflow-ledger.md",
+    "agent/contracts/artifact-acceptance.md",
     "agent/contracts/authority-matrix.md",
     "agent/contracts/artifact-contracts.md",
     "agent/contracts/input-trust.md",
     "agent/contracts/role-artifact-contracts.md",
     "agent/contracts/treatment-contract.md",
+    "agent/contracts/catalog-registry-contract.md",
     "agent/contracts/motion-spec-contract.md",
     "agent/contracts/capability-gap-contract.md",
     "agent/contracts/revision-contract.md",
@@ -16,38 +72,226 @@
     "agent/contracts/engine-interface.md",
     "agent/contracts/diagnostics.md"
   ],
+  "interfaces": [
+    {
+      "id": "workflow-ledger-recorder",
+      "status": "required-not-implemented",
+      "contract": "agent/contracts/workflow-ledger.md",
+      "writes": [
+        "projects/<project-id>/.workflow/action-results/<action-id>/<result-receipt-hash>.json",
+        "projects/<project-id>/.workflow/ledger.jsonl"
+      ]
+    },
+    {
+      "id": "action-result-reconciliation",
+      "status": "required-not-implemented",
+      "contract": "agent/contracts/workflow-ledger.md",
+      "writes": []
+    },
+    {
+      "id": "trusted-candidate-writer",
+      "status": "required-not-implemented-infrastructure",
+      "contract": "agent/contracts/artifact-acceptance.md",
+      "writes": [
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/research.findings.json",
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/brief.spec.json",
+        "projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/brief.spec.json",
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/treatment.json",
+        "projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/treatment.json",
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/motion.spec.json",
+        "projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/motion.spec.json",
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/capability-gap.json",
+        "projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/capability-gap.json",
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/revision.patch.json",
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/audio-brief.json",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/reviews/creative/<review-attempt-id>/review.json",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/reviews/motion/<review-attempt-id>/review.json"
+      ]
+    },
+    {
+      "id": "local-source-ingress",
+      "status": "required-not-implemented",
+      "contract": "agent/contracts/artifact-acceptance.md",
+      "writes": [
+        "projects/<project-id>/sources/<source-id>/<content-hash>/source.<verified-format-extension>",
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/assets.manifest.json"
+      ]
+    },
+    {
+      "id": "project-policy-ingress",
+      "status": "required-not-implemented",
+      "contract": "agent/contracts/artifact-acceptance.md",
+      "writes": [
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/project.policy.json"
+      ]
+    },
+    {
+      "id": "artifact-validation-and-hashing",
+      "status": "required-not-implemented",
+      "contract": "agent/contracts/artifact-acceptance.md",
+      "writes": []
+    },
+    {
+      "id": "catalog-registry-snapshot",
+      "status": "required-not-implemented",
+      "contract": "agent/contracts/catalog-registry-contract.md",
+      "reads": ["catalog/core-registry.json"],
+      "writes": []
+    },
+    {
+      "id": "canonical-source-hashing-and-validation",
+      "status": "required-not-implemented",
+      "contract": "agent/contracts/engine-interface.md",
+      "writes": []
+    },
+    {
+      "id": "initial-snapshot",
+      "status": "required-not-implemented",
+      "contract": "agent/contracts/workflow-ledger.md",
+      "writes": [
+        "projects/<project-id>/revisions/<revision-id>/revision.manifest.json",
+        "projects/<project-id>/revisions/<revision-id>/locks.json"
+      ]
+    },
+    {
+      "id": "semantic-revision-apply",
+      "status": "required-not-implemented",
+      "contract": "agent/contracts/revision-contract.md",
+      "writes": [
+        "projects/<project-id>/revisions/<revision-id>/revision.manifest.json",
+        "projects/<project-id>/revisions/<revision-id>/locks.json"
+      ]
+    },
+    {
+      "id": "project-local-capability-implementation-and-registration",
+      "status": "required-not-implemented-separate-authorization",
+      "contract": "agent/contracts/artifact-acceptance.md",
+      "writes": [
+        "<capability-implementation-authorization.exactFileManifest>",
+        "projects/<project-id>/capabilities/<capability-id>/<capability-version>/receipts/<implementation-authorization-hash>/implementation-receipt.json"
+      ]
+    },
+    {
+      "id": "resolver-compiler",
+      "status": "part2-not-implemented",
+      "contract": "agent/contracts/engine-interface.md",
+      "writes": [
+        "out/<project-id>/<revision-id>/<render-plan-hash>/renderer/<renderer-build-hash>/renderer-build-manifest.json",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/resolved-motion-ir.json",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/render-plan.json"
+      ]
+    },
+    {
+      "id": "preview-evidence-renderer",
+      "status": "part2-not-implemented",
+      "contract": "agent/contracts/engine-interface.md",
+      "writes": [
+        "out/<project-id>/<revision-id>/<render-plan-hash>/preview/preview.mp4",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/evidence/items/<evidence-id>.<verified-evidence-extension>",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/evidence/evidence-manifest.json"
+      ]
+    },
+    {
+      "id": "technical-qc",
+      "status": "part2-not-implemented",
+      "contract": "agent/contracts/engine-interface.md",
+      "writes": ["out/<project-id>/<revision-id>/<render-plan-hash>/qc/technical-qc.json"]
+    },
+    {
+      "id": "approval-recorder",
+      "status": "part2-not-implemented",
+      "contract": "agent/contracts/engine-interface.md",
+      "writes": ["out/<project-id>/<revision-id>/<render-plan-hash>/approval/preview-approval.json"]
+    },
+    {
+      "id": "silent-final-renderer",
+      "status": "part2-not-implemented",
+      "contract": "agent/contracts/engine-interface.md",
+      "writes": [
+        "out/<project-id>/<revision-id>/<render-plan-hash>/final/silent-master.mp4",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/final/render-manifest.json"
+      ]
+    },
+    {
+      "id": "audio-prompt-generator",
+      "status": "required-not-implemented",
+      "contract": "agent/templates/music-prompt-document.md",
+      "writes": [
+        "out/<project-id>/<revision-id>/<render-plan-hash>/audio/<audio-brief-hash>/prompts/<prompt-attempt-hash>/MUSIC_PROMPT.md",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/audio/<audio-brief-hash>/prompts/<prompt-attempt-hash>/prompt-attempt.json"
+      ]
+    },
+    {
+      "id": "manual-audio-ingress",
+      "status": "required-not-implemented",
+      "contract": "agent/contracts/artifact-contracts.md",
+      "writes": [
+        "projects/<project-id>/audio/manual/<track-content-hash>/track.<verified-audio-extension>",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/audio/manual/<manual-audio-return-hash>/manual-audio-return.json"
+      ]
+    },
+    {
+      "id": "local-alignment-mux",
+      "status": "part2-not-implemented",
+      "contract": "agent/contracts/engine-interface.md",
+      "writes": [
+        "out/<project-id>/<revision-id>/<render-plan-hash>/audio/mux/<mux-manifest-hash>/alignment-manifest.json",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/audio/mux/<mux-manifest-hash>/mux-manifest.json",
+        "out/<project-id>/<revision-id>/<render-plan-hash>/audio/mux/<mux-manifest-hash>/mixed-master.mp4"
+      ]
+    },
+    {
+      "id": "delivery-packager",
+      "status": "part2-not-implemented",
+      "contract": "agent/contracts/engine-interface.md",
+      "writes": ["out/<project-id>/<revision-id>/<render-plan-hash>/delivery/<delivery-manifest-hash>/delivery-manifest.json"]
+    }
+  ],
   "roles": [
     {
       "id": "orchestrator",
       "file": "agent/video-workflow.md",
       "authority": ["state", "routing", "gates", "repair-budgets", "stops"],
-      "writes": []
+      "writes": [],
+      "candidateOutputs": []
     },
     {
       "id": "brief-planner",
       "file": "agent/prompts/brief-planner.md",
-      "authority": ["brief", "facts", "assumptions", "fact-check"],
-      "writes": ["projects/<project-id>/brief.spec.json"]
+      "authority": ["brief", "facts", "assumptions"],
+      "writes": [],
+      "candidateOutputs": [
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/brief.spec.json",
+        "projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/brief.spec.json"
+      ]
     },
     {
       "id": "researcher",
       "file": "agent/prompts/researcher.md",
       "authority": ["local-source-evidence", "measurements"],
-      "writes": ["projects/<project-id>/research.findings.json"]
+      "writes": [],
+      "candidateOutputs": ["projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/research.findings.json"]
     },
     {
       "id": "creative-direction",
       "file": "agent/prompts/creative-direction.md",
       "authority": ["treatment", "narrative", "visual-thesis", "motion-profile"],
-      "writes": ["projects/<project-id>/treatment.json"]
+      "writes": [],
+      "candidateOutputs": [
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/treatment.json",
+        "projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/treatment.json"
+      ]
     },
     {
       "id": "motion-planner",
       "file": "agent/prompts/motion-planner.md",
       "authority": ["motion-spec", "capability-gap"],
-      "writes": [
-        "projects/<project-id>/motion.spec.json",
-        "projects/<project-id>/capability-gaps/<gap-id>.json"
+      "writes": [],
+      "candidateOutputs": [
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/motion.spec.json",
+        "projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/motion.spec.json",
+        "projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/capability-gap.json",
+        "projects/<project-id>/.workflow/candidates/<revision-attempt-id>/<candidate-attempt-id>/capability-gap.json"
       ]
     },
     {
@@ -55,34 +299,37 @@
       "file": "agent/prompts/capability-builder.md",
       "authority": ["capability-gap-diagnosis", "project-local-capability-proposal-advisory"],
       "writes": [],
+      "candidateOutputs": [],
       "availability": "interface-stub",
-      "futureWrites": [
-        "projects/<project-id>/capabilities/<capability-id>/capability.manifest.json"
-      ]
+      "implementationOwner": "project-local-capability-implementation-and-registration"
     },
     {
       "id": "revision-interpreter",
       "file": "agent/prompts/revision-interpreter.md",
       "authority": ["semantic-patch"],
-      "writes": ["projects/<project-id>/revision.patch.json"]
+      "writes": [],
+      "candidateOutputs": ["projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/revision.patch.json"]
     },
     {
       "id": "sound-designer",
       "file": "agent/prompts/sound-designer.md",
       "authority": ["audio-brief"],
-      "writes": ["projects/<project-id>/audio-brief.json"]
+      "writes": [],
+      "candidateOutputs": ["projects/<project-id>/.workflow/candidates/<request-id>/<candidate-attempt-id>/audio-brief.json"]
     },
     {
       "id": "creative-reviewer",
       "file": "agent/reviewers/creative-reviewer.md",
       "authority": ["creative-review"],
-      "writes": ["out/<project-id>/<revision-id>/<render-plan-hash>/review/creative-review.json"]
+      "writes": [],
+      "candidateOutputs": ["out/<project-id>/<revision-id>/<render-plan-hash>/reviews/creative/<review-attempt-id>/review.json"]
     },
     {
       "id": "motion-reviewer",
       "file": "agent/reviewers/motion-reviewer.md",
       "authority": ["motion-review"],
-      "writes": ["out/<project-id>/<revision-id>/<render-plan-hash>/review/motion-review.json"]
+      "writes": [],
+      "candidateOutputs": ["out/<project-id>/<revision-id>/<render-plan-hash>/reviews/motion/<review-attempt-id>/review.json"]
     }
   ]
 }
