@@ -66,9 +66,22 @@ const executableCodeExtensions = new Set([
   '.wasm',
 ]);
 
+// Non-source directories that are never part of the checked-in repository
+// surface these tests inspect. `node_modules/` exists once the Part 2 engine is
+// installed and uses pnpm's symlinked store, which is not a repository symlink.
+const nonSourceDirs = new Set([
+  '.git',
+  'node_modules',
+  'out',
+  '.cache',
+  '.remotion',
+  'coverage',
+  'generated-assets',
+]);
+
 function walk(directory) {
   return readdirSync(directory, {withFileTypes: true}).flatMap((entry) => {
-    if (entry.name === '.git') return [];
+    if (nonSourceDirs.has(entry.name)) return [];
     const absolute = resolve(directory, entry.name);
     return entry.isDirectory() ? walk(absolute) : [absolute];
   });

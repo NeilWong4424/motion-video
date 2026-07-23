@@ -1,8 +1,23 @@
+# Dependencies and caches
 node_modules/
-out/
 .cache/
 .remotion/
-.DS_Store
+
+# Immutable derived output (content-addressed); keep the directory marker only.
+out/*
+!out/.gitkeep
+
+# Generated project-local capability snapshots (materialized from closed manifests).
+src/generated/project-capabilities/
+
+# Derived, content-addressed render assets (source assets/manifests stay authoritative).
+public/generated-assets/*
+!public/generated-assets/.gitkeep
+
+# User-returned audio binaries staged under a project (never engine-generated).
+projects/*/assets/audio/
+
+# Part 1 Prompt OS project working data (documentation-era ignores).
 projects/*/assets/
 projects/*/references/
 projects/*/revisions/
@@ -12,3 +27,10 @@ projects/*/audio/
 projects/*/.workflow/
 !projects/_template/
 !projects/_template/**
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
