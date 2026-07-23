@@ -147,10 +147,12 @@ describe('acceptArtifact — refusals (never repairs)', () => {
     });
   });
 
-  it('refuses an unwired route loudly rather than guessing', () => {
+  it('refuses a genuinely unwired route loudly rather than guessing', () => {
+    // audio-brief requires a locked-picture lineage that cannot exist yet, so it is
+    // intentionally not wired; acceptance must refuse rather than guess.
     const bytes = briefCandidate();
     stage(bytes);
-    const result = acceptArtifact(anchor, {...baseInput({hash: sha256Hex(bytes), length: bytes.length}), acceptanceRouteId: 'initial-treatment'});
+    const result = acceptArtifact(anchor, {...baseInput({hash: sha256Hex(bytes), length: bytes.length}), acceptanceRouteId: 'audio-brief'});
     expect(result).toMatchObject({ok: false, code: 'ACCEPTANCE_ROUTE_NOT_IMPLEMENTED'});
   });
 

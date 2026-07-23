@@ -20,8 +20,31 @@ import {enforceCandidateBudget} from './candidate-budget.js';
 import {budgetForRoute} from './candidate-writer.js';
 import {routeRule, type RouteRule} from './route-matrix.js';
 
-/** Routes whose acceptance is fully wired in this build. */
-const WIRED_ROUTES = new Set(['initial-brief']);
+/**
+ * Routes whose acceptance is fully wired in this build. The verifier is generic over
+ * the route rule (schema/kind/producer/project/path/context + ordered parent tuple),
+ * so the initial + rebuild role-artifact routes all use the same mechanical path.
+ *
+ * NOT yet wired (they require interfaces built in later slices, whose parent hashes
+ * cannot yet exist): local-asset routes (local-source-ingress), review routes
+ * (governed render/QC), audio-brief (locked picture), capability receipts
+ * (capability implementation), and project-policy (policy ingress). Acceptance
+ * refuses those loudly rather than accept a candidate whose parents can't be real.
+ */
+const WIRED_ROUTES = new Set([
+  'initial-brief',
+  'rebuild-brief',
+  'initial-research',
+  'source-update-research',
+  'initial-treatment',
+  'rebuild-treatment',
+  'initial-motion-spec',
+  'rebuild-motion-spec',
+  'initial-capability-gap',
+  'rebuild-capability-gap',
+  'bounded-patch',
+  'rebuild-patch',
+]);
 
 /** A parent binding as observed on the candidate (name → hash-or-null). */
 export type ObservedParent = {name: string; contentHash: string | null};
@@ -114,6 +137,16 @@ export function acceptArtifact(anchor: RepoRootAnchor, input: AcceptanceInput): 
   if (!rule) return reject('ACCEPTANCE_ROUTE_UNKNOWN', input.acceptanceRouteId);
   if (!WIRED_ROUTES.has(input.acceptanceRouteId)) {
     return reject('ACCEPTANCE_ROUTE_NOT_IMPLEMENTED', input.acceptanceRouteId);
+  }
+
+  // 0. The candidate path's terminal filename must match this route's unique path
+  //    form (e.g. brief.spec.json for a brief). Belt-and-suspenders vs a mis-derived
+  //    path; acceptance still never composes the path itself.
+  if (rule.candidateFilename !== null) {
+    const base = input.candidatePath.split('/').pop() ?? '';
+    if (base !== rule.candidateFilename) {
+      return reject('ACCEPTANCE_PATH_FILENAME', `${base} != ${rule.candidateFilename}`);
+    }
   }
 
   // 1. Reload the exact candidate bytes through the anchored no-follow read path.
