@@ -11,6 +11,8 @@ import {runPreview} from './commands/preview.js';
 import {runStills} from './commands/stills.js';
 import {runInspect} from './commands/inspect.js';
 import {runQc} from './commands/qc.js';
+import {runApprove} from './commands/approve.js';
+import {runRender} from './commands/render.js';
 
 /**
  * Run the motion CLI. Production passes no context and derives the immutable
@@ -94,6 +96,35 @@ export async function runMotionCli(argv: string[], context?: RepoContext): Promi
     .allowUnknownOption(false)
     .action(async (projectId: string) => {
       exitCode = await runQc(ctx, projectId);
+    });
+
+  program
+    .command('approve')
+    .argument('<project-id>')
+    .requiredOption('--reviewed-plan <hash>', 'the exact RenderPlan hash being approved')
+    .requiredOption('--actor <actor>', 'human | codex | claude-code')
+    .requiredOption('--reason <text>', 'approval reason')
+    .allowUnknownOption(false)
+    .action(async (projectId: string, options: {reviewedPlan: string; actor: string; reason: string}) => {
+      const actor = options.actor;
+      if (actor !== 'human' && actor !== 'codex' && actor !== 'claude-code') {
+        process.stderr.write('APPROVAL_ACTOR_INVALID\n');
+        exitCode = 1;
+        return;
+      }
+      exitCode = await runApprove(ctx, projectId, {
+        reviewedPlan: options.reviewedPlan,
+        actor,
+        reason: options.reason,
+      });
+    });
+
+  program
+    .command('render')
+    .argument('<project-id>')
+    .allowUnknownOption(false)
+    .action(async (projectId: string) => {
+      exitCode = await runRender(ctx, projectId);
     });
 
   try {
