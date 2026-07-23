@@ -384,5 +384,8 @@ test('Part 1 status does not pretend the deferred engine exists', () => {
 });
 
 test('test paths are reported relative to the repo for readable failures', () => {
-  assert.equal(relative(root, file('agent/video-workflow.md')), 'agent/video-workflow.md');
+  assert.equal(
+    relative(root, file('agent/video-workflow.md')).replaceAll('\\', '/'),
+    'agent/video-workflow.md',
+  );
 });

@@ -5,26 +5,39 @@ import test from 'node:test';
 
 const root = resolve(import.meta.dirname, '..');
 
-const forbiddenRuntimeRoots = new Set([
+// Part 2 (the deterministic motion engine) is built in-place alongside the
+// Part 1 Prompt OS. The engine owns these roots and config/lockfile paths; they
+// are no longer treated as a forbidden "deferred engine" leak. The Part 1
+// boundary now asserts only that the DOCUMENTATION surfaces stay declarative:
+// no executable code inside the prompt/craft/agent/docs documentation trees,
+// and no symlinks. The engine's own no-API/no-network boundary is enforced by
+// src/engine/boundary (Part 2, Task 1), not by this Part 1 documentation guard.
+const engineRuntimeRoots = new Set([
   'src',
   'scripts',
-  'engine',
-  'runtime',
-  'lib',
-  'bin',
 ]);
 
-const forbiddenPart2Files = new Set([
+const enginePart2Files = new Set([
   'remotion.config.ts',
   'remotion.config.js',
   'vite.config.ts',
   'vite.config.js',
+  'vitest.config.ts',
   'tsconfig.json',
+  'eslint.config.mjs',
+  'prettier.config.mjs',
   'pnpm-lock.yaml',
-  'package-lock.json',
-  'yarn.lock',
-  'bun.lock',
-  'bun.lockb',
+]);
+
+// Documentation trees that must remain declarative (no executable code files).
+const documentationRoots = new Set([
+  'agent',
+  'craft',
+  'docs',
+  'examples',
+  'catalog',
+  'projects',
+  '.claude',
 ]);
 
 const executableCodeExtensions = new Set([
@@ -61,15 +74,24 @@ function walk(directory) {
   });
 }
 
-function isDeferredPart2Path(repositoryPath) {
+// Returns true when a path is executable code living inside a Part 1
+// documentation tree, which must stay declarative. Engine roots (src/, scripts/),
+// tests, and allowed engine config/lockfiles are explicitly not violations.
+function isDocumentationBoundaryViolation(repositoryPath) {
   const normalized = repositoryPath.replaceAll('\\', '/').replace(/^\.\//, '');
   const [topLevel] = normalized.split('/');
 
-  if (forbiddenRuntimeRoots.has(topLevel)) return true;
-  if (forbiddenPart2Files.has(normalized)) return true;
+  // Engine-owned trees and files are allowed in-place.
+  if (engineRuntimeRoots.has(topLevel)) return false;
+  if (enginePart2Files.has(normalized)) return false;
   if (topLevel === 'tests') return false;
 
-  return executableCodeExtensions.has(extname(normalized).toLowerCase());
+  // Executable code inside a documentation tree is a violation.
+  if (documentationRoots.has(topLevel)) {
+    return executableCodeExtensions.has(extname(normalized).toLowerCase());
+  }
+
+  return false;
 }
 
 test('all checked-in JSON documentation artifacts are valid JSON', () => {
@@ -99,15 +121,14 @@ test('relative Markdown links remain inside the repository and resolve', () => {
   assert.deepEqual(failures, [], `Broken or escaping Markdown links:\n${failures.join('\n')}`);
 });
 
-test('Part 1 contains no deferred motion-engine implementation', () => {
+test('Part 1 documentation trees stay declarative (no executable code, no symlinks)', () => {
   const checkedInPaths = walk(root).map((path) => relative(root, path).replaceAll('\\', '/'));
-  const forbiddenRoots = [...forbiddenRuntimeRoots]
-    .filter((path) => existsSync(resolve(root, path)));
-  const present = [
-    ...forbiddenRoots,
-    ...checkedInPaths.filter(isDeferredPart2Path),
-  ];
-  assert.deepEqual(present, [], `Part 2 files appeared in Part 1: ${present.join(', ')}`);
+  const present = checkedInPaths.filter(isDocumentationBoundaryViolation);
+  assert.deepEqual(
+    present,
+    [],
+    `Executable code leaked into a Part 1 documentation tree: ${present.join(', ')}`,
+  );
 
   const symlinks = walk(root)
     .filter((path) => lstatSync(path).isSymbolicLink())
@@ -115,16 +136,19 @@ test('Part 1 contains no deferred motion-engine implementation', () => {
   assert.deepEqual(symlinks, [], `Prompt OS should not depend on symlinks: ${symlinks.join(', ')}`);
 });
 
-test('Part 2 boundary recognizes runtime roots and code outside tests', () => {
+test('documentation boundary flags code in doc trees but allows engine roots and configs', () => {
   for (const path of [
-    'engine/index.ts',
-    'runtime/resolve.js',
-    'lib/compiler.tsx',
-    'bin/render.sh',
-    'misc/compositor.mjs',
-    'index.cjs',
+    'agent/index.ts',
+    'craft/compiler.tsx',
+    'docs/render.js',
+    'examples/compositor.mjs',
+    'projects/demo/hack.sh',
   ]) {
-    assert.equal(isDeferredPart2Path(path), true, `Part 2 path escaped the boundary: ${path}`);
+    assert.equal(
+      isDocumentationBoundaryViolation(path),
+      true,
+      `Code in a documentation tree escaped the boundary: ${path}`,
+    );
   }
 
   for (const path of [
@@ -132,8 +156,18 @@ test('Part 2 boundary recognizes runtime roots and code outside tests', () => {
     'package.json',
     'docs/example.md',
     'agent/prompt-manifest.json',
+    'src/index.ts',
+    'src/engine/resolver/resolve-motion.ts',
+    'scripts/verify-environment.mjs',
+    'tsconfig.json',
+    'vitest.config.ts',
+    'remotion.config.ts',
   ]) {
-    assert.equal(isDeferredPart2Path(path), false, `Part 1 documentation/test file was rejected: ${path}`);
+    assert.equal(
+      isDocumentationBoundaryViolation(path),
+      false,
+      `Allowed engine/documentation path was rejected: ${path}`,
+    );
   }
 });
 

@@ -1,15 +1,55 @@
 {
-  "name": "local-text-to-motion-prompt-os",
-  "version": "0.1.0-part1",
+  "name": "motion-video",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Local Prompt OS contracts for a continuity-first text-to-motion repository. Part 1 contains no motion engine.",
+  "description": "Local, continuity-first text-to-motion graphics for Codex and Claude Code. Part 1 Prompt OS (documentation contracts) plus the Part 2 deterministic motion engine, coexisting in one package.",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {"node": ">=24.12.0 <25"},
   "scripts": {
-    "test": "node --test tests/*.test.mjs",
-    "test:prompts": "node --test tests/prompt-contracts.test.mjs",
-    "verify:part1": "node --test tests/*.test.mjs"
+    "studio": "remotion studio src/index.ts",
+    "motion": "node --import tsx src/cli/index.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:prompts": "node --test tests/*.test.mjs",
+    "verify:part1": "node --test tests/*.test.mjs",
+    "test:all": "pnpm test:prompts && pnpm test",
+    "verify:environment": "node scripts/verify-environment.mjs",
+    "verify:boundary": "node --import tsx scripts/scan-production-boundary.mjs",
+    "check": "pnpm verify:environment && pnpm verify:boundary && pnpm verify:part1 && pnpm lint && pnpm typecheck && pnpm test"
   },
-  "engines": {
-    "node": ">=22"
+  "dependencies": {
+    "@remotion/bundler": "4.0.495",
+    "@remotion/cli": "4.0.495",
+    "@remotion/media-utils": "4.0.495",
+    "@remotion/renderer": "4.0.495",
+    "commander": "15.0.0",
+    "culori": "4.0.2",
+    "pixelmatch": "7.2.0",
+    "pngjs": "7.0.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "remotion": "4.0.495",
+    "sharp": "0.35.3",
+    "ssim.js": "3.5.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "@types/pngjs": "6.0.5",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@types/react-test-renderer": "19.1.0",
+    "@vitest/coverage-v8": "4.1.10",
+    "eslint": "10.7.0",
+    "fast-check": "4.9.0",
+    "prettier": "3.9.6",
+    "react-test-renderer": "19.2.7",
+    "tsx": "4.23.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.65.0",
+    "vitest": "4.1.10"
   }
 }
