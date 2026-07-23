@@ -1,6 +1,10 @@
 import type {CapabilityManifestEntry} from '../engine/capability/types.js';
 
 export const coreCapabilityManifest = [
+  {"kind":"effect","id":"ambient.drift","version":"1.0.0","implementationHash":"1d41c98d5f44aaa731af64a9a75ca67ae503bcdc0a4663e388a1ce26bd5b7922","scope":"core","supportedNodeKinds":["shape","group","image"],"ownedChannels":["geometry"],"family":"ambient"},
+  {"kind":"effect","id":"data.bar-grow","version":"1.0.0","implementationHash":"7116643822fae1e36a1b6d5c06068aacbdf6523a520b886461c5430793778d20","scope":"core","supportedNodeKinds":["shape","chart"],"ownedChannels":["geometry"],"family":"data"},
+  {"kind":"effect","id":"diagram.node-connect","version":"1.0.0","implementationHash":"4dff53632f39735ca79d675f71371151d25f9214cc73149db2bb6c19d821d579","scope":"core","supportedNodeKinds":["shape","group"],"ownedChannels":["geometry","opacity"],"family":"diagram"},
+  {"kind":"effect","id":"identity.logo-assemble","version":"1.0.0","implementationHash":"7f5861d0d05b9e31df7e304eee94ad0da9f61d93fbef909a05733d75a8bfa9ba","scope":"core","supportedNodeKinds":["logo","path","group"],"ownedChannels":["geometry","opacity"],"family":"identity"},
   {"kind":"effect","id":"path.connector-draw","version":"1.0.0","implementationHash":"6ea1264f11410ce7e805a77e248f042354f06bcd06b323f1909035767f801702","scope":"core","supportedNodeKinds":["path"],"ownedChannels":["path"],"family":"path"},
   {"kind":"effect","id":"path.path-draw","version":"1.0.0","implementationHash":"0974032264818db77d86cbe5f23dfe039582cebe037e15a94ccd2ccc284b0e1d","scope":"core","supportedNodeKinds":["path"],"ownedChannels":["path"],"family":"path"},
   {"kind":"effect","id":"shape.geometry-morph","version":"1.0.0","implementationHash":"aaba47734098cb86b5a676c03dbf3728773762936ce4b1955397d9779299c96e","scope":"core","supportedNodeKinds":["shape"],"ownedChannels":["geometry"],"family":"shape"},
@@ -11,6 +15,7 @@ export const coreCapabilityManifest = [
   {"kind":"effect","id":"text.tracking-resolve","version":"1.0.0","implementationHash":"5a0e0360ba48d86c63a4aa2dbb27df7563da3a3ca16dc1529e762981c08372e2","scope":"core","supportedNodeKinds":["text"],"ownedChannels":["style"],"family":"text"},
   {"kind":"effect","id":"text.word-replace","version":"1.0.0","implementationHash":"834e81cac757d1c637aea08e58c0d19f956555b76858cf8769e6dd2b588374c1","scope":"core","supportedNodeKinds":["text"],"ownedChannels":["content"],"family":"text"},
   {"kind":"effect","id":"text.word-stagger","version":"1.0.0","implementationHash":"571d4ee21a0f8eb6039323ef7e96990ef4ab077a748bdd331857818662afb217","scope":"core","supportedNodeKinds":["text"],"ownedChannels":["opacity"],"family":"text"},
+  {"kind":"effect","id":"ui.card-lift","version":"1.0.0","implementationHash":"b1f13ce76ad227af41f85b1bf22a50437b1acf399fba20df756cbe2a99b647df","scope":"core","supportedNodeKinds":["ui","shape","group"],"ownedChannels":["geometry","filter"],"family":"ui"},
   {"kind":"renderer","id":"base.group","version":"1.0.0","implementationHash":"4e33a2c952ac860e5669f46d7977cf5c729008f3e4c397fc702be0c57a6f48d8","scope":"core","supportedNodeKinds":["group","ui","chart","logo"]},
   {"kind":"renderer","id":"base.image","version":"1.0.0","implementationHash":"5bd05b5865d08991767b7eca6d7a7cd7df9a1dea7a8d90eba850347fe8a53d20","scope":"core","supportedNodeKinds":["image","logo"]},
   {"kind":"renderer","id":"base.path","version":"1.0.0","implementationHash":"ad349a6cb3888f71b15107216c25718aed086aa73006bf6f9e08f96f3304aa31","scope":"core","supportedNodeKinds":["path"]},

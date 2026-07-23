@@ -4,11 +4,25 @@ import {
   textEffects,
   shapeEffects,
   pathEffects,
+  dataEffects,
+  diagramEffects,
+  uiEffects,
+  identityEffects,
+  ambientEffects,
 } from '../../capabilities/index.js';
 import type {MotionCapabilityDefinition} from '../capability/types.js';
 
 const effectById = new Map<string, MotionCapabilityDefinition<unknown, unknown>>(
-  [...textEffects, ...shapeEffects, ...pathEffects].map((e) => [`${e.id}@${e.version}`, e]),
+  [
+    ...textEffects,
+    ...shapeEffects,
+    ...pathEffects,
+    ...dataEffects,
+    ...diagramEffects,
+    ...uiEffects,
+    ...identityEffects,
+    ...ambientEffects,
+  ].map((e) => [`${e.id}@${e.version}`, e]),
 );
 
 export type EffectBinding = {

@@ -1,4 +1,7 @@
 import {StylePackSchema, type StylePack} from './types.js';
+import {productionStylePacks} from './production-packs.js';
+
+export {productionStylePacks};
 
 /** The neutral test style pack. Production packs arrive in Task 12. */
 export const testNeutralStylePack: StylePack = StylePackSchema.parse({
@@ -51,5 +54,15 @@ export class StyleCatalog {
 export function createDefaultStyleCatalog(): StyleCatalog {
   const catalog = new StyleCatalog();
   catalog.register(testNeutralStylePack);
+  return catalog;
+}
+
+/** A catalog with the neutral test pack plus the three production packs. */
+export function createFullStyleCatalog(): StyleCatalog {
+  const catalog = new StyleCatalog();
+  catalog.register(testNeutralStylePack);
+  for (const pack of productionStylePacks) {
+    catalog.register(pack);
+  }
   return catalog;
 }

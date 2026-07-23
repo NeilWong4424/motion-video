@@ -28,6 +28,11 @@ const CORE_CAPABILITIES = [
   {kind: 'effect', id: 'shape.geometry-morph', version: '1.0.0', file: 'src/capabilities/shape/geometry-morph.tsx', supportedNodeKinds: ['shape'], ownedChannels: ['geometry'], family: 'shape'},
   {kind: 'effect', id: 'path.path-draw', version: '1.0.0', file: 'src/capabilities/path/path-draw.tsx', supportedNodeKinds: ['path'], ownedChannels: ['path'], family: 'path'},
   {kind: 'effect', id: 'path.connector-draw', version: '1.0.0', file: 'src/capabilities/path/connector-draw.tsx', supportedNodeKinds: ['path'], ownedChannels: ['path'], family: 'path'},
+  {kind: 'effect', id: 'data.bar-grow', version: '1.0.0', file: 'src/capabilities/data/bar-grow.tsx', supportedNodeKinds: ['shape', 'chart'], ownedChannels: ['geometry'], family: 'data'},
+  {kind: 'effect', id: 'diagram.node-connect', version: '1.0.0', file: 'src/capabilities/diagram/node-connect.tsx', supportedNodeKinds: ['shape', 'group'], ownedChannels: ['geometry', 'opacity'], family: 'diagram'},
+  {kind: 'effect', id: 'ui.card-lift', version: '1.0.0', file: 'src/capabilities/ui/card-lift.tsx', supportedNodeKinds: ['ui', 'shape', 'group'], ownedChannels: ['geometry', 'filter'], family: 'ui'},
+  {kind: 'effect', id: 'identity.logo-assemble', version: '1.0.0', file: 'src/capabilities/identity/logo-assemble.tsx', supportedNodeKinds: ['logo', 'path', 'group'], ownedChannels: ['geometry', 'opacity'], family: 'identity'},
+  {kind: 'effect', id: 'ambient.drift', version: '1.0.0', file: 'src/capabilities/ambient/drift.tsx', supportedNodeKinds: ['shape', 'group', 'image'], ownedChannels: ['geometry'], family: 'ambient'},
 ];
 
 function hashFile(relPath) {
