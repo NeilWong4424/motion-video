@@ -18,6 +18,8 @@
     "test:all": "pnpm test:prompts && pnpm test",
     "verify:environment": "node scripts/verify-environment.mjs",
     "verify:boundary": "node --import tsx scripts/scan-production-boundary.mjs",
+    "capabilities:manifest": "node scripts/build-core-capability-manifest.mjs",
+    "capabilities:manifest:check": "node scripts/build-core-capability-manifest.mjs --check",
     "check": "pnpm verify:environment && pnpm verify:boundary && pnpm verify:part1 && pnpm lint && pnpm typecheck && pnpm test"
   },
   "dependencies": {
