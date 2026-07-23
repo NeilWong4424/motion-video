@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "motion-spec@1",
+  "projectId": "motion-house-intro",
+  "treatmentHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "canvas": {"width": 1920, "height": 1080, "fps": 30},
+  "timeline": {
+    "beats": [
+      {"id": "spark", "durationFrames": 90, "objective": "Open on a single spark.", "message": "One small idea.", "focalNodeId": "spark", "liveContentNodeIds": ["spark"], "settleAt": {"segmentId": "spark", "progress": 0.6}, "holdRange": {"from": {"segmentId": "spark", "progress": 0.6}, "to": {"segmentId": "spark", "progress": 1}}},
+      {"id": "word", "durationFrames": 120, "objective": "The spark becomes a word.", "message": "Ideas.", "focalNodeId": "idea", "liveContentNodeIds": ["spark", "idea"], "settleAt": {"segmentId": "word", "progress": 0.6}, "holdRange": {"from": {"segmentId": "word", "progress": 0.6}, "to": {"segmentId": "word", "progress": 1}}},
+      {"id": "world", "durationFrames": 120, "objective": "The idea lives in a world.", "message": "We give it room to grow.", "focalNodeId": "idea", "liveContentNodeIds": ["idea", "frame"], "settleAt": {"segmentId": "world", "progress": 0.6}, "holdRange": {"from": {"segmentId": "world", "progress": 0.6}, "to": {"segmentId": "world", "progress": 1}}},
+      {"id": "motion", "durationFrames": 126, "objective": "The idea moves.", "message": "Words become motion.", "focalNodeId": "movingLine", "liveContentNodeIds": ["frame", "trace", "movingLine", "mark"], "settleAt": {"segmentId": "motion", "progress": 0.6}, "holdRange": {"from": {"segmentId": "motion", "progress": 0.6}, "to": {"segmentId": "motion", "progress": 1}}},
+      {"id": "name", "durationFrames": 114, "objective": "Resolve into the studio.", "message": "Motion House.", "focalNodeId": "mark", "liveContentNodeIds": ["movingLine", "mark", "studioName"], "settleAt": {"segmentId": "name", "progress": 0.6}, "holdRange": {"from": {"segmentId": "name", "progress": 0.6}, "to": {"segmentId": "name", "progress": 1}}},
+      {"id": "cta", "durationFrames": 60, "objective": "Invite.", "message": "Let's make yours move.", "focalNodeId": "ctaText", "liveContentNodeIds": ["studioName", "mark", "ctaText"], "settleAt": {"segmentId": "cta", "progress": 0.6}, "holdRange": {"from": {"segmentId": "cta", "progress": 0.6}, "to": {"segmentId": "cta", "progress": 1}}}
+    ],
+    "bridges": [
+      {"id": "spark-word", "fromBeatId": "spark", "toBeatId": "word", "durationFrames": 6, "narrativeReason": "The spark grows in place into the word Ideas.", "transitionFamily": "shared-element", "vocabularyRole": "ordinary", "eyeTrace": {"outgoing": {"nodeId": "spark", "point": {"x": 0.5, "y": 0.5}}, "incoming": {"nodeId": "spark", "point": {"x": 0.5, "y": 0.5}}}, "motionOwnership": "node", "mode": "shared-element", "nodeId": "spark", "motionRange": {"from": {"segmentId": "spark-word", "progress": 0}, "to": {"segmentId": "spark-word", "progress": 1}}},
+      {"id": "word-world", "fromBeatId": "word", "toBeatId": "world", "durationFrames": 6, "narrativeReason": "The word settles as a soft world forms around it.", "transitionFamily": "shared-element", "vocabularyRole": "ordinary", "eyeTrace": {"outgoing": {"nodeId": "idea", "point": {"x": 0.5, "y": 0.45}}, "incoming": {"nodeId": "idea", "point": {"x": 0.5, "y": 0.4}}}, "motionOwnership": "node", "mode": "shared-element", "nodeId": "idea", "motionRange": {"from": {"segmentId": "word-world", "progress": 0}, "to": {"segmentId": "word-world", "progress": 1}}},
+      {"id": "world-motion", "fromBeatId": "world", "toBeatId": "motion", "durationFrames": 6, "narrativeReason": "The camera draws us in as a line begins to trace through the world.", "transitionFamily": "camera-navigation", "vocabularyRole": "ordinary", "eyeTrace": {"outgoing": {"nodeId": "frame", "point": {"x": 0.5, "y": 0.5}}, "incoming": {"nodeId": "frame", "point": {"x": 0.5, "y": 0.5}}}, "motionOwnership": "camera", "mode": "camera-navigation", "cameraSegmentId": "cam-push", "destinationNodeId": "frame", "spatialRelationship": "The traced line lives inside the world's frame."},
+      {"id": "motion-name", "fromBeatId": "motion", "toBeatId": "name", "durationFrames": 6, "narrativeReason": "The line's leading point resolves into the studio mark on the same motion.", "transitionFamily": "morph-into-target", "vocabularyRole": "signature", "eyeTrace": {"outgoing": {"nodeId": "movingLine", "point": {"x": 0.6, "y": 0.45}}, "incoming": {"nodeId": "mark", "point": {"x": 0.5, "y": 0.42}}}, "motionOwnership": "node", "mode": "morph-into-target", "sourceNodeId": "movingLine", "targetNodeId": "mark", "motionRange": {"from": {"segmentId": "motion-name", "progress": 0}, "to": {"segmentId": "motion-name", "progress": 1}}, "preRollFrames": 8, "settleFrames": 4},
+      {"id": "name-cta", "fromBeatId": "name", "toBeatId": "cta", "durationFrames": 6, "narrativeReason": "The name settles and the invitation rises beneath it.", "transitionFamily": "match-on-action", "vocabularyRole": "ordinary", "eyeTrace": {"outgoing": {"nodeId": "studioName", "point": {"x": 0.5, "y": 0.45}}, "incoming": {"nodeId": "ctaText", "point": {"x": 0.5, "y": 0.55}}}, "motionOwnership": "node", "mode": "match-on-action", "outgoingNodeId": "studioName", "incomingNodeId": "ctaText", "actionAt": {"segmentId": "name-cta", "progress": 0.5}, "action": "translate"}
+    ]
+  },
+  "world": {
+    "coordinateSpace": "composition-pixels",
+    "origin": "top-left",
+    "transformOrigin": "top-left",
+    "childGeometry": "parent-local",
+    "nodes": [
+      {
+        "id": "frame", "kind": "shape", "space": "world", "semanticRole": "background",
+        "renderer": {"id": "base.shape", "version": "1.0.0", "props": {"shape": "rounded-rect", "width": 1200, "height": 620, "fill": "#111420", "stroke": "#2a3040", "strokeWidth": 2, "radius": 36}},
+        "effects": [],
+        "geometryTrack": [
+          {"at": {"segmentId": "world", "progress": 0}, "value": {"x": 360, "y": 230, "width": 1200, "height": 620}, "interpolation": "hold"}
+        ],
+        "styleTrack": [
+          {"at": {"segmentId": "world", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}
+        ],
+        "visibleTrack": [
+          {"at": {"segmentId": "world", "progress": 0}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "name", "progress": 0.6}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "name", "progress": 0.9}, "value": 0, "interpolation": "hold"}
+        ]
+      },
+      {
+        "id": "trace", "kind": "path", "space": "world", "semanticRole": "content",
+        "renderer": {"id": "base.path", "version": "1.0.0", "props": {"d": "M0 180 C120 40 240 320 360 160 C480 20 600 300 760 120", "width": 800, "height": 340, "stroke": "#3d6fff", "strokeWidth": 6}},
+        "effects": [],
+        "geometryTrack": [
+          {"at": {"segmentId": "motion", "progress": 0}, "value": {"x": 560, "y": 400, "width": 800, "height": 340}, "interpolation": "hold"}
+        ],
+        "styleTrack": [
+          {"at": {"segmentId": "motion", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}
+        ],
+        "visibleTrack": [
+          {"at": {"segmentId": "world", "progress": 0.9}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "motion", "progress": 1}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "name", "progress": 0.5}, "value": 0, "interpolation": "hold"}
+        ]
+      },
+      {
+        "id": "movingLine", "kind": "path", "space": "world", "semanticRole": "content",
+        "renderer": {"id": "base.path", "version": "1.0.0", "props": {"d": "M0 40 L60 0 L120 40 L100 40 L60 12 L20 40 Z", "width": 120, "height": 120, "fill": "#3d6fff", "stroke": "#3d6fff", "strokeWidth": 2}},
+        "effects": [],
+        "geometryTrack": [
+          {"at": {"segmentId": "motion", "progress": 0.2}, "value": {"x": 700, "y": 430, "width": 120, "height": 120}, "interpolation": "hold"},
+          {"at": {"segmentId": "motion", "progress": 1}, "value": {"x": 1080, "y": 430, "width": 120, "height": 120}, "interpolation": "ease", "easing": "easeInOutQuint"}
+        ],
+        "styleTrack": [
+          {"at": {"segmentId": "motion", "progress": 0.2}, "value": {"opacity": 1}, "interpolation": "hold"}
+        ],
+        "visibleTrack": [
+          {"at": {"segmentId": "motion", "progress": 0.2}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "motion-name", "progress": 1}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "name", "progress": 0.35}, "value": 0, "interpolation": "hold"}
+        ]
+      },
+      {
+        "id": "mark", "kind": "path", "space": "world", "semanticRole": "content",
+        "renderer": {"id": "base.path", "version": "1.0.0", "props": {"d": "M0 40 L60 0 L120 40 L100 40 L60 12 L20 40 Z", "width": 120, "height": 120, "fill": "#3d6fff", "stroke": "#3d6fff", "strokeWidth": 2}},
+        "effects": [],
+        "geometryTrack": [
+          {"at": {"segmentId": "name", "progress": 0}, "value": {"x": 900, "y": 380, "width": 120, "height": 120}, "interpolation": "hold"}
+        ],
+        "styleTrack": [
+          {"at": {"segmentId": "name", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"}
+        ],
+        "visibleTrack": [
+          {"at": {"segmentId": "motion", "progress": 0.75}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "name", "progress": 0}, "value": 1, "interpolation": "hold"}
+        ]
+      },
+      {
+        "id": "spark", "kind": "shape", "space": "world", "semanticRole": "content",
+        "renderer": {"id": "base.shape", "version": "1.0.0", "props": {"shape": "ellipse", "width": 40, "height": 40, "fill": "#3d6fff"}},
+        "effects": [],
+        "geometryTrack": [
+          {"at": {"segmentId": "spark", "progress": 0}, "value": {"x": 940, "y": 520, "width": 40, "height": 40}, "interpolation": "hold"},
+          {"at": {"segmentId": "spark", "progress": 1}, "value": {"x": 900, "y": 500, "width": 120, "height": 120}, "interpolation": "ease", "easing": "easeOutExpo"}
+        ],
+        "styleTrack": [
+          {"at": {"segmentId": "spark", "progress": 0}, "value": {"opacity": 1}, "interpolation": "hold"},
+          {"at": {"segmentId": "word", "progress": 0.4}, "value": {"opacity": 0}, "interpolation": "ease", "easing": "easeOutQuart"}
+        ],
+        "visibleTrack": [
+          {"at": {"segmentId": "spark", "progress": 0}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "word", "progress": 0.4}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "word", "progress": 0.5}, "value": 0, "interpolation": "hold"}
+        ]
+      },
+      {
+        "id": "idea", "kind": "text", "space": "world", "semanticRole": "content",
+        "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Ideas"}},
+        "effects": [],
+        "geometryTrack": [
+          {"at": {"segmentId": "word", "progress": 0}, "value": {"x": 720, "y": 470, "width": 520, "height": 150}, "interpolation": "hold"},
+          {"at": {"segmentId": "world", "progress": 0.6}, "value": {"x": 760, "y": 300, "width": 420, "height": 110}, "interpolation": "ease", "easing": "easeOutQuart"}
+        ],
+        "styleTrack": [
+          {"at": {"segmentId": "word", "progress": 0}, "value": {"opacity": 1, "color": "#f5f7fa"}, "interpolation": "hold"}
+        ],
+        "visibleTrack": [
+          {"at": {"segmentId": "word", "progress": 0.1}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "world", "progress": 0.8}, "value": 1, "interpolation": "hold"},
+          {"at": {"segmentId": "motion", "progress": 0.2}, "value": 0, "interpolation": "hold"}
+        ]
+      },
+      {
+        "id": "studioName", "kind": "text", "space": "world", "semanticRole": "content",
+        "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Motion House"}},
+        "effects": [],
+        "geometryTrack": [
+          {"at": {"segmentId": "name", "progress": 0}, "value": {"x": 640, "y": 540, "width": 640, "height": 120}, "interpolation": "hold"}
+        ],
+        "styleTrack": [
+          {"at": {"segmentId": "name", "progress": 0}, "value": {"opacity": 1, "color": "#f5f7fa"}, "interpolation": "hold"}
+        ],
+        "visibleTrack": [
+          {"at": {"segmentId": "name", "progress": 0.15}, "value": 1, "interpolation": "hold"}
+        ]
+      },
+      {
+        "id": "ctaText", "kind": "text", "space": "world", "semanticRole": "content",
+        "renderer": {"id": "base.text", "version": "1.0.0", "props": {"text": "Let's make yours move"}},
+        "effects": [],
+        "geometryTrack": [
+          {"at": {"segmentId": "cta", "progress": 0}, "value": {"x": 700, "y": 660, "width": 560, "height": 60}, "interpolation": "hold"}
+        ],
+        "styleTrack": [
+          {"at": {"segmentId": "cta", "progress": 0}, "value": {"opacity": 1, "color": "#9aa4b2"}, "interpolation": "hold"}
+        ],
+        "visibleTrack": [
+          {"at": {"segmentId": "cta", "progress": 0.1}, "value": 1, "interpolation": "hold"}
+        ]
+      }
+    ]
+  },
+  "camera": {
+    "id": "main-camera",
+    "segments": [
+      {"id": "cam-hold-1", "mode": "hold", "segmentId": "spark", "state": {"x": 0, "y": 0, "zoom": 1}},
+      {"id": "cam-hold-1b", "mode": "hold", "segmentId": "spark-word", "state": {"x": 0, "y": 0, "zoom": 1}},
+      {"id": "cam-hold-2", "mode": "hold", "segmentId": "word", "state": {"x": 0, "y": 0, "zoom": 1}},
+      {"id": "cam-hold-2b", "mode": "hold", "segmentId": "word-world", "state": {"x": 0, "y": 0, "zoom": 1}},
+      {"id": "cam-hold-3", "mode": "hold", "segmentId": "world", "state": {"x": 0, "y": 0, "zoom": 1}},
+      {"id": "cam-push", "mode": "move", "segmentId": "world-motion", "from": {"x": 0, "y": 0, "zoom": 1}, "to": {"x": 120, "y": 90, "zoom": 1.15}, "verb": "zoom", "easing": "easeInOutQuint", "reveals": "the line tracing through the world"},
+      {"id": "cam-hold-4", "mode": "hold", "segmentId": "motion", "state": {"x": 120, "y": 90, "zoom": 1.15}},
+      {"id": "cam-hold-4b", "mode": "hold", "segmentId": "motion-name", "state": {"x": 120, "y": 90, "zoom": 1.15}},
+      {"id": "cam-pull", "mode": "move", "segmentId": "name", "from": {"x": 120, "y": 90, "zoom": 1.15}, "to": {"x": 0, "y": 0, "zoom": 1}, "verb": "zoom", "easing": "easeInOutQuint", "reveals": "the full studio name"},
+      {"id": "cam-hold-5b", "mode": "hold", "segmentId": "name-cta", "state": {"x": 0, "y": 0, "zoom": 1}},
+      {"id": "cam-hold-6", "mode": "hold", "segmentId": "cta", "state": {"x": 0, "y": 0, "zoom": 1}}
+    ]
+  },
+  "motionCues": [
+    {"id": "cue-spark", "at": {"segmentId": "spark", "progress": 0.6}, "role": "hero-reveal", "description": "The spark appears."},
+    {"id": "cue-travel", "at": {"segmentId": "world-motion", "progress": 0.5}, "role": "camera-travel", "description": "Camera draws into the world."},
+    {"id": "cue-morph", "at": {"segmentId": "motion-name", "progress": 0.5}, "role": "morph-handoff", "description": "The line becomes the mark."},
+    {"id": "cue-payoff", "at": {"segmentId": "name", "progress": 0.6}, "role": "payoff", "description": "Motion House resolves."},
+    {"id": "cue-resolve", "at": {"segmentId": "cta", "progress": 0.6}, "role": "resolve", "description": "The invitation settles."}
+  ]
+}

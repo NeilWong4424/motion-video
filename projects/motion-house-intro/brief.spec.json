@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "brief@1",
+  "projectId": "motion-house-intro",
+  "title": "Motion House — Introduction",
+  "language": "en",
+  "goal": "Introduce our motion studio to a general public audience so they instantly feel what we do: turn plain ideas into beautiful, flowing motion — without any jargon.",
+  "audience": "Anyone curious about our studio: founders, marketers, creators and first-time visitors with no technical background.",
+  "message": "We turn your ideas into motion.",
+  "cta": "Let's make yours move",
+  "canvas": {"width": 1920, "height": 1080, "fps": 30},
+  "durationSeconds": 22,
+  "facts": [],
+  "suppliedAssetIds": [],
+  "constraints": [
+    "No technical jargon of any kind.",
+    "Warm, confident, human tone.",
+    "Only code-rendered type, shapes and paths.",
+    "One continuous idea that keeps evolving — never a slideshow.",
+    "No audio dependency."
+  ],
+  "prohibitedContent": [],
+  "assumptions": [
+    "The public does not need to know how the motion is made.",
+    "A calm, elegant register suits a first impression."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "treatment@1",
+  "projectId": "motion-house-intro",
+  "briefHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "message": "We turn your ideas into motion.",
+  "narrativeArc": "A single spark of an idea grows into a word, the word settles into a living shape, the camera draws us into that world, a line traces the idea in motion, and it all resolves into the studio's name and a warm invitation.",
+  "continuityPolicy": "seamless-default",
+  "compositionMode": "continuous-world",
+  "motionProfile": "calm",
+  "stylePackId": "styles/test-neutral@1.0.0",
+  "visualThesis": "One spark is the spine of the whole film; every beat is the same idea, seen a little further along as it comes to life.",
+  "copyStrategy": "Short, plain, human lines that hand off from one to the next like a single sentence spoken slowly.",
+  "transitionVocabulary": ["shared-element", "camera-navigation", "match-on-action"],
+  "signatureTransition": "morph-into-target",
+  "chapterCutBudget": 0,
+  "beatIntentions": [
+    {"id": "bi-spark", "objective": "Open on a single spark.", "message": "Every great thing starts as one small idea."},
+    {"id": "bi-word", "objective": "The spark becomes a word.", "message": "Ideas."},
+    {"id": "bi-world", "objective": "Reveal the idea lives in a world.", "message": "We give it room to grow."},
+    {"id": "bi-motion", "objective": "The idea moves.", "message": "Words become motion."},
+    {"id": "bi-name", "objective": "Resolve into the studio.", "message": "Motion House."},
+    {"id": "bi-cta", "objective": "Invite.", "message": "Let's make yours move."}
+  ],
+  "adjacentIntentionPairs": [
+    {"fromBeatIntentionId": "bi-spark", "toBeatIntentionId": "bi-word", "cameraRationale": "Hold; the spark grows in place into the word."},
+    {"fromBeatIntentionId": "bi-word", "toBeatIntentionId": "bi-world", "cameraRationale": "Ease back so the word settles into a wider world."},
+    {"fromBeatIntentionId": "bi-world", "toBeatIntentionId": "bi-motion", "cameraRationale": "Push gently in as a line begins to trace through the world."},
+    {"fromBeatIntentionId": "bi-motion", "toBeatIntentionId": "bi-name", "cameraRationale": "Hold; the line's end resolves into the studio mark on the same motion."},
+    {"fromBeatIntentionId": "bi-name", "toBeatIntentionId": "bi-cta", "cameraRationale": "Hold; the name settles and the invitation rises beneath it."}
+  ]
+}
