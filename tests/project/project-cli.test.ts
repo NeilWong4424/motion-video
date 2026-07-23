@@ -5,6 +5,7 @@ import {describe, expect, it} from 'vitest';
 
 import {createTestRepoContext} from '../helpers/create-test-repo-context.js';
 import {runMotionCli} from '../../src/cli/index.js';
+import {anchorRepoRoot, loadLedger} from '../../src/engine/ledger/index.js';
 
 const fixture = JSON.parse(
   readFileSync(join(import.meta.dirname, '..', 'fixtures', 'contracts', 'minimal-project.json'), 'utf8'),
@@ -77,5 +78,38 @@ describe('motion new / snapshot CLI', () => {
     const context = createTestRepoContext();
     const code = await runMotionCli(['new', 'https://evil.example/x'], context);
     expect(code).toBe(1);
+  });
+
+  it('initializes a verified Workflow Ledger on new', async () => {
+    const context = createTestRepoContext();
+    const code = await runMotionCli(['new', 'launch-film'], context);
+    expect(code).toBe(0);
+
+    const ledgerPath = join(context.repoRoot, 'projects', 'launch-film', '.workflow', 'ledger.jsonl');
+    expect(existsSync(ledgerPath)).toBe(true);
+    // Two events, LF-terminated: project-initialized + invocation-received.
+    const raw = readFileSync(ledgerPath, 'utf8');
+    expect(raw.endsWith('\n')).toBe(true);
+    expect(raw.trimEnd().split('\n')).toHaveLength(2);
+
+    // The ledger reloads and verifies, reproducing a ready@INTAKE checkpoint with
+    // an active new-project request.
+    const anchor = anchorRepoRoot(context.repoRoot);
+    const loaded = loadLedger(anchor, 'launch-film');
+    expect(loaded).not.toBeNull();
+    expect(loaded!.checkpoint.control).toEqual({kind: 'ready', state: 'INTAKE'});
+    expect(loaded!.checkpoint.activeRequest?.requestClass).toBe('new-project');
+    expect(loaded!.checkpoint.activeRequest?.trustedHostId).toBe('claude-code');
+  });
+
+  it('a second new refuses without leaving a partial ledger', async () => {
+    const context = createTestRepoContext();
+    await runMotionCli(['new', 'launch-film'], context);
+    const code = await runMotionCli(['new', 'launch-film'], context);
+    expect(code).toBe(1);
+    // The original ledger is intact and still verifies.
+    const anchor = anchorRepoRoot(context.repoRoot);
+    const loaded = loadLedger(anchor, 'launch-film');
+    expect(loaded!.events).toHaveLength(2);
   });
 });
