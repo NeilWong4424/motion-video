@@ -196,6 +196,25 @@ export function reduce(
     case 'interface-result-recorded': {
       if (previous === null) throw new Error('LEDGER_REDUCER_NO_PRIOR');
       const p = binding.payload as InterfaceResultRecordedPayload;
+
+      // Source-validation success (VALIDATE → SNAPSHOT for the initial disposition).
+      if (p.validation) {
+        if (previous.control.kind !== 'ready') {
+          throw new Error(`LEDGER_REDUCER_VALIDATE_NOT_READY: ${previous.control.kind}`);
+        }
+        const v = p.validation;
+        if (v.fromState !== previous.control.state) {
+          throw new Error(`LEDGER_REDUCER_VALIDATE_FROM: ${v.fromState} != ${previous.control.state}`);
+        }
+        if (previous.control.state !== 'VALIDATE') {
+          throw new Error(`LEDGER_REDUCER_VALIDATE_STATE: expected VALIDATE got ${previous.control.state}`);
+        }
+        if (v.disposition !== 'initial-source-set' || v.continuationState !== 'SNAPSHOT') {
+          throw new Error('LEDGER_REDUCER_ROUTE_NOT_IMPLEMENTED: non-initial validation disposition');
+        }
+        return {...previous, control: {kind: 'ready', state: 'SNAPSHOT'}};
+      }
+
       if (!p.acceptance) {
         // Non-acceptance interface results are deferred routes in this build.
         throw new Error('LEDGER_REDUCER_ROUTE_NOT_IMPLEMENTED: non-acceptance interface result');

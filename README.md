@@ -1,12 +1,14 @@
 # Local Text-to-Motion Prompt OS
 
-Part 1 is the documentation layer for a local, continuity-first text-to-motion compiler. Codex or Claude Code interprets a request through [`agent/video-workflow.md`](agent/video-workflow.md); role prompts own narrowly defined artifacts; craft documents constrain decisions. The intended films are deterministic, pure-code 2D motion built from text, shapes, paths, diagrams, data, UI, logos, and supported user-supplied local assets.
+This repository is a local, continuity-first text-to-motion system in two coexisting layers. **Part 1** is the documentation layer: Codex or Claude Code interprets a request through [`agent/video-workflow.md`](agent/video-workflow.md), role prompts own narrowly defined artifacts, and craft documents constrain decisions. **Part 2** is the deterministic motion engine those contracts describe — now implemented in [`src/`](src/) and driven by the `motion` CLI. The films are deterministic, pure-code 2D motion built from text, shapes, paths, diagrams, data, UI, logos, and supported user-supplied local assets.
+
+> **Reading order note.** The next two sections ("Part 1 boundary" and "Engine implementation status") describe Part 1's *original* boundary, when no engine existed. That boundary has since been crossed: the engine is real. Those sections are kept for provenance — see [**Part 2 — the motion engine**](#part-2--the-motion-engine-implemented) below for the current, executable state.
 
 The repository itself does not contain or invoke a model. It does not ask for credentials, call remote media services, generate or fetch image/video substrate, or provide a hosted application. Human conversation in Codex or Claude Code is the interface.
 
-## Part 1 boundary
+## Part 1 boundary (historical)
 
-This phase defines prompts, workflow states, authority, artifacts, a checked-in planning-only core catalog, diagnostics, and future deterministic interfaces. It contains no Remotion runtime, capability implementation, resolver, compiler, renderer, QC implementation, revision engine, audio tool, delivery tool, or CLI. Catalog entries marked `part2-required` are contracts, not executable features or evidence that output exists.
+This describes the **original Part 1 phase**, before the engine was built. At that time the repository defined prompts, workflow states, authority, artifacts, a checked-in planning-only core catalog, diagnostics, and *future* deterministic interfaces, and contained no Remotion runtime, capability implementation, resolver, compiler, renderer, QC implementation, revision engine, audio tool, delivery tool, or CLI. Those facilities now exist in [`src/`](src/); catalog entries marked `part2-required` are the contracts the engine implements. Kept here for provenance — see [Part 2](#part-2--the-motion-engine-implemented) for what runs today.
 
 ## Start here
 
@@ -16,7 +18,7 @@ This phase defines prompts, workflow states, authority, artifacts, a checked-in 
 - [`agent/prompt-manifest.json`](agent/prompt-manifest.json) is the machine entrypoint for the exhaustive contract, interface, role, and execution-resource inventories. Its `resources` scope is explicit: every non-role file directly loaded as a normative procedure, canonical data file, deterministic document template, or operator project template. Explanatory maps, reports, and examples are documentation rather than execution resources; individual craft files are exhaustively indexed by `craft/skill-manifest.json`.
 - Recoverable local state and exact re-entry are defined in [`agent/contracts/workflow-ledger.md`](agent/contracts/workflow-ledger.md).
 - Ownership and handoffs are defined in [`agent/contracts/authority-matrix.md`](agent/contracts/authority-matrix.md), [`agent/contracts/artifact-acceptance.md`](agent/contracts/artifact-acceptance.md), and [`agent/contracts/artifact-contracts.md`](agent/contracts/artifact-contracts.md).
-- Cold-start motion profiles, style packs, and capability IDs are locally closed by [`agent/contracts/catalog-registry-contract.md`](agent/contracts/catalog-registry-contract.md) and [`catalog/core-registry.json`](catalog/core-registry.json); Part 2 must implement them before render.
+- Cold-start motion profiles, style packs, and capability IDs are locally closed by [`agent/contracts/catalog-registry-contract.md`](agent/contracts/catalog-registry-contract.md) and [`catalog/core-registry.json`](catalog/core-registry.json); the Part 2 engine implements them for render.
 
 ## Operator experience
 
@@ -44,7 +46,7 @@ The user sees one workflow, not a conversation between agents. Internally, the o
 | Capability Builder | Return an ephemeral, write-free capability-gap advisory | Author a candidate, implementation, receipt, registration, or gate artifact |
 | Cold reviewers | Evaluate exact hash-bound preview evidence | Repair, approve, or invent missing evidence |
 | On-demand craft skills | Supply narrow motion judgment | Own artifacts, state, or implementation |
-| Future deterministic engine | Validate, resolve, preview, QC, render, revise, and package | Exists only in Part 2 |
+| Deterministic engine (Part 2, implemented in `src/`) | Validate, resolve, preview, QC, render, revise, and package | Make creative decisions, call a model/network, or bypass the render gate |
 
 ## Fixed creative policy
 
@@ -68,7 +70,7 @@ The current completion boundary and independent pressure-review record are in [`
 
 ## Engine implementation status
 
-Every executable facility named by this Prompt OS is a **required interface — not implemented** in Part 1. Do not claim a preview, render, validation, QC pass, revision, audio prompt, mux, or delivery until a later implementation produces verifiable local, hash-bound evidence.
+The executable facilities named by this Prompt OS — validation, resolve, preview, QC, revision, render, audio prompt, mux, delivery — are **implemented in Part 2** (see below). The honesty rule still holds: never claim a preview, render, QC pass, revision, or delivery without current local, hash-bound evidence from an actual run. Each derived output is immutable and content-addressed under `out/<id>/<rev>/<plan-hash>/`, and the final render is gated on current QC + both `ship` reviews + an explicit approval bound to the exact plan and preview bytes.
 
 ---
 
@@ -122,9 +124,17 @@ Every derived output is immutable and content-addressed; a changed plan gets a
 new directory. Final render is impossible without current QC, both `ship`
 reviews, and an explicit approval bound to the exact plan and preview bytes.
 
-## The Golden Film
+## Worked films
 
 `projects/golden-continuity` is a committed 20-second, 600-frame continuity-first
 film (keyword → product card → dashboard → chart → brand). It resolves,
 compiles, renders through the real Remotion browser, and passes technical QC —
 proving the seamless kernel reads as one evolving idea, not slides.
+
+`projects/world-cup-2026-format` is a 20-second explainer of the expanded 2026
+tournament — one persistent field of team-dots that re-forms rather than resets:
+48 teams → 12 groups of 4 → 32 advance → 104 matches / 1 champion. It uses
+original tournament styling only (no FIFA marks), and was carried the full route:
+authored specs → validate → snapshot → resolve → preview → a `replace-motion-spec`
+rebuild (rev-0002) that fixed per-beat captions and paint order → QC pass → both
+`ship` reviews → human approval → gated final render.

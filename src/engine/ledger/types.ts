@@ -37,6 +37,8 @@ export type WorkflowState =
   | 'TREATMENT'
   | 'MOTION_SPEC'
   | 'VALIDATE'
+  | 'SNAPSHOT'
+  | 'RESOLVE'
   | 'STOP'
   | 'COMPLETE';
 
@@ -151,6 +153,16 @@ export type InterfaceResultRecordedPayload = {
     candidateByteHash: string;
     successState: WorkflowState;
     contentHash: string;
+  };
+  /**
+   * On source-validation success, the disposition's continuation. `initial-source-set`
+   * moves VALIDATE → SNAPSHOT.
+   */
+  validation?: {
+    disposition: 'initial-source-set' | 'accepted-rebuild-candidates' | 'committed-current-revision';
+    fromState: WorkflowState;
+    continuationState: WorkflowState;
+    validationReceiptHash: string;
   };
   [field: string]: unknown;
 };
