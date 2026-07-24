@@ -87,6 +87,19 @@
       "exitEvidence": ["A role-owned plan or review identifies a coherent, accessible visual system."]
     },
     {
+      "id": "design-system",
+      "file": "craft/design-system.md",
+      "authority": "none",
+      "writes": [],
+      "loadPolicy": "on-demand",
+      "readerRoles": ["creative-direction", "motion-planner", "creative-reviewer"],
+      "workflowStates": ["TREATMENT", "MOTION_SPEC", "CREATIVE_AND_MOTION_REVIEW"],
+      "triggerConditions": ["The task needs a concrete broadcast-grade baseline of palette, type ladder, spacing, and reusable node/effect recipes, or a reviewer flags amateur styling."],
+      "requires": ["style-system", "motion-craft"],
+      "entryConditions": ["Brief facts, constraints, and a selected style pack are current."],
+      "exitEvidence": ["A role-owned plan or review applies the design-system tokens and recipes to concrete node props."]
+    },
+    {
       "id": "kinetic-type",
       "file": "craft/kinetic-type.md",
       "authority": "none",

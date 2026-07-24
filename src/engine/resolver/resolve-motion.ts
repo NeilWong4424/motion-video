@@ -108,6 +108,7 @@ export function resolveMotion(input: ResolveMotionInput): ResolveMotionResult {
           fromFrame: e.fromFrame,
           toFrame: e.toFrame,
           channels: [...e.channels],
+          intent: e.intent,
         })),
         geometryTrack: n.geometryTrack,
         styleTrack: n.styleTrack,

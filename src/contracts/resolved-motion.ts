@@ -42,6 +42,10 @@ export const ResolvedNodeSchema = z.strictObject({
       fromFrame: z.number().int().nonnegative(),
       toFrame: z.number().int().nonnegative(),
       channels: z.array(z.string().min(1)),
+      // The validated effect intent (author props parsed against the capability's
+      // intent schema, defaults filled). `z.unknown()` mirrors `rendererProps`;
+      // per-capability validation already happened at bind time.
+      intent: z.unknown(),
     }),
   ),
   geometryTrack: z.array(ResolvedKeyframeSchema),

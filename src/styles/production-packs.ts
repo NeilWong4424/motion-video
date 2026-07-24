@@ -45,4 +45,86 @@ export const calmPack: StylePack = StylePackSchema.parse({
   motion: {profile: 'calm', heroEase: 'easeOutExpo', standardEase: 'easeOutQuart', travelEase: 'easeInOutQuint'},
 });
 
-export const productionStylePacks: readonly StylePack[] = [editorialPack, energeticPack, calmPack];
+/**
+ * Broadcast Noir: a dark, editorial-grade design-system pack. One neutral ramp
+ * (bg → surface → surfaceRaised → line), one restrained hero accent (warm brass),
+ * a rare cool support hue, and a full type ladder with tuned tracking. This is the
+ * professional baseline every dark film should start from instead of raw primaries.
+ * Font sizes are NOT in this pack (the schema has no size field); the size ladder
+ * lives in craft/design-system.md and each project's registries.tokens, applied to
+ * base.text lines[].fontSize. See craft/design-system.md for the token→prop map.
+ */
+export const broadcastNoirPack: StylePack = StylePackSchema.parse({
+  id: 'styles/broadcast-noir@1.0.0',
+  version: '1.0.0',
+  colors: {
+    bg: '#0a0e14',
+    surface: '#121821',
+    surfaceRaised: '#1a212c',
+    ink: '#f2f5f9',
+    muted: '#8b97a8',
+    line: '#232c39',
+    accent: '#e0a43b',
+    accentQuiet: '#7a5f2a',
+    support: '#5b8fb0',
+  },
+  typography: {
+    display: {fontId: 'noto-sans-sc', weight: 720, trackingEm: -0.02, lineHeight: 1.02},
+    headline: {fontId: 'noto-sans-sc', weight: 620, trackingEm: -0.012, lineHeight: 1.08},
+    title: {fontId: 'noto-sans-sc', weight: 560, trackingEm: -0.006, lineHeight: 1.2},
+    body: {fontId: 'noto-sans-sc', weight: 400, trackingEm: 0, lineHeight: 1.5},
+    caption: {fontId: 'noto-sans-sc', weight: 520, trackingEm: 0.06, lineHeight: 1.35},
+  },
+  spacing: {xs: 8, sm: 12, md: 20, lg: 32, xl: 56, xxl: 96, hero: 160},
+  radius: {sm: 8, md: 14, lg: 24, pill: 999},
+  shadow: {
+    soft: {x: 0, y: 12, blur: 36, spread: -14, color: 'rgba(0,0,0,0.45)'},
+    raised: {x: 0, y: 24, blur: 64, spread: -20, color: 'rgba(0,0,0,0.55)'},
+    accentGlow: {x: 0, y: 8, blur: 40, spread: -16, color: 'rgba(224,164,59,0.28)'},
+  },
+  motion: {profile: 'editorial', heroEase: 'easeOutExpo', standardEase: 'easeOutQuart', travelEase: 'easeInOutQuint'},
+});
+
+/**
+ * Broadcast Daylight: the light counterpart to Broadcast Noir with the same type
+ * ladder and spacing, retuned for legibility on a light background (cooler accent,
+ * softer shadows). Use for explainers and product films that want an airy register.
+ */
+export const broadcastDaylightPack: StylePack = StylePackSchema.parse({
+  id: 'styles/broadcast-daylight@1.0.0',
+  version: '1.0.0',
+  colors: {
+    bg: '#f4f6f9',
+    surface: '#ffffff',
+    surfaceRaised: '#ffffff',
+    ink: '#131922',
+    muted: '#5b6675',
+    line: '#dce2ea',
+    accent: '#1f6feb',
+    accentQuiet: '#9fc0f2',
+    support: '#0f9d7a',
+  },
+  typography: {
+    display: {fontId: 'noto-sans-sc', weight: 700, trackingEm: -0.018, lineHeight: 1.03},
+    headline: {fontId: 'noto-sans-sc', weight: 600, trackingEm: -0.01, lineHeight: 1.08},
+    title: {fontId: 'noto-sans-sc', weight: 560, trackingEm: -0.004, lineHeight: 1.2},
+    body: {fontId: 'noto-sans-sc', weight: 420, trackingEm: 0, lineHeight: 1.5},
+    caption: {fontId: 'noto-sans-sc', weight: 540, trackingEm: 0.05, lineHeight: 1.35},
+  },
+  spacing: {xs: 8, sm: 12, md: 20, lg: 32, xl: 56, xxl: 96, hero: 160},
+  radius: {sm: 6, md: 12, lg: 20, pill: 999},
+  shadow: {
+    soft: {x: 0, y: 12, blur: 36, spread: -14, color: 'rgba(20,30,50,0.10)'},
+    raised: {x: 0, y: 24, blur: 64, spread: -20, color: 'rgba(20,30,50,0.16)'},
+    accentGlow: {x: 0, y: 8, blur: 40, spread: -16, color: 'rgba(31,111,235,0.20)'},
+  },
+  motion: {profile: 'playful', heroEase: 'easeOutExpo', standardEase: 'easeOutQuart', travelEase: 'easeInOutQuint'},
+});
+
+export const productionStylePacks: readonly StylePack[] = [
+  editorialPack,
+  energeticPack,
+  calmPack,
+  broadcastNoirPack,
+  broadcastDaylightPack,
+];

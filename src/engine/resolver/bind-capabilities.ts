@@ -16,7 +16,9 @@ export type CapabilityBinding = {
 export type ResolvedNodeBinding = {
   nodeId: string;
   renderer: CapabilityBinding;
-  effects: Array<CapabilityBinding & {fromFrame: number; toFrame: number; channels: readonly MotionChannel[]}>;
+  effects: Array<
+    CapabilityBinding & {fromFrame: number; toFrame: number; channels: readonly MotionChannel[]; intent: unknown}
+  >;
 };
 
 export type BindResult = {
@@ -74,20 +76,39 @@ function resolveEffects(
 ): ResolvedNodeBinding['effects'] {
   const result: ResolvedNodeBinding['effects'] = [];
   for (const effect of node.effects) {
+    let def;
     try {
-      const def = registry.resolveEffect(effect.id, effect.version, projectId);
-      result.push({
-        id: def.id,
-        version: def.version,
-        implementationHash: def.implementationHash,
-        scope: 'core',
-        fromFrame: resolveSegmentRef(timeline, effect.range.from),
-        toFrame: resolveSegmentRef(timeline, effect.range.to),
-        channels: def.ownedChannels,
-      });
+      def = registry.resolveEffect(effect.id, effect.version, projectId);
     } catch {
       diagnostics.push(errorDiagnostic('CAPABILITY_GAP', {nodeId: node.id, evidence: `effect ${effect.id}`}));
+      continue;
     }
+
+    // Validate the author-supplied effect props against the capability's intent
+    // schema. Absent props parse to the fixture defaults (every intent field uses
+    // `.default(...)`), preserving the historical fixture-only behavior. Malformed
+    // props fail loudly rather than silently degrading to defaults.
+    const parsedIntent = def.intentSchema.safeParse(effect.props ?? {});
+    if (!parsedIntent.success) {
+      diagnostics.push(
+        errorDiagnostic('EFFECT_INTENT_INVALID', {
+          nodeId: node.id,
+          evidence: `effect ${effect.id}: ${parsedIntent.error.issues.map((i) => i.message).join('; ')}`,
+        }),
+      );
+      continue;
+    }
+
+    result.push({
+      id: def.id,
+      version: def.version,
+      implementationHash: def.implementationHash,
+      scope: 'core',
+      fromFrame: resolveSegmentRef(timeline, effect.range.from),
+      toFrame: resolveSegmentRef(timeline, effect.range.to),
+      channels: def.ownedChannels,
+      intent: parsedIntent.data,
+    });
   }
   return result;
 }
