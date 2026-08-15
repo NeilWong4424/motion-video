@@ -6,6 +6,7 @@ import {textLineReveal} from './line-reveal.js';
 import {textTrackingResolve} from './tracking-resolve.js';
 import {textHighlightSweep} from './highlight-sweep.js';
 import {textWordReplace} from './word-replace.js';
+import {textKineticReveal} from './kinetic-reveal.js';
 
 export {
   textMaskRise,
@@ -14,6 +15,7 @@ export {
   textTrackingResolve,
   textHighlightSweep,
   textWordReplace,
+  textKineticReveal,
 };
 
 export const textEffects: readonly MotionCapabilityDefinition<unknown, unknown>[] = [
@@ -23,6 +25,7 @@ export const textEffects: readonly MotionCapabilityDefinition<unknown, unknown>[
   textTrackingResolve,
   textHighlightSweep,
   textWordReplace,
+  textKineticReveal,
 ] as MotionCapabilityDefinition<unknown, unknown>[];
 
 export function registerTextEffects(registry: CapabilityRegistry): void {

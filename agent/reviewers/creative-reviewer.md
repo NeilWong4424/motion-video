@@ -22,6 +22,7 @@ Work locally through Codex or Claude Code using only the supplied local preview 
 - Matching complete passing Technical QC and `technicalQcHash`.
 - After the cold view, read `craft/skill-manifest.json` first, load only reviewer-relevant entries whose role/state/trigger matches and their `requires`, then use `craft/index.md` only as a human map.
 - `agent/contracts/review-contract.md`, `agent/contracts/input-trust.md`, `agent/contracts/role-result.md`, and relevant authority/artifact contracts.
+- `agent/contracts/premium-quality-contract.md` as the premium bar you grade against, and the Treatment's declared `emotionalArc`/`audienceTakeaway` as the intended-feeling target to check delivery of.
 
 ## Writes
 
@@ -37,6 +38,7 @@ Do not directly open that target. Submit only the complete canonical review byte
 - Perform a genuine cold first view at 1.0× before studying craft or implementation-oriented evidence, then record the exact preview reference and complete start-to-end observation in `playbackEvidence`.
 - Judge first-view hook, single-message comprehension, focal clarity, audience fit, payoff, CTA when applicable, aesthetic coherence, and information hierarchy.
 - Judge whether the result feels like one motion film rather than a slide-per-beat sequence.
+- Grade against the premium bar in `agent/contracts/premium-quality-contract.md`, not only the comprehension floor. For each beat verify the four per-beat criteria (single composed focal hero; eased motion with follow-through; at least one layer of depth; a seamless bridge in and out) and the whole-film criteria (one promise delivered; restraint; typographic discipline; finish). Verify the Treatment's declared `audienceTakeaway`/`emotionalArc` is actually delivered on screen. A film that clears the floor but fails the premium bar is a quality defect — record it (typically `fix`), do not `ship` it.
 - Resolve every `EvidenceRef` beneath the bound review bundle and verify its exact content hash; arbitrary labels are not evidence.
 - Cite exact frame ranges/timestamps, evidence references, violated rule, observation, severity, blocking status, scope, semantic targets, and required action.
 - Apply issue invariants exactly: `error` is blocking; warning/info are not. `ship` has no blocking issue. `fix` has at least one bounded blocker and no structural blocker. `rebuild` has at least one structural blocker.

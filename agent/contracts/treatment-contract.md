@@ -18,6 +18,10 @@ type BeatIntention = {
   message: DurableSemanticText;
   focalIntent: DurableSemanticText;
   liveContinuityIntent: DurableSemanticText;
+  // The felt outcome this beat delivers to the audience — what the viewer
+  // should FEEL and the unspoken line it says. Optional for back-compat; the
+  // director's-brain planning path (see premium-quality-contract.md) requires it.
+  audienceTakeaway?: DurableSemanticText;
 };
 
 type CameraTravelRationale = {
@@ -51,6 +55,12 @@ type TreatmentSpec = {
   chapterCutBudget: 0 | 1;
   beatIntentions: [BeatIntention, ...BeatIntention[]];
   cameraTravelRationale: CameraTravelRationale[];
+  // Director's-brain fields (optional, back-compatible). See
+  // premium-quality-contract.md. `emotionalArc` names the felt journey across
+  // the film (e.g. "awe -> clarity -> tension -> triumph"); `premiumTarget`
+  // declares the reference bar the film is authored to and graded against.
+  emotionalArc?: DurableSemanticText;
+  premiumTarget?: DurableSemanticText;
 };
 ```
 

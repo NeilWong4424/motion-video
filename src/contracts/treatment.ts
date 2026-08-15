@@ -7,6 +7,13 @@ export const BeatIntentionSchema = z.strictObject({
   id: z.string().min(1),
   objective: z.string().min(1),
   message: z.string().min(1),
+  // Director's-brain fields (optional, back-compatible). See
+  // agent/contracts/premium-quality-contract.md. `audienceTakeaway` is the felt
+  // outcome the beat delivers; focal/continuity intent name the hero and the
+  // live carry across the boundary.
+  focalIntent: z.string().min(1).optional(),
+  liveContinuityIntent: z.string().min(1).optional(),
+  audienceTakeaway: z.string().min(1).optional(),
 });
 
 /** Camera rationale bound to one adjacent Beat-intention pair. */
@@ -40,6 +47,10 @@ export const TreatmentSpecSchema = z.strictObject({
   chapterCutBudget: z.union([z.literal(0), z.literal(1)]),
   beatIntentions: z.array(BeatIntentionSchema).min(1),
   adjacentIntentionPairs: z.array(AdjacentIntentionPairSchema),
+  // Director's-brain fields (optional, back-compatible): the felt journey across
+  // the film and the premium reference bar it is authored to / graded against.
+  emotionalArc: z.string().min(1).optional(),
+  premiumTarget: z.string().min(1).optional(),
 });
 
 export type TreatmentSpec = z.infer<typeof TreatmentSpecSchema>;

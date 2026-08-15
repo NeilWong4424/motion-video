@@ -29,17 +29,24 @@ export async function renderProfile(
     inputProps: {plan},
   });
 
+  // The composition is always authored at the true canvas size; the preview
+  // profile downscales the OUTPUT via Remotion's `scale`, never by shrinking the
+  // canvas (which would leave 1920-space coordinates in a 960-wide frame and
+  // push content off-screen). scale = profile.width / canvas.width.
+  const outputScale = profile.width / plan.canvas.width;
+
   await renderMedia({
     composition: {
       ...composition,
-      width: profile.width,
-      height: profile.height,
+      width: plan.canvas.width,
+      height: plan.canvas.height,
       durationInFrames: plan.durationInFrames,
       fps: plan.canvas.fps,
     },
     serveUrl,
     codec: 'h264',
     crf: profile.crf,
+    scale: outputScale,
     outputLocation: outputPath,
     inputProps: {plan},
     muted: true,

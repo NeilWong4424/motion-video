@@ -15,6 +15,8 @@ const checkMode = process.argv.includes('--check');
 const CORE_CAPABILITIES = [
   {kind: 'renderer', id: 'base.text', version: '1.0.0', file: 'src/capabilities/base/text-node.tsx', supportedNodeKinds: ['text']},
   {kind: 'renderer', id: 'base.shape', version: '1.0.0', file: 'src/capabilities/base/shape-node.tsx', supportedNodeKinds: ['shape']},
+  {kind: 'renderer', id: 'base.gradient-shape', version: '1.0.0', file: 'src/capabilities/base/gradient-shape-node.tsx', supportedNodeKinds: ['shape']},
+  {kind: 'renderer', id: 'base.iso-stack', version: '1.0.0', file: 'src/capabilities/base/iso-stack-node.tsx', supportedNodeKinds: ['shape']},
   {kind: 'renderer', id: 'base.path', version: '1.0.0', file: 'src/capabilities/base/path-node.tsx', supportedNodeKinds: ['path']},
   {kind: 'renderer', id: 'base.group', version: '1.0.0', file: 'src/capabilities/base/group-node.tsx', supportedNodeKinds: ['group', 'ui', 'chart', 'logo']},
   {kind: 'renderer', id: 'base.image', version: '1.0.0', file: 'src/capabilities/base/image-node.tsx', supportedNodeKinds: ['image', 'logo']},
@@ -24,6 +26,7 @@ const CORE_CAPABILITIES = [
   {kind: 'effect', id: 'text.tracking-resolve', version: '1.0.0', file: 'src/capabilities/text/tracking-resolve.tsx', supportedNodeKinds: ['text'], ownedChannels: ['style'], family: 'text'},
   {kind: 'effect', id: 'text.highlight-sweep', version: '1.0.0', file: 'src/capabilities/text/highlight-sweep.tsx', supportedNodeKinds: ['text'], ownedChannels: ['filter'], family: 'text'},
   {kind: 'effect', id: 'text.word-replace', version: '1.0.0', file: 'src/capabilities/text/word-replace.tsx', supportedNodeKinds: ['text'], ownedChannels: ['content'], family: 'text'},
+  {kind: 'effect', id: 'text.kinetic-reveal', version: '1.0.0', file: 'src/capabilities/text/kinetic-reveal.tsx', supportedNodeKinds: ['text'], ownedChannels: ['geometry', 'opacity'], family: 'text'},
   {kind: 'effect', id: 'shape.shape-reveal', version: '1.0.0', file: 'src/capabilities/shape/shape-reveal.tsx', supportedNodeKinds: ['shape'], ownedChannels: ['geometry', 'opacity'], family: 'shape'},
   {kind: 'effect', id: 'shape.geometry-morph', version: '1.0.0', file: 'src/capabilities/shape/geometry-morph.tsx', supportedNodeKinds: ['shape'], ownedChannels: ['geometry'], family: 'shape'},
   {kind: 'effect', id: 'path.path-draw', version: '1.0.0', file: 'src/capabilities/path/path-draw.tsx', supportedNodeKinds: ['path'], ownedChannels: ['path'], family: 'path'},
@@ -33,6 +36,7 @@ const CORE_CAPABILITIES = [
   {kind: 'effect', id: 'ui.card-lift', version: '1.0.0', file: 'src/capabilities/ui/card-lift.tsx', supportedNodeKinds: ['ui', 'shape', 'group'], ownedChannels: ['geometry', 'filter'], family: 'ui'},
   {kind: 'effect', id: 'identity.logo-assemble', version: '1.0.0', file: 'src/capabilities/identity/logo-assemble.tsx', supportedNodeKinds: ['logo', 'path', 'group'], ownedChannels: ['geometry', 'opacity'], family: 'identity'},
   {kind: 'effect', id: 'ambient.drift', version: '1.0.0', file: 'src/capabilities/ambient/drift.tsx', supportedNodeKinds: ['shape', 'group', 'image'], ownedChannels: ['geometry'], family: 'ambient'},
+  {kind: 'effect', id: 'ambient.soft-shadow', version: '1.0.0', file: 'src/capabilities/ambient/soft-shadow.tsx', supportedNodeKinds: ['shape', 'group', 'image', 'text', 'path'], ownedChannels: ['filter'], family: 'ambient'},
 ];
 
 function hashFile(relPath) {

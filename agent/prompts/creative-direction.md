@@ -23,6 +23,7 @@ Work locally through Codex or Claude Code. Use only user-supplied local assets a
 - User-stated creative preferences that do not contradict the Brief.
 - `agent/contracts/input-trust.md`, `agent/contracts/role-result.md`, and applicable source/authority contracts.
 - `agent/contracts/treatment-contract.md` as the sole closed Treatment shape.
+- `agent/contracts/premium-quality-contract.md` as the normative premium/story bar you author to.
 
 ## Writes
 
@@ -50,6 +51,7 @@ Do not directly open either target. Submit only the complete canonical candidate
 - Set `chapterCutBudget` to `0` or `1`; the maximum is one justified chapter cut for the entire film.
 - Prefer honest held/shared-element/action structures over fake spatiality or decorative camera drift.
 - Record the intended focal hierarchy, hook, development, payoff, and CTA/resolve where applicable.
+- Author to the premium bar in `agent/contracts/premium-quality-contract.md`: declare `emotionalArc`, a per-beat `audienceTakeaway`, and a `premiumTarget`; load the `storytelling`, `emotional-pacing`, `shot-language`, and `premium-taste` craft skills (and their `requires`) before authoring. Aim for the standard of a top-tier international motion house — Apple-Keynote restraint crossed with broadcast-title gravitas — within truth, rights, and continuity law.
 - Return the exact `RoleResult@1` form. Use `written` only after the artifact is actually written with owner-supplied current bindings.
 - During `REBUILD_AUTHORING`, consume the accepted rebuild directive, byte-exact accepted `DurableInstructionText`, exact accepted rebuilt/current Brief, staged parents, current Treatment, and only Creative-Direction-owned authorized scopes. Preserve every out-of-scope Treatment value. Use acceptance route `rebuild-treatment`; do not author MotionSpec.
 
@@ -72,7 +74,7 @@ Return `RoleResult@1` with `status: "blocked"` when required Brief/Research/asse
 ## Procedure
 
 1. Verify the exact accepted Brief binding and restate the one message, audience, constraints, and verified facts without changing them.
-2. Choose the smallest honest narrative arc and define ordered Beat intentions as information states.
+2. Build the smallest narrative arc that still MOVES the audience — never the smallest arc as flat information states. Define ordered Beat intentions that carry emotional intent: for each, name the `audienceTakeaway` (what the viewer should feel and the unspoken line it says). State the film's single emotional promise (opening) and its payoff (close), and record the overall `emotionalArc`. Map the arc to typed narrative functions so `narrativeArc` is populated as structured steps, not one flat sentence.
 3. Choose one composition mode. For each adjacent ordered Beat-intention pair, create its stable camera-rationale ID and exact pair binding. Test every camera-travel idea against a named spatial relationship; convert unsupported travels into a held live composition, then verify the rationale list is a complete ordered `beatIntentions.length - 1` registry.
 4. Read `craft/skill-manifest.json`, select only triggered entries plus `requires`, and consult `craft/index.md` afterward; then define visual thesis, copy strategy, focal progression, style pack, and motion profile.
 5. Select a restrained transition vocabulary consistent with seamless-default and stable identity.

@@ -63,6 +63,7 @@
     "agent/contracts/input-trust.md",
     "agent/contracts/role-artifact-contracts.md",
     "agent/contracts/treatment-contract.md",
+    "agent/contracts/premium-quality-contract.md",
     "agent/contracts/catalog-registry-contract.md",
     "agent/contracts/motion-spec-contract.md",
     "agent/contracts/capability-gap-contract.md",

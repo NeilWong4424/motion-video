@@ -55,4 +55,41 @@ describe('evaluateTrack', () => {
     // easeOutQuart is ahead of linear at the midpoint.
     expect(mid).toBeGreaterThan(50);
   });
+
+  it('interpolates matching 6-digit hex colors in RGB', () => {
+    const track: RenderTrack<string> = [
+      {frame: 0, value: '#000000', interpolation: 'linear'},
+      {frame: 10, value: '#ffffff', interpolation: 'linear'},
+    ];
+    expect(evaluateTrack(track, 5)).toBe('#808080');
+    expect(evaluateTrack(track, 0)).toBe('#000000');
+    expect(evaluateTrack(track, 10)).toBe('#ffffff');
+  });
+
+  it('interpolates hex color inside a style object per key', () => {
+    const track: RenderTrack<{opacity: number; color: string}> = [
+      {frame: 0, value: {opacity: 0, color: '#000000'}, interpolation: 'linear'},
+      {frame: 10, value: {opacity: 1, color: '#ffffff'}, interpolation: 'linear'},
+    ];
+    expect(evaluateTrack(track, 5)).toEqual({opacity: 0.5, color: '#808080'});
+  });
+
+  it('regression: non-hex color strings still snap to destination on arrival', () => {
+    const track: RenderTrack<string> = [
+      {frame: 0, value: 'red', interpolation: 'linear'},
+      {frame: 10, value: 'blue', interpolation: 'linear'},
+    ];
+    // Held before arrival, snapped at/after the destination frame.
+    expect(evaluateTrack(track, 5)).toBe('red');
+    expect(evaluateTrack(track, 10)).toBe('blue');
+  });
+
+  it('regression: mismatched color notations (hex vs named) snap, not lerp', () => {
+    const track: RenderTrack<string> = [
+      {frame: 0, value: '#000000', interpolation: 'linear'},
+      {frame: 10, value: 'white', interpolation: 'linear'},
+    ];
+    expect(evaluateTrack(track, 5)).toBe('#000000');
+    expect(evaluateTrack(track, 10)).toBe('white');
+  });
 });

@@ -49,6 +49,7 @@ Do not directly open either target. Submit only the complete canonical candidate
 - Ask a concise question when a truth-critical fact, destination requirement, or asset right cannot be established locally.
 - Enforce local-only, pure-code 2D scope with no AI-generated image or video substrate and no footage as the film's substrate.
 - Leave creative gaps as labeled assumptions that Creative Direction may resolve without changing factual authority.
+- When the request implies a desired feeling or takeaway (e.g. "make it exciting", "premium", "make people care"), record it as a single labeled non-factual assumption capturing the intended audience emotional takeaway, so Creative Direction has a target. Never invent facts, claims, dates, people, rights, or a CTA to support it; an emotional-takeaway assumption is intent, not evidence.
 - Preserve existing semantic locks during a revision handoff.
 - During `REBUILD_AUTHORING`, consume only the accepted rebuild directive, byte-exact accepted `DurableInstructionText`, staged parent identities, current Brief, and authorized Brief-owned scopes. Author a full new Brief candidate without changing out-of-scope fields. Use acceptance route `rebuild-brief`; do not author downstream Treatment/Motion content.
 - Return the exact discriminated `RoleResult@1` form. Use `written` only after the authorized artifact was actually written and every required current binding was supplied by its owner.
